@@ -239,12 +239,27 @@ Page {
             LabelSpacer {
             }
 
+            PasswordField {
+                id: restorePasswordField
+                width: parent.width
+                enabled: !isRestoreRunning
+                
+                // Only show the field if the backup is actually valid
+                visible: availableMetadata["version"] !== undefined
+                
+                label: qsTr("Password")
+                placeholderText: qsTr("Enter the backup password")
+                EnterKey.iconSource: "image://theme/icon-m-enter-close"
+                EnterKey.onClicked: focus = false
+            }
+
             Repeater {
                 model: restoreCategoriesModel
 
                 delegate: Column {
                     width: parent.width
-                    visible: availableMetadata[model.key] === "true"
+                    //visible: availableMetadata[model.key] === "true"
+                    visible: availableMetadata[model.key] === "true" || (model.section !== "" && isSectionVisible(model.triggers))
 
                     SectionHeader {
                         text: model.section
@@ -252,6 +267,7 @@ Page {
                     }
 
                     TextSwitch {
+                        visible: availableMetadata[model.key] === "true"
                         text: model.name
                         checked: model.isChecked
                         enabled: !isRestoreRunning
@@ -275,17 +291,18 @@ Page {
 
                 text: isRestoreRunning ? qsTr("Restoring...") : qsTr("Start restore")
                 anchors.horizontalCenter: parent.horizontalCenter
-                enabled: availableMetadata["version"] !== undefined && !noneSelected && !isRestoreRunning
+                enabled: availableMetadata["version"] !== undefined && !noneSelected && !isRestoreRunning && restorePasswordField.text.length > 0
                 onClicked: {
                     isRestoreRunning = true;
                     var restoreOptions = {
+                        "password": restorePasswordField.text // <-- Pass the password to C++!
                     };
                     for (var i = 0; i < restoreCategoriesModel.count; i++) {
                         var item = restoreCategoriesModel.get(i);
                         restoreOptions[item.key] = item.isChecked;
                     }
                     appCore.executeRestore(selectedBackupPath, restoreOptions);
-                    appWindow.showProgressNotification(qsTr("Talteen Backup"), qsTr("Restoring backup..."), Notification.ProgressIndeterminate);
+                    appWindow.showProgressNotification(qsTr("Restore"), qsTr("Restoring backup..."), Notification.ProgressIndeterminate);
                 }
             }
 

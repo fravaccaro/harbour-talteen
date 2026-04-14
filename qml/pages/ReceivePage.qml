@@ -95,7 +95,7 @@ Page {
             enabled: !isTransferRunning
             // Dynamically change the text based on whether the server is on or off
             text: netTransfer.isListening ? qsTr("Waiting for sender...") : qsTr("Device is hidden")
-            hintText: netTransfer.isListening ? qsTr("Pull down to hide this device") : qsTr("Pull down to make device visible")
+            hintText: netTransfer.isListening ? qsTr("Pull down to hide this device") : qsTr("Pull down to make this device visible")
         }
 
         Column {

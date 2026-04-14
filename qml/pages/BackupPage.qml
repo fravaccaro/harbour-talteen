@@ -165,6 +165,32 @@ Page {
 
             }
 
+            PasswordField {
+                id: passwordField
+                enabled: !isBackupRunning
+                width: parent.width
+                label: qsTr("Password")
+                placeholderText: qsTr("Enter a password to protect your data")
+                
+                // Move focus to the next field when Enter is pressed
+                EnterKey.iconSource: "image://theme/icon-m-enter-next"
+                EnterKey.onClicked: repeatPasswordField.focus = true
+            }
+
+            PasswordField {
+                id: repeatPasswordField
+                enabled: !isBackupRunning
+                width: parent.width
+                label: qsTr("Repeat password")
+                placeholderText: qsTr("Re-enter password")
+                
+                // Highlight red if the user makes a typo
+                errorHighlight: text.length > 0 && text !== passwordField.text
+                
+                EnterKey.iconSource: "image://theme/icon-m-enter-close"
+                EnterKey.onClicked: focus = false
+            }
+
             StorageDestinationButton {
                 id: storageBtn
 
@@ -208,12 +234,13 @@ Page {
                 text: isBackupRunning ? qsTr("Saving backup...") : qsTr("Start backup")
                 anchors.horizontalCenter: parent.horizontalCenter
                 // Disable the button while running so they can't spam it
-                enabled: !noneSelected && !isBackupRunning && backupLabelField.acceptableInput
+                enabled: !noneSelected && !isBackupRunning && backupLabelField.acceptableInput && passwordField.text.length > 0 && passwordField.text === repeatPasswordField.text
                 onClicked: {
                     isBackupRunning = true;
                     var backupOptions = {
                         "destination": storageBtn.saveToSdCard ? appCore.getSdCardPath() : "internal",
-                        "label": backupLabelField.text
+                        "label": backupLabelField.text,
+                        "password": passwordField.text
                     };
                     for (var i = 0; i < categoriesModel.count; i++) {
                         var item = categoriesModel.get(i);

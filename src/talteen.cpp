@@ -58,9 +58,7 @@ qint64 Talteen::getFreeSpace(bool onSdCard)
     if (path.isEmpty())
         return 0;
 
-    // Ensure the folder exists before checking space
     QDir().mkpath(path);
-
     QStorageInfo storage(path);
     return storage.bytesAvailable();
 }
@@ -68,10 +66,8 @@ qint64 Talteen::getFreeSpace(bool onSdCard)
 void Talteen::startBackup(const QVariantMap &options)
 {
     QString homePath = QDir::homePath();
-
     QString cachePath = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
     QString workDir = cachePath + "/workdir";
-
     QString dateTimeString = QDateTime::currentDateTime().toString("yyyy-MM-dd_HH-mm");
 
     QDir(workDir).removeRecursively();
@@ -99,7 +95,6 @@ void Talteen::startBackup(const QVariantMap &options)
         estimatedSize += calculateDirSize(QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
     if (hasVideos)
         estimatedSize += calculateDirSize(QStandardPaths::writableLocation(QStandardPaths::MoviesLocation));
-
     if (hasAppdata)
     {
         estimatedSize += calculateDirSize(homePath + "/.config");
@@ -109,45 +104,51 @@ void Talteen::startBackup(const QVariantMap &options)
     QString destOption = options.value("destination").toString();
     QString targetFolder = (destOption == "internal" || destOption.isEmpty()) ? homePath : destOption;
 
-    // Always ensure the directory exists before QStorageInfo checks it
     QDir().mkpath(targetFolder);
-
     QStorageInfo storage(targetFolder);
-    qint64 freeSpace = storage.bytesAvailable();
 
-    if (freeSpace < (estimatedSize + 104857600))
+    // 1. Check final destination space
+    if (storage.bytesAvailable() < (estimatedSize + 104857600))
     {
-        qDebug() << "[ERROR] Not enough free space for backup. Need approx:" << estimatedSize << "Have:" << freeSpace;
+        qDebug() << "[ERROR] Not enough free space in destination.";
         emit backupFinished(false, tr("Not enough storage space to save the backup"));
+        return;
+    }
+
+    // 2. Check internal cache space (We need roughly 2x the size to hold the temporary encrypted payloads)
+    QDir().mkpath(cachePath);
+    QStorageInfo cacheStorage(cachePath);
+    if (cacheStorage.bytesAvailable() < (estimatedSize * 2 + 104857600))
+    {
+        qDebug() << "[ERROR] Not enough free space in internal cache memory.";
+        emit backupFinished(false, tr("Not enough internal storage space to prepare the backup"));
         return;
     }
 
     qDebug() << "Start preparing backup...";
 
+    QString password = options.value("password").toString();
+    if (password.isEmpty())
+    {
+        emit backupFinished(false, tr("A password is required to save a backup"));
+        return;
+    }
+
     QFile yamlFile(workDir + "/content.yaml");
     if (yamlFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         QTextStream out(&yamlFile);
-
-        QString appVersion = "1.0.0";
-        out << "version: \"" << appVersion << "\"\n";
+        out << "version: \"1.0.0\"\n";
         out << "time: \"" << QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") << "\"\n";
-
         QString userLabel = options.value("label").toString().trimmed();
-        QString baseFileName = "talteen_backup_" + dateTimeString;
+        out << "label: \"" << (userLabel.isEmpty() ? "talteen_backup_" + dateTimeString : userLabel) << "\"\n";
+        out << "encrypted: \"true\"\n";
 
-        out << "label: \"" << (userLabel.isEmpty() ? baseFileName : userLabel) << "\"\n";
-
-        QStringList allCategories = {
-            "appdata", "apporder", "calls", "messages", "pictures",
-            "documents", "downloads", "music", "videos"};
-
+        QStringList allCategories = {"appdata", "apporder", "calls", "messages", "pictures", "documents", "downloads", "music", "videos"};
         for (const QString &category : allCategories)
         {
-            bool isIncluded = options.value(category).toBool();
-            out << category << ": " << (isIncluded ? "true" : "false") << "\n";
+            out << category << ": " << (options.value(category).toBool() ? "true" : "false") << "\n";
         }
-
         out << "EOF: true\n";
         yamlFile.close();
     }
@@ -157,14 +158,12 @@ void Talteen::startBackup(const QVariantMap &options)
         QDir().mkpath(workDir + "/apporder");
         QFile::copy(homePath + "/.config/lipstick/applications.menu", workDir + "/apporder/applications.menu");
     }
-
     if (hasAppdata)
     {
         QDir().mkpath(workDir + "/appdata");
         QFile::link(homePath + "/.config", workDir + "/appdata/.config");
         QFile::link(homePath + "/.local", workDir + "/appdata/.local");
     }
-
     if (hasPictures)
         QFile::link(QStandardPaths::writableLocation(QStandardPaths::PicturesLocation), workDir + "/pictures");
     if (hasDocuments)
@@ -176,30 +175,86 @@ void Talteen::startBackup(const QVariantMap &options)
     if (hasVideos)
         QFile::link(QStandardPaths::writableLocation(QStandardPaths::MoviesLocation), workDir + "/videos");
 
-    auto runTarStep = [=]()
+    // --- STEP 3: Outer Wrapper ---
+    auto runOuterTarStep = [=](const QString &payloadFileName)
     {
-        QString destOption = options.value("destination").toString();
-        QString backupFolder;
+        qDebug() << "Executing Step 3/3: Packing final archive...";
 
-        // Use standard AppData location for internal, and a specific folder for SD Card
-        if (destOption == "internal" || destOption.isEmpty())
-        {
-            backupFolder = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-        }
-        else
-        {
-            backupFolder = destOption + "/harbour-talteen";
-        }
-
+        QString backupFolder = (destOption == "internal" || destOption.isEmpty()) ? QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) : destOption + "/harbour-talteen";
         QDir().mkpath(backupFolder);
-
         QString finalDestination = backupFolder + "/talteen_backup_" + dateTimeString + ".talteen";
 
-        QProcess *tarProcess = new QProcess(this);
-        tarProcess->setWorkingDirectory(workDir);
+        QProcess *outerTar = new QProcess(this);
+        outerTar->setWorkingDirectory(workDir);
+        outerTar->setProcessChannelMode(QProcess::ForwardedErrorChannel); // Prevents buffer deadlock
+
+        outerTar->start("tar", {"-cf", finalDestination, "content.yaml", payloadFileName});
+
+        connect(outerTar, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                [=](int exitCode, QProcess::ExitStatus)
+                {
+                    QDir(workDir).removeRecursively();
+                    if (exitCode == 0)
+                    {
+                        qDebug() << "Backup successfully saved in:" << finalDestination;
+                        emit backupFinished(true, tr("Backup saved successfully"));
+                    }
+                    else
+                    {
+                        emit backupFinished(false, tr("Unable to save backup"));
+                    }
+                    outerTar->deleteLater();
+                });
+    };
+
+    // --- STEP 2: Encryption ---
+    auto runEncryptStep = [=]()
+    {
+        qDebug() << "Executing Step 2/3: Encrypting payload...";
+
+        QProcess *encryptProcess = new QProcess(this);
+        encryptProcess->setWorkingDirectory(workDir);
+        encryptProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
+
+        QStringList sslArgs;
+        sslArgs << "enc" << "-aes-256-cbc" << "-salt" << "-pbkdf2"
+                << "-in" << "payload.tar.gz" << "-out" << "payload.enc" << "-pass" << "pass:" + password;
+
+        connect(encryptProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                [=](int exitCode, QProcess::ExitStatus)
+                {
+                    if (exitCode == 0)
+                    {
+                        QFile::remove(workDir + "/payload.tar.gz");
+                        runOuterTarStep("payload.enc");
+                    }
+                    else
+                    {
+                        emit backupFinished(false, tr("Encryption failed"));
+                    }
+                    encryptProcess->deleteLater();
+                });
+
+        connect(encryptProcess, &QProcess::errorOccurred, [=](QProcess::ProcessError error)
+                {
+            qDebug() << "[FATAL] OpenSSL process error:" << error << encryptProcess->errorString();
+            emit backupFinished(false, tr("Unable to secure your backup. Is OpenSSL installed?"));
+            encryptProcess->deleteLater(); });
+
+        encryptProcess->start("openssl", sslArgs);
+    };
+
+    // --- STEP 1: Inner Tar ---
+    auto runInnerTarStep = [=]()
+    {
+        qDebug() << "Executing Step 1/3: Compressing raw data folders...";
+
+        QProcess *innerTarProcess = new QProcess(this);
+        innerTarProcess->setWorkingDirectory(workDir);
+        innerTarProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
 
         QStringList tarArgs;
-        tarArgs << "-czhf" << finalDestination;
+        tarArgs << "-czhf" << "payload.tar.gz";
 
         if (hasAppdata)
         {
@@ -209,14 +264,10 @@ void Talteen::startBackup(const QVariantMap &options)
                 "appdata/.config/nemomobile", "appdata/.config/pulse", "appdata/.config/signond",
                 "appdata/.config/systemd", "appdata/.config/tracker", "appdata/.config/user-dirs.dirs",
                 "appdata/.config/user-dirs.locale", "appdata/.config/.sailfish-gallery-reindex",
-                "appdata/.local/nemo-transferengine",
-                "appdata/.local/share/ambienced", "appdata/.local/share/applications",
-                "appdata/.local/share/commhistory", "appdata/.local/share/dbus-1",
-                "appdata/.local/share/gsettings-data-convert", "appdata/.local/share/maliit-server",
-                "*/.mozilla/lock",
-                "*/.mozilla/.parentlock",
-                "appdata/.local/share/system", "appdata/.local/share/systemd",
-                "appdata/.local/share/telepathy", "appdata/.local/share/system/privilege/Contacts",
+                "appdata/.local/nemo-transferengine", "appdata/.local/share/ambienced", "appdata/.local/share/applications",
+                "appdata/.local/share/commhistory", "appdata/.local/share/dbus-1", "appdata/.local/share/gsettings-data-convert",
+                "appdata/.local/share/maliit-server", "*/.mozilla/lock", "*/.mozilla/.parentlock", "appdata/.local/share/system",
+                "appdata/.local/share/systemd", "appdata/.local/share/telepathy", "appdata/.local/share/system/privilege/Contacts",
                 "appdata/.local/share/tracker", "appdata/.local/share/xt9"};
             for (const QString &path : excludePaths)
             {
@@ -224,7 +275,6 @@ void Talteen::startBackup(const QVariantMap &options)
             }
         }
 
-        tarArgs << "content.yaml";
         if (hasApporder)
             tarArgs << "apporder";
         if (hasCalls)
@@ -244,37 +294,33 @@ void Talteen::startBackup(const QVariantMap &options)
         if (hasVideos)
             tarArgs << "videos";
 
-        connect(tarProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+        connect(innerTarProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                 [=](int exitCode, QProcess::ExitStatus)
                 {
-                    QDir(workDir).removeRecursively();
-
                     if (exitCode == 0 || exitCode == 1)
                     {
-                        qDebug() << "Backup saved in:" << finalDestination << "(Exit code:" << exitCode << ")";
-                        emit backupFinished(true, tr("Backup saved successfully"));
+                        runEncryptStep();
                     }
                     else
                     {
-                        qDebug() << "Error tar (Exit code:" << exitCode << "):" << tarProcess->readAllStandardError();
                         emit backupFinished(false, tr("Unable to save backup"));
                     }
-                    tarProcess->deleteLater();
+                    innerTarProcess->deleteLater();
                 });
-
-        tarProcess->start("tar", tarArgs);
+        innerTarProcess->start("tar", tarArgs);
     };
 
     auto runMessagesStep = [=]()
     {
         if (hasMessages)
         {
+            qDebug() << "Exporting messages database...";
             QDir().mkpath(workDir + "/messages");
-            Spawner::execute("commhistory-tool", {"export", "-groups", workDir + "/messages/groups.dat"}, runTarStep);
+            Spawner::execute("commhistory-tool", {"export", "-groups", workDir + "/messages/groups.dat"}, runInnerTarStep);
         }
         else
         {
-            runTarStep();
+            runInnerTarStep();
         }
     };
 
@@ -282,6 +328,7 @@ void Talteen::startBackup(const QVariantMap &options)
     {
         if (hasCalls)
         {
+            qDebug() << "Exporting calls database...";
             QDir().mkpath(workDir + "/calls");
             Spawner::execute("commhistory-tool", {"export", "-calls", workDir + "/calls/calls.dat"}, runMessagesStep);
         }
@@ -299,14 +346,12 @@ void Talteen::analyzeArchive(const QString &backupFile)
     QProcess *tarProcess = new QProcess(this);
     QByteArray *yamlData = new QByteArray();
 
-    tarProcess->start("tar", {"-xzOf", backupFile, "content.yaml"});
+    tarProcess->start("tar", {"-xOf", backupFile, "content.yaml"});
 
     connect(tarProcess, &QProcess::readyReadStandardOutput, [=]()
             {
         yamlData->append(tarProcess->readAllStandardOutput());
-        
         if (yamlData->contains("EOF: true")) {
-            qDebug() << "content.yaml read. Stopping tar...";
             tarProcess->kill(); 
         } });
 
@@ -329,14 +374,11 @@ void Talteen::analyzeArchive(const QString &backupFile)
                     QStringList parts = line.split(": ");
                     if (parts.size() == 2)
                     {
-                        QString key = parts[0].trimmed();
-                        QString value = parts[1].trimmed().remove("\"");
-                        metadata.insert(key, value);
+                        metadata.insert(parts[0].trimmed(), parts[1].trimmed().remove("\""));
                     }
                 }
 
-                QString version = metadata.value("version").toString();
-                if (version != "1.0.0")
+                if (metadata.value("version").toString() != "1.0.0")
                 {
                     emit archiveAnalyzed(false, tr("Unsupported backup version"), QVariantMap());
                 }
@@ -353,17 +395,15 @@ void Talteen::analyzeArchive(const QString &backupFile)
 void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selectedOptions)
 {
     QString homePath = QDir::homePath();
-
     QString cachePath = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
-    QString workDir = cachePath + "/restore_workdir"; // Ensure it exists
+    QString workDir = cachePath + "/restore_workdir";
 
     QFileInfo archiveInfo(backupFile);
-    qint64 requiredSpace = archiveInfo.size() * 1.5;
 
-    // Ensure it exists
+    // We need 3x the space during restore (encrypted payload + decrypted payload + extracted files)
+    qint64 requiredSpace = archiveInfo.size() * 3.0;
+
     QDir().mkpath(cachePath);
-
-    // Create the storage info object using our cache path
     QStorageInfo cacheStorage(cachePath);
 
     if (cacheStorage.bytesAvailable() < (requiredSpace + 104857600))
@@ -375,115 +415,193 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
     QDir(workDir).removeRecursively();
     QDir().mkpath(workDir);
 
-    qDebug() << "Extracting archive for restoring...";
+    auto finalCleanup = [=]()
+    {
+        QDir(workDir).removeRecursively();
+        emit restoreFinished(true, tr("Backup restored successfully"));
+    };
 
-    QProcess *tarProcess = new QProcess(this);
-    tarProcess->start("tar", {"-xzpf", backupFile, "-C", workDir});
+    auto restoreMessages = [=]()
+    {
+        if (selectedOptions.value("messages").toBool() && QFile::exists(workDir + "/messages/groups.dat"))
+        {
+            qDebug() << "Importing messages...";
+            Spawner::execute("commhistory-tool", {"import", "-groups", workDir + "/messages/groups.dat"}, finalCleanup);
+        }
+        else
+        {
+            finalCleanup();
+        }
+    };
 
-    connect(tarProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-            [=](int exitCode, QProcess::ExitStatus)
-            {
-                if (exitCode != 0)
-                {
-                    emit restoreFinished(false, tr("Restore failed. The backup may be damaged"));
-                    tarProcess->deleteLater();
-                    return;
-                }
-                tarProcess->deleteLater();
+    auto restoreCalls = [=]()
+    {
+        if (selectedOptions.value("calls").toBool() && QFile::exists(workDir + "/calls/calls.dat"))
+        {
+            qDebug() << "Importing calls...";
+            Spawner::execute("commhistory-tool", {"import", "-calls", workDir + "/calls/calls.dat"}, restoreMessages);
+        }
+        else
+        {
+            restoreMessages();
+        }
+    };
 
-                auto finalCleanup = [=]()
-                {
-                    QDir(workDir).removeRecursively();
-                    emit restoreFinished(true, tr("Backup restored successfully"));
-                };
+    auto restoreFiles = [=]()
+    {
+        qDebug() << "Moving extracted files to their final destinations...";
+        QProcess *copyProcess = new QProcess(this);
+        copyProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
 
-                auto restoreMessages = [=]()
-                {
-                    if (selectedOptions.value("messages").toBool() && QFile::exists(workDir + "/messages/groups.dat"))
-                    {
-                        Spawner::execute("commhistory-tool", {"import", "-groups", workDir + "/messages/groups.dat"}, finalCleanup);
-                    }
-                    else
-                    {
-                        finalCleanup();
-                    }
-                };
+        QStringList rsyncArgs;
+        rsyncArgs << "-a";
 
-                auto restoreCalls = [=]()
-                {
-                    if (selectedOptions.value("calls").toBool() && QFile::exists(workDir + "/calls/calls.dat"))
-                    {
-                        Spawner::execute("commhistory-tool", {"import", "-calls", workDir + "/calls/calls.dat"}, restoreMessages);
-                    }
-                    else
-                    {
-                        restoreMessages();
-                    }
-                };
+        bool hasFilesToCopy = false;
 
-                auto restoreFiles = [=]()
-                {
-                    QProcess *copyProcess = new QProcess(this);
-                    QStringList rsyncArgs;
-                    rsyncArgs << "-a";
+        if (selectedOptions.value("appdata").toBool() && QDir(workDir + "/appdata").exists())
+        {
+            rsyncArgs << workDir + "/appdata/.config" << workDir + "/appdata/.local" << homePath + "/";
+            hasFilesToCopy = true;
+        }
+        if (selectedOptions.value("apporder").toBool() && QDir(workDir + "/apporder").exists())
+        {
+            QDir().mkpath(homePath + "/.config/lipstick");
+            QFile::copy(workDir + "/apporder/applications.menu", homePath + "/.config/lipstick/applications.menu");
+        }
+        if (selectedOptions.value("pictures").toBool() && QDir(workDir + "/pictures").exists())
+        {
+            rsyncArgs << workDir + "/pictures/" << QStandardPaths::writableLocation(QStandardPaths::PicturesLocation) + "/";
+            hasFilesToCopy = true;
+        }
+        if (selectedOptions.value("documents").toBool() && QDir(workDir + "/documents").exists())
+        {
+            rsyncArgs << workDir + "/documents/" << QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/";
+            hasFilesToCopy = true;
+        }
+        if (selectedOptions.value("downloads").toBool() && QDir(workDir + "/downloads").exists())
+        {
+            rsyncArgs << workDir + "/downloads/" << QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + "/";
+            hasFilesToCopy = true;
+        }
+        if (selectedOptions.value("music").toBool() && QDir(workDir + "/music").exists())
+        {
+            rsyncArgs << workDir + "/music/" << QStandardPaths::writableLocation(QStandardPaths::MusicLocation) + "/";
+            hasFilesToCopy = true;
+        }
+        if (selectedOptions.value("videos").toBool() && QDir(workDir + "/videos").exists())
+        {
+            rsyncArgs << workDir + "/videos/" << QStandardPaths::writableLocation(QStandardPaths::MoviesLocation) + "/";
+            hasFilesToCopy = true;
+        }
 
-                    bool hasFilesToCopy = false;
-
-                    if (selectedOptions.value("appdata").toBool() && QDir(workDir + "/appdata").exists())
-                    {
-                        rsyncArgs << workDir + "/appdata/.config" << workDir + "/appdata/.local" << homePath + "/";
-                        hasFilesToCopy = true;
-                    }
-                    if (selectedOptions.value("apporder").toBool() && QDir(workDir + "/apporder").exists())
-                    {
-                        QDir().mkpath(homePath + "/.config/lipstick");
-                        QFile::copy(workDir + "/apporder/applications.menu", homePath + "/.config/lipstick/applications.menu");
-                    }
-
-                    if (selectedOptions.value("pictures").toBool() && QDir(workDir + "/pictures").exists())
-                    {
-                        rsyncArgs << workDir + "/pictures/" << QStandardPaths::writableLocation(QStandardPaths::PicturesLocation) + "/";
-                        hasFilesToCopy = true;
-                    }
-                    if (selectedOptions.value("documents").toBool() && QDir(workDir + "/documents").exists())
-                    {
-                        rsyncArgs << workDir + "/documents/" << QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/";
-                        hasFilesToCopy = true;
-                    }
-                    if (selectedOptions.value("downloads").toBool() && QDir(workDir + "/downloads").exists())
-                    {
-                        rsyncArgs << workDir + "/downloads/" << QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + "/";
-                        hasFilesToCopy = true;
-                    }
-                    if (selectedOptions.value("music").toBool() && QDir(workDir + "/music").exists())
-                    {
-                        rsyncArgs << workDir + "/music/" << QStandardPaths::writableLocation(QStandardPaths::MusicLocation) + "/";
-                        hasFilesToCopy = true;
-                    }
-                    if (selectedOptions.value("videos").toBool() && QDir(workDir + "/videos").exists())
-                    {
-                        rsyncArgs << workDir + "/videos/" << QStandardPaths::writableLocation(QStandardPaths::MoviesLocation) + "/";
-                        hasFilesToCopy = true;
-                    }
-
-                    if (hasFilesToCopy)
-                    {
-                        connect(copyProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-                                [=](int, QProcess::ExitStatus)
-                                {
-                                    copyProcess->deleteLater();
-                                    restoreCalls();
-                                });
-                        copyProcess->start("rsync", rsyncArgs);
-                    }
-                    else
+        if (hasFilesToCopy)
+        {
+            connect(copyProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                    [=](int, QProcess::ExitStatus)
                     {
                         copyProcess->deleteLater();
                         restoreCalls();
-                    }
-                };
+                    });
+            copyProcess->start("rsync", rsyncArgs);
+        }
+        else
+        {
+            copyProcess->deleteLater();
+            restoreCalls();
+        }
+    };
 
-                restoreFiles();
+    // --- STEP 3: Inner Extract ---
+    auto runInnerExtract = [=]()
+    {
+        qDebug() << "Executing Step 3/3: Unpacking inner payload...";
+        QProcess *innerTar = new QProcess(this);
+        innerTar->setProcessChannelMode(QProcess::ForwardedErrorChannel);
+        innerTar->start("tar", {"-xzpf", workDir + "/payload.tar.gz", "-C", workDir});
+
+        connect(innerTar, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                [=](int exitCode, QProcess::ExitStatus)
+                {
+                    innerTar->deleteLater();
+                    if (exitCode == 0)
+                    {
+                        QFile::remove(workDir + "/payload.tar.gz");
+                        restoreFiles();
+                    }
+                    else
+                    {
+                        emit restoreFinished(false, tr("Restore failed. The backup contents may be damaged"));
+                    }
+                });
+    };
+
+    // --- STEP 2: Decrypt ---
+    auto runDecryptStep = [=]()
+    {
+        qDebug() << "Executing Step 2/3: Decrypting payload...";
+        QString password = selectedOptions.value("password").toString();
+
+        if (password.isEmpty())
+        {
+            emit restoreFinished(false, tr("Password required for this backup"));
+            return;
+        }
+        if (!QFile::exists(workDir + "/payload.enc"))
+        {
+            emit restoreFinished(false, tr("Restore failed. Invalid backup format"));
+            return;
+        }
+
+        QProcess *decryptProcess = new QProcess(this);
+        decryptProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
+        QStringList sslArgs;
+        sslArgs << "enc" << "-d" << "-aes-256-cbc" << "-pbkdf2"
+                << "-in" << workDir + "/payload.enc"
+                << "-out" << workDir + "/payload.tar.gz"
+                << "-pass" << "pass:" + password;
+
+        connect(decryptProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                [=](int exitCode, QProcess::ExitStatus)
+                {
+                    decryptProcess->deleteLater();
+                    if (exitCode == 0)
+                    {
+                        QFile::remove(workDir + "/payload.enc");
+                        runInnerExtract();
+                    }
+                    else
+                    {
+                        emit restoreFinished(false, tr("Unable to unlock the backup. Please check your password"));
+                    }
+                });
+
+        connect(decryptProcess, &QProcess::errorOccurred, [=](QProcess::ProcessError error)
+                {
+            qDebug() << "[FATAL] OpenSSL decrypt process error:" << error << decryptProcess->errorString();
+            emit restoreFinished(false, tr("Encryption tool failed to start. Is OpenSSL installed?"));
+            decryptProcess->deleteLater(); });
+
+        decryptProcess->start("openssl", sslArgs);
+    };
+
+    // --- STEP 1: Outer Extract ---
+    qDebug() << "Executing Step 1/3: Extracting outer wrapper...";
+    QProcess *outerTarProcess = new QProcess(this);
+    outerTarProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
+    outerTarProcess->start("tar", {"-xf", backupFile, "-C", workDir});
+
+    connect(outerTarProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+            [=](int exitCode, QProcess::ExitStatus)
+            {
+                outerTarProcess->deleteLater();
+                if (exitCode == 0)
+                {
+                    runDecryptStep();
+                }
+                else
+                {
+                    emit restoreFinished(false, tr("Restore failed. The backup may be damaged"));
+                }
             });
 }
 
@@ -521,16 +639,14 @@ QVariantList Talteen::getBackupFiles()
 
             QString label = fileName;
 
-            // Check the cache
             if (settings.contains(fileName))
             {
                 label = settings.value(fileName).toString();
             }
-            // Fetch it if missing
             else
             {
                 QProcess tar;
-                tar.start("tar", {"-xzOf", file.absoluteFilePath(), "content.yaml"});
+                tar.start("tar", {"-xOf", file.absoluteFilePath(), "content.yaml"});
                 tar.waitForFinished(1000);
 
                 if (tar.exitStatus() == QProcess::NormalExit)
@@ -547,8 +663,6 @@ QVariantList Talteen::getBackupFiles()
                         }
                     }
                 }
-
-                // Save to the cache file immediately
                 settings.setValue(fileName, label);
             }
 
@@ -566,7 +680,6 @@ bool Talteen::deleteBackup(const QString &filePath)
 
     if (QFile::remove(filePath))
     {
-        // Keep the cache clean when files are deleted
         QString cacheFile = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/labels.ini";
         QSettings settings(cacheFile, QSettings::IniFormat);
         settings.remove(fileName);

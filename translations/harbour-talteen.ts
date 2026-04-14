@@ -186,6 +186,22 @@
         <source>Deselect all</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter a password to protect your data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Repeat password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Re-enter password</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CoverPage</name>
@@ -507,6 +523,14 @@ Saved to: %1</source>
         <source>Deselect all</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter the backup password</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SendPage</name>
@@ -638,6 +662,38 @@ Saved to: %1</source>
     </message>
     <message>
         <source>Unsupported backup version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A password is required to save a backup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Encryption failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restore failed. The payload may be damaged</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Password required for this backup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restore failed. Invalid backup format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not enough internal storage space to prepare the backup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Encryption tool failed to start. Is OpenSSL installed?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to unlock the backup. Please check your password</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

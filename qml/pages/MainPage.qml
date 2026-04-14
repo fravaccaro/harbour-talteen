@@ -63,7 +63,7 @@ Page {
             }
 
             MenuItem {
-                text: qsTr("Receive from another device")
+                text: qsTr("Receive from a nearby device")
                 onClicked: pageStack.push(Qt.resolvedUrl("ReceivePage.qml"))
             }
 
