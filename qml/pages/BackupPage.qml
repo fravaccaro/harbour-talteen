@@ -1,4 +1,5 @@
 import "../components"
+import Nemo.KeepAlive 1.2
 import Nemo.Notifications 1.0
 import QtQuick 2.0
 import Sailfish.Silica 1.0
@@ -113,15 +114,16 @@ Page {
     }
 
     SilicaFlickable {
+        // Disable while backup is ongoing
+
         id: backupView
 
         anchors.fill: parent
         contentHeight: column.height + Theme.paddingLarge
-        // Disable while backup is ongoing
-        enabled: !isBackupRunning
-        opacity: isBackupRunning ? 0.2 : 1
 
         PullDownMenu {
+            enabled: !isBackupRunning
+
             MenuItem {
                 text: qsTr("Unselect all")
                 enabled: !noneSelected
@@ -149,16 +151,16 @@ Page {
             TextField {
                 id: backupLabelField
 
+                enabled: !isBackupRunning
                 focus: false
                 width: parent.width
-                //placeholderText: qsTr("e.g. , Before system update")
                 label: qsTr("Label (optional)")
                 // Closes the keyboard when the user presses Enter
                 EnterKey.iconSource: "image://theme/icon-m-enter-close"
                 EnterKey.onClicked: focus = false
 
                 validator: RegExpValidator {
-                    regExp: /^[a-zA-Z0-9+\-_]{3,}$/
+                    regExp: /^$|^[a-zA-Z0-9+\-_]{3,}$/
                 }
 
             }
@@ -185,6 +187,7 @@ Page {
 
                     TextSwitch {
                         text: model.name
+                        enabled: !isBackupRunning
                         checked: model.isChecked
                         onCheckedChanged: {
                             if (model.isChecked !== checked) {
@@ -202,9 +205,10 @@ Page {
             }
 
             Button {
-                text: qsTr("Start backup")
+                text: isBackupRunning ? qsTr("Saving backup...") : qsTr("Start backup")
                 anchors.horizontalCenter: parent.horizontalCenter
-                enabled: !noneSelected
+                // Disable the button while running so they can't spam it
+                enabled: !noneSelected && !isBackupRunning && backupLabelField.acceptableInput
                 onClicked: {
                     isBackupRunning = true;
                     var backupOptions = {
@@ -220,6 +224,22 @@ Page {
                 }
             }
 
+            ProgressBar {
+                // width: parent.width
+                width: parent.width - (Theme.horizontalPageMargin * 2)
+                anchors.horizontalCenter: parent.horizontalCenter
+                indeterminate: true
+                visible: isBackupRunning
+                opacity: isBackupRunning ? 1 : 0
+
+                Behavior on opacity {
+                    FadeAnimation {
+                    }
+
+                }
+
+            }
+
             LabelSpacer {
             }
 
@@ -233,19 +253,9 @@ Page {
 
     }
 
-    // PROGRESS BAR OVERLAY
-    Column {
-        anchors.centerIn: parent
-        width: parent.width - (Theme.paddingLarge * 2)
-        visible: isBackupRunning
-        spacing: Theme.paddingMedium
-
-        ProgressBar {
-            width: parent.width
-            indeterminate: true
-            label: qsTr("Saving backup...")
-        }
-
+    KeepAlive {
+        // Prevents the system from suspending ONLY while a backup is running
+        enabled: isBackupRunning
     }
 
 }

@@ -1,4 +1,5 @@
 import "../components"
+import Nemo.KeepAlive 1.2
 import Nemo.Notifications 1.0
 import QtQuick 2.0
 import Sailfish.Silica 1.0
@@ -174,11 +175,11 @@ Page {
         id: restoreView
 
         contentHeight: column.height + Theme.paddingLarge
-        enabled: !isRestoreRunning
-        opacity: isRestoreRunning ? 0.2 : 1
         anchors.fill: parent
 
         PullDownMenu {
+            enabled: !isRestoreRunning
+
             MenuItem {
                 text: qsTr("Unselect all")
                 enabled: availableMetadata["version"] !== undefined && !noneSelected
@@ -259,6 +260,7 @@ Page {
                     TextSwitch {
                         text: model.name
                         checked: model.isChecked
+                        enabled: !isRestoreRunning
                         onCheckedChanged: {
                             if (model.isChecked !== checked) {
                                 restoreCategoriesModel.setProperty(index, "isChecked", checked);
@@ -277,9 +279,9 @@ Page {
             Button {
                 id: restoreButton
 
-                text: qsTr("Start restore")
+                text: isRestoreRunning ? qsTr("Restoring...") : qsTr("Start restore")
                 anchors.horizontalCenter: parent.horizontalCenter
-                enabled: availableMetadata["version"] !== undefined && !noneSelected
+                enabled: availableMetadata["version"] !== undefined && !noneSelected && !isRestoreRunning
                 onClicked: {
                     isRestoreRunning = true;
                     var restoreOptions = {
@@ -291,6 +293,21 @@ Page {
                     appCore.executeRestore(selectedBackupPath, restoreOptions);
                     appWindow.showProgressNotification(qsTr("Talteen Backup"), qsTr("Restoring archive..."), Notification.ProgressIndeterminate);
                 }
+            }
+
+            ProgressBar {
+                width: parent.width - (Theme.horizontalPageMargin * 2)
+                anchors.horizontalCenter: parent.horizontalCenter
+                indeterminate: true
+                visible: isRestoreRunning
+                opacity: isRestoreRunning ? 1 : 0
+
+                Behavior on opacity {
+                    FadeAnimation {
+                    }
+
+                }
+
             }
 
             LabelSpacer {
@@ -306,18 +323,8 @@ Page {
 
     }
 
-    Column {
-        anchors.centerIn: parent
-        width: parent.width - (Theme.paddingLarge * 2)
-        visible: isRestoreRunning
-        spacing: Theme.paddingMedium
-
-        ProgressBar {
-            width: parent.width
-            indeterminate: true
-            label: qsTr("Restoring backup...")
-        }
-
+    KeepAlive {
+        enabled: isRestoreRunning
     }
 
 }

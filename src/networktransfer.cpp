@@ -366,7 +366,7 @@ void NetworkTransfer::acceptTransfer(bool useSdCard)
     }
     else
     {
-        baseFolder = QDir::homePath() + "/TalteenBackup";
+        baseFolder = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     }
 
     // ENSURE THE FOLDER EXISTS BEFORE CHECKING SPACE OR SAVING
@@ -417,4 +417,15 @@ void NetworkTransfer::rejectTransfer()
     incomingData.clear();
     emit statusChanged(tr("Sending cancelled"));
     emit progressChanged(0.0);
+}
+
+void NetworkTransfer::cancelTransfer()
+{
+    // If the socket is currently connected and sending data, force it to disconnect!
+    if (socket && socket->state() == QAbstractSocket::ConnectedState)
+    {
+        socket->disconnectFromHost();
+        emit statusChanged(tr("Transfer cancelled"));
+        emit progressChanged(0.0);
+    }
 }

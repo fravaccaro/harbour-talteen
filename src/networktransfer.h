@@ -27,6 +27,7 @@ public:
     Q_INVOKABLE void sendFile(QString targetIp, int port, QString filePath);
     Q_INVOKABLE void acceptTransfer(bool useSdCard);
     Q_INVOKABLE void rejectTransfer();
+    Q_INVOKABLE void cancelTransfer();
 
     Q_INVOKABLE void stopDiscovery();
 

@@ -171,11 +171,21 @@ void Talteen::startBackup(const QVariantMap &options)
     auto runTarStep = [=]()
     {
         QString destOption = options.value("destination").toString();
-        QString targetFolder = (destOption == "internal" || destOption.isEmpty()) ? homePath : destOption;
+        QString backupFolder;
 
-        QDir().mkpath(targetFolder + "/TalteenBackup");
+        // Use standard AppData location for internal, and a specific folder for SD Card
+        if (destOption == "internal" || destOption.isEmpty())
+        {
+            backupFolder = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+        }
+        else
+        {
+            backupFolder = destOption + "/harbour-talteen";
+        }
 
-        QString finalDestination = targetFolder + "/TalteenBackup/talteen_backup_" + dateTimeString + ".talteen";
+        QDir().mkpath(backupFolder);
+
+        QString finalDestination = backupFolder + "/talteen_backup_" + dateTimeString + ".talteen";
 
         QProcess *tarProcess = new QProcess(this);
         tarProcess->setWorkingDirectory(workDir);
@@ -469,7 +479,7 @@ QVariantList Talteen::getBackupFiles()
     QString cacheFile = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/harbour-talteen/labels.ini";
     QSettings settings(cacheFile, QSettings::IniFormat);
 
-    QStringList paths = {QDir::homePath() + "/TalteenBackup"};
+    QStringList paths = {QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)};
     QString sdCard = getSdCardPath();
     if (!sdCard.isEmpty())
     {

@@ -186,6 +186,10 @@
         <source>Backup completed</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>keep-it-safe</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CoverPage</name>
@@ -321,6 +325,10 @@ Saved in: %1</source>
         <source>Sending cancelled</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Transfer cancelled</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ReceivePage</name>
@@ -358,6 +366,22 @@ Saved in: %1</source>
     </message>
     <message>
         <source>Wait for Backup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Waiting for sender...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device is hidden</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pull down to hide this device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pull down to make device visible</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -495,9 +519,21 @@ Saved in: %1</source>
         <source>Status:</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Restoring...</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SendPage</name>
+    <message>
+        <source>Searching for nearby devices..</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sending backup...</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Transferring</source>
         <translation type="unfinished"></translation>
@@ -511,15 +547,27 @@ Saved in: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Devices found:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stop search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search for nearby devices</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Send Backup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>File</source>
+        <source>Details</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Send</source>
+        <source>File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -535,31 +583,19 @@ Saved in: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Details</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Searching for nearby devices..</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sending backup...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stop search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Search for nearby devices</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Send to</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Devices found:</source>
+        <source>Cancel Transfer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Send</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Transfer cancelled</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

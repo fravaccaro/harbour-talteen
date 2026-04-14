@@ -1,5 +1,6 @@
 import "../components"
 import "../components/Utils.js" as SharedUtils
+import Nemo.KeepAlive 1.2
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 import org.harbour.talteen 1.0
@@ -19,6 +20,7 @@ Page {
         appWindow.isAppWorking = isTransferRunning;
         appWindow.appWorkingText = qsTr("Receiving file...");
     }
+    Component.onCompleted: netTransfer.startReceiving(45455)
 
     NetworkTransfer {
         id: netTransfer
@@ -48,6 +50,7 @@ Page {
             // Safety check so it doesn't crash if the file is missing
             if (dialog) {
                 dialog.accepted.connect(function() {
+                    isTransferRunning = true;
                     var useSdCard = dialog.saveToSdCard;
                     netTransfer.acceptTransfer(useSdCard);
                 });
@@ -65,6 +68,36 @@ Page {
         anchors.fill: parent
         contentHeight: column.height + Theme.paddingLarge
 
+        PullDownMenu {
+            MenuItem {
+                // Show this option ONLY if a transfer is actively moving
+                visible: isTransferRunning
+                text: qsTr("Stop Transfer")
+                onClicked: netTransfer.stopReceiving()
+            }
+
+            MenuItem {
+                // Show this option ONLY when idle
+                visible: !isTransferRunning
+                text: netTransfer.isListening ? qsTr("Hide Device") : qsTr("Wait for Backup")
+                onClicked: {
+                    if (netTransfer.isListening)
+                        netTransfer.stopReceiving();
+                    else
+                        netTransfer.startReceiving(45455);
+                }
+            }
+
+        }
+
+        ViewPlaceholder {
+            // Only show the placeholder when no file is currently transferring
+            enabled: !isTransferRunning
+            // Dynamically change the text based on whether the server is on or off
+            text: netTransfer.isListening ? qsTr("Waiting for sender...") : qsTr("Device is hidden")
+            hintText: netTransfer.isListening ? qsTr("Pull down to hide this device") : qsTr("Pull down to make device visible")
+        }
+
         Column {
             id: column
 
@@ -77,6 +110,7 @@ Page {
 
             StatusLabel {
                 text: statusMessage
+                visible: isTransferRunning
             }
 
             ProgressBar {
@@ -86,29 +120,26 @@ Page {
                 maximumValue: 1
                 value: currentProgress
                 valueText: Math.round(value * 100) + "%"
-                visible: currentProgress > 0 && currentProgress < 1
+                visible: isTransferRunning
+                opacity: isTransferRunning ? 1 : 0
+
+                Behavior on opacity {
+                    FadeAnimation {
+                    }
+
+                }
+
             }
 
             LabelSpacer {
             }
 
-            Button {
-                // --- FIX 4: Removed saveToSdCard from here because the C++ was updated! ---
-
-                text: netTransfer.isListening ? (isTransferRunning ? qsTr("Stop Transfer") : qsTr("Hide Device")) : qsTr("Wait for Backup")
-                anchors.horizontalCenter: parent.horizontalCenter
-                enabled: !isTransferRunning || netTransfer.isListening
-                opacity: enabled ? 1 : 0.3
-                onClicked: {
-                    if (netTransfer.isListening)
-                        netTransfer.stopReceiving();
-                    else
-                        netTransfer.startReceiving(45455);
-                }
-            }
-
         }
 
+    }
+
+    KeepAlive {
+        enabled: isTransferRunning
     }
 
 }

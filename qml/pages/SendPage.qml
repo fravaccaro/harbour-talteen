@@ -1,4 +1,5 @@
 import "../components"
+import Nemo.KeepAlive 1.2
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 import org.harbour.talteen 1.0
@@ -105,7 +106,15 @@ Page {
                 maximumValue: 1
                 value: currentProgress
                 valueText: Math.round(value * 100) + "%"
-                visible: currentProgress > 0 && currentProgress < 1
+                visible: isTransferRunning
+                opacity: isTransferRunning ? 1 : 0
+
+                Behavior on opacity {
+                    FadeAnimation {
+                    }
+
+                }
+
             }
 
             LabelSpacer {
@@ -164,22 +173,32 @@ Page {
             }
 
             Button {
-                text: qsTr("Send")
+                text: isTransferRunning ? qsTr("Cancel Transfer") : qsTr("Send")
                 anchors.horizontalCenter: parent.horizontalCenter
-                enabled: devicesModel.count > 0 && !isTransferRunning
+                enabled: (devicesModel.count > 0 && !isTransferRunning) || isTransferRunning
                 opacity: enabled ? 1 : 0.3
                 onClicked: {
-                    var selectedIp = devicesModel.get(deviceSelector.currentIndex).ipAddress;
-                    if (netTransfer.isDiscovering)
-                        netTransfer.stopDiscovery();
+                    if (isTransferRunning) {
+                        netTransfer.cancelTransfer();
+                        isTransferRunning = false;
+                        statusMessage = qsTr("Transfer cancelled");
+                    } else {
+                        var selectedIp = devicesModel.get(deviceSelector.currentIndex).ipAddress;
+                        if (netTransfer.isDiscovering)
+                            netTransfer.stopDiscovery();
 
-                    isTransferRunning = true;
-                    netTransfer.sendFile(selectedIp, 45455, selectedFile);
+                        isTransferRunning = true;
+                        netTransfer.sendFile(selectedIp, 45455, selectedFile);
+                    }
                 }
             }
 
         }
 
+    }
+
+    KeepAlive {
+        enabled: isTransferRunning
     }
 
 }
