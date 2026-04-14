@@ -115,10 +115,10 @@ void Talteen::startBackup(const QVariantMap &options)
         return;
     }
 
-    // Check internal cache space (We need roughly 2x the size to hold the temporary encrypted payloads)
+    // Because of streaming, we only need ~1.5x the size in cache (just for the encrypted file and raw links)
     QDir().mkpath(cachePath);
     QStorageInfo cacheStorage(cachePath);
-    if (cacheStorage.bytesAvailable() < (estimatedSize * 2 + 104857600))
+    if (cacheStorage.bytesAvailable() < (estimatedSize * 1.5 + 104857600))
     {
         qDebug() << "[ERROR] Not enough free space in internal cache memory.";
         emit backupFinished(false, tr("Not enough internal storage space to prepare the backup"));
@@ -132,25 +132,6 @@ void Talteen::startBackup(const QVariantMap &options)
     {
         emit backupFinished(false, tr("A password is required to save a backup"));
         return;
-    }
-
-    QFile yamlFile(workDir + "/content.yaml");
-    if (yamlFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        QTextStream out(&yamlFile);
-        out << "version: \"1.0.0\"\n";
-        out << "time: \"" << QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") << "\"\n";
-        QString userLabel = options.value("label").toString().trimmed();
-        out << "label: \"" << (userLabel.isEmpty() ? "talteen_backup_" + dateTimeString : userLabel) << "\"\n";
-        out << "encrypted: \"true\"\n";
-
-        QStringList allCategories = {"appdata", "apporder", "calls", "messages", "pictures", "documents", "downloads", "music", "videos"};
-        for (const QString &category : allCategories)
-        {
-            out << category << ": " << (options.value(category).toBool() ? "true" : "false") << "\n";
-        }
-        out << "EOF: true\n";
-        yamlFile.close();
     }
 
     if (hasApporder)
@@ -176,9 +157,9 @@ void Talteen::startBackup(const QVariantMap &options)
         QFile::link(QStandardPaths::writableLocation(QStandardPaths::MoviesLocation), workDir + "/videos");
 
     // Outer Wrapper
-    auto runOuterTarStep = [=](const QString &payloadFileName)
+    auto runOuterTarStep = [=]()
     {
-        qDebug() << "Executing Step 3/3: Packing final archive...";
+        qDebug() << "Executing Step 4/4: Packing final archive...";
 
         QString backupFolder = (destOption == "internal" || destOption.isEmpty()) ? QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) : destOption + "/harbour-talteen";
         QDir().mkpath(backupFolder);
@@ -186,9 +167,9 @@ void Talteen::startBackup(const QVariantMap &options)
 
         QProcess *outerTar = new QProcess(this);
         outerTar->setWorkingDirectory(workDir);
-        outerTar->setProcessChannelMode(QProcess::ForwardedErrorChannel); // Prevents buffer deadlock
+        outerTar->setProcessChannelMode(QProcess::ForwardedErrorChannel);
 
-        outerTar->start("tar", {"-cf", finalDestination, "content.yaml", payloadFileName});
+        outerTar->start("tar", {"-cf", finalDestination, "content.yaml", "payload.enc"});
 
         connect(outerTar, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                 [=](int exitCode, QProcess::ExitStatus)
@@ -207,54 +188,92 @@ void Talteen::startBackup(const QVariantMap &options)
                 });
     };
 
-    // Encryption
-    auto runEncryptStep = [=]()
+    // STEP 3: Write YAML & Checksum
+    auto writeYamlStep = [=](const QString &checksum)
     {
-        qDebug() << "Executing Step 2/3: Encrypting payload...";
+        qDebug() << "Executing Step 3/4: Writing metadata and checksum...";
+        QFile yamlFile(workDir + "/content.yaml");
+        if (yamlFile.open(QIODevice::WriteOnly | QIODevice::Text))
+        {
+            QTextStream out(&yamlFile);
+            out << "version: \"1.0.0\"\n";
+            out << "time: \"" << QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") << "\"\n";
+            QString userLabel = options.value("label").toString().trimmed().replace("\"", "'");
+            out << "label: \"" << (userLabel.isEmpty() ? "talteen_backup_" + dateTimeString : userLabel) << "\"\n";
+            out << "encrypted: \"true\"\n";
+            out << "checksum: \"" << checksum << "\"\n";
 
-        QProcess *encryptProcess = new QProcess(this);
-        encryptProcess->setWorkingDirectory(workDir);
-        encryptProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
+            QStringList allCategories = {"appdata", "apporder", "calls", "messages", "pictures", "documents", "downloads", "music", "videos"};
+            for (const QString &category : allCategories)
+            {
+                out << category << ": " << (options.value(category).toBool() ? "true" : "false") << "\n";
+            }
+            out << "EOF: true\n";
+            yamlFile.close();
 
-        QStringList sslArgs;
-        sslArgs << "enc" << "-aes-256-cbc" << "-salt" << "-pbkdf2"
-                << "-in" << "payload.tar.gz" << "-out" << "payload.enc" << "-pass" << "pass:" + password;
+            runOuterTarStep();
+        }
+        else
+        {
+            emit backupFinished(false, tr("Failed to write metadata file"));
+        }
+    };
 
-        connect(encryptProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+    // Calculate Checksum
+    auto runChecksumStep = [=]()
+    {
+        qDebug() << "Executing Step 2/4: Generating SHA-256 checksum...";
+        QProcess *hashProc = new QProcess(this);
+        hashProc->setWorkingDirectory(workDir);
+
+        connect(hashProc, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                 [=](int exitCode, QProcess::ExitStatus)
                 {
                     if (exitCode == 0)
                     {
-                        QFile::remove(workDir + "/payload.tar.gz");
-                        runOuterTarStep("payload.enc");
+                        QString output = QString(hashProc->readAllStandardOutput()).trimmed();
+                        QString checksum = output.section(' ', 0, 0); // Isolate the hash
+                        hashProc->deleteLater();
+                        writeYamlStep(checksum);
                     }
                     else
                     {
-                        emit backupFinished(false, tr("Encryption failed"));
+                        emit backupFinished(false, tr("Failed to generate checksum"));
+                        hashProc->deleteLater();
                     }
-                    encryptProcess->deleteLater();
                 });
-
-        connect(encryptProcess, &QProcess::errorOccurred, [=](QProcess::ProcessError error)
-                {
-            qDebug() << "[FATAL] OpenSSL process error:" << error << encryptProcess->errorString();
-            emit backupFinished(false, tr("Unable to secure your backup. Is OpenSSL installed?"));
-            encryptProcess->deleteLater(); });
-
-        encryptProcess->start("openssl", sslArgs);
+        hashProc->start("sha256sum", {"payload.enc"});
     };
 
-    // Inner Tar
-    auto runInnerTarStep = [=]()
+    // Stream Tar -> XZ -> OpenSSL
+    auto runStreamingTarStep = [=]()
     {
-        qDebug() << "Executing Step 1/3: Compressing raw data folders...";
+        qDebug() << "Executing Step 1/4: Compressing (XZ) and encrypting payload stream...";
 
-        QProcess *innerTarProcess = new QProcess(this);
-        innerTarProcess->setWorkingDirectory(workDir);
-        innerTarProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
+        QProcess *tarProcess = new QProcess(this);
+        QProcess *sslProcess = new QProcess(this);
+
+        // Fix missing /etc/crypto-policies/back-ends/opensslcnf.config
+        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+        env.insert("OPENSSL_CONF", "/dev/null");
+        sslProcess->setProcessEnvironment(env);
+
+        // Force XZ to use Level 1 compression
+        QProcessEnvironment tarEnv = QProcessEnvironment::systemEnvironment();
+        tarEnv.insert("XZ_OPT", "-1"); // -1 is fast, -9 is maximum compression
+        tarProcess->setProcessEnvironment(tarEnv);
+
+        tarProcess->setWorkingDirectory(workDir);
+        sslProcess->setWorkingDirectory(workDir);
+
+        tarProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
+        sslProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
+
+        // Connect the pipe: tar stdout feeds directly into openssl stdin
+        tarProcess->setStandardOutputProcess(sslProcess);
 
         QStringList tarArgs;
-        tarArgs << "-czhf" << "payload.tar.gz";
+        tarArgs << "-cJhf" << "-";
 
         if (hasAppdata)
         {
@@ -294,20 +313,42 @@ void Talteen::startBackup(const QVariantMap &options)
         if (hasVideos)
             tarArgs << "videos";
 
-        connect(innerTarProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+        QStringList sslArgs;
+        sslArgs << "enc" << "-aes-256-cbc" << "-salt" << "-pbkdf2"
+                << "-out" << "payload.enc" << "-pass" << "pass:" + password;
+
+        connect(sslProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                 [=](int exitCode, QProcess::ExitStatus)
                 {
-                    if (exitCode == 0 || exitCode == 1)
+                    // Ensure tar also finished successfully
+                    tarProcess->waitForFinished(2000);
+
+                    if (exitCode == 0 && tarProcess->exitCode() == 0 && tarProcess->exitStatus() == QProcess::NormalExit)
                     {
-                        runEncryptStep();
+                        runChecksumStep();
                     }
                     else
                     {
-                        emit backupFinished(false, tr("Unable to save backup"));
+                        qDebug() << "[FATAL] Pipeline broken! OpenSSL exit:" << exitCode << "Tar exit:" << tarProcess->exitCode();
+                        QFile::remove(workDir + "/payload.enc"); // Delete the broken file instantly
+                        emit backupFinished(false, tr("Encryption or compression failed. Backup cancelled"));
                     }
-                    innerTarProcess->deleteLater();
+
+                    tarProcess->deleteLater();
+                    sslProcess->deleteLater();
                 });
-        innerTarProcess->start("tar", tarArgs);
+
+        connect(sslProcess, &QProcess::errorOccurred, [=](QProcess::ProcessError error)
+                {
+            qDebug() << "[FATAL] OpenSSL process error:" << error << sslProcess->errorString();
+            emit backupFinished(false, tr("Unable to secure your backup. Is OpenSSL installed?"));
+            tarProcess->kill();
+            tarProcess->deleteLater();
+            sslProcess->deleteLater(); });
+
+        // Downstream processes must start before upstream ones in a pipe
+        sslProcess->start("openssl", sslArgs);
+        tarProcess->start("tar", tarArgs);
     };
 
     auto runMessagesStep = [=]()
@@ -316,11 +357,11 @@ void Talteen::startBackup(const QVariantMap &options)
         {
             qDebug() << "Exporting messages database...";
             QDir().mkpath(workDir + "/messages");
-            Spawner::execute("commhistory-tool", {"export", "-groups", workDir + "/messages/groups.dat"}, runInnerTarStep);
+            Spawner::execute("commhistory-tool", {"export", "-groups", workDir + "/messages/groups.dat"}, runStreamingTarStep);
         }
         else
         {
-            runInnerTarStep();
+            runStreamingTarStep();
         }
     };
 
@@ -400,8 +441,8 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
 
     QFileInfo archiveInfo(backupFile);
 
-    // We need 3x the space during restore (encrypted payload + decrypted payload + extracted files)
-    qint64 requiredSpace = archiveInfo.size() * 3.0;
+    // Only need 2x space for restore (encrypted payload + extracted raw files)
+    qint64 requiredSpace = archiveInfo.size() * 2.5;
 
     QDir().mkpath(cachePath);
     QStorageInfo cacheStorage(cachePath);
@@ -453,48 +494,43 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
         QProcess *copyProcess = new QProcess(this);
         copyProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
 
-        QStringList rsyncArgs;
-        rsyncArgs << "-a";
-
-        bool hasFilesToCopy = false;
+        QStringList syncCmds;
 
         if (selectedOptions.value("appdata").toBool() && QDir(workDir + "/appdata").exists())
         {
-            rsyncArgs << workDir + "/appdata/.config" << workDir + "/appdata/.local" << homePath + "/";
-            hasFilesToCopy = true;
+            syncCmds << QString("rsync -a \"%1/appdata/.config\" \"%2/\"").arg(workDir, homePath);
+            syncCmds << QString("rsync -a \"%1/appdata/.local\" \"%2/\"").arg(workDir, homePath);
         }
         if (selectedOptions.value("apporder").toBool() && QDir(workDir + "/apporder").exists())
         {
             QDir().mkpath(homePath + "/.config/lipstick");
-            QFile::copy(workDir + "/apporder/applications.menu", homePath + "/.config/lipstick/applications.menu");
+            QString destMenu = homePath + "/.config/lipstick/applications.menu";
+            // QFile::copy will fail if the file already exists, so we must delete it first!
+            QFile::remove(destMenu);
+            QFile::copy(workDir + "/apporder/applications.menu", destMenu);
         }
         if (selectedOptions.value("pictures").toBool() && QDir(workDir + "/pictures").exists())
         {
-            rsyncArgs << workDir + "/pictures/" << QStandardPaths::writableLocation(QStandardPaths::PicturesLocation) + "/";
-            hasFilesToCopy = true;
+            syncCmds << QString("rsync -a \"%1/pictures/\" \"%2/\"").arg(workDir, QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
         }
         if (selectedOptions.value("documents").toBool() && QDir(workDir + "/documents").exists())
         {
-            rsyncArgs << workDir + "/documents/" << QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/";
-            hasFilesToCopy = true;
+            syncCmds << QString("rsync -a \"%1/documents/\" \"%2/\"").arg(workDir, QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
         }
         if (selectedOptions.value("downloads").toBool() && QDir(workDir + "/downloads").exists())
         {
-            rsyncArgs << workDir + "/downloads/" << QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + "/";
-            hasFilesToCopy = true;
+            syncCmds << QString("rsync -a \"%1/downloads/\" \"%2/\"").arg(workDir, QStandardPaths::writableLocation(QStandardPaths::DownloadLocation));
         }
         if (selectedOptions.value("music").toBool() && QDir(workDir + "/music").exists())
         {
-            rsyncArgs << workDir + "/music/" << QStandardPaths::writableLocation(QStandardPaths::MusicLocation) + "/";
-            hasFilesToCopy = true;
+            syncCmds << QString("rsync -a \"%1/music/\" \"%2/\"").arg(workDir, QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
         }
         if (selectedOptions.value("videos").toBool() && QDir(workDir + "/videos").exists())
         {
-            rsyncArgs << workDir + "/videos/" << QStandardPaths::writableLocation(QStandardPaths::MoviesLocation) + "/";
-            hasFilesToCopy = true;
+            syncCmds << QString("rsync -a \"%1/videos/\" \"%2/\"").arg(workDir, QStandardPaths::writableLocation(QStandardPaths::MoviesLocation));
         }
 
-        if (hasFilesToCopy)
+        if (!syncCmds.isEmpty())
         {
             connect(copyProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                     [=](int, QProcess::ExitStatus)
@@ -502,7 +538,8 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
                         copyProcess->deleteLater();
                         restoreCalls();
                     });
-            copyProcess->start("rsync", rsyncArgs);
+            // Execute all the rsync commands sequentially safely
+            copyProcess->start("sh", {"-c", syncCmds.join(" && ")});
         }
         else
         {
@@ -511,81 +548,152 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
         }
     };
 
-    // Inner Extract
-    auto runInnerExtract = [=]()
+    // Stream OpenSSL -> XZ -> Tar
+    auto runStreamingExtractStep = [=]()
     {
-        qDebug() << "Executing Step 3/3: Unpacking inner payload...";
-        QProcess *innerTar = new QProcess(this);
-        innerTar->setProcessChannelMode(QProcess::ForwardedErrorChannel);
-        innerTar->start("tar", {"-xzpf", workDir + "/payload.tar.gz", "-C", workDir});
+        qDebug() << "Executing Step 4/4: Decrypting and extracting (XZ) on the fly...";
+        QString password = selectedOptions.value("password").toString();
 
-        connect(innerTar, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+        QProcess *sslProcess = new QProcess(this);
+        QProcess *tarProcess = new QProcess(this);
+
+        // Fix missing /etc/crypto-policies/back-ends/opensslcnf.config
+        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+        env.insert("OPENSSL_CONF", "/dev/null");
+        sslProcess->setProcessEnvironment(env);
+
+        sslProcess->setWorkingDirectory(workDir);
+        tarProcess->setWorkingDirectory(workDir);
+
+        sslProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
+        tarProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
+
+        // Connect the pipe: openssl stdout feeds directly into tar stdin
+        sslProcess->setStandardOutputProcess(tarProcess);
+
+        QStringList sslArgs;
+        sslArgs << "enc" << "-d" << "-aes-256-cbc" << "-pbkdf2"
+                << "-in" << "payload.enc"
+                << "-pass" << "pass:" + password;
+
+        QStringList tarArgs;
+        // -x reads, -J uses xz, -p preserves permissions, -f - reads from standard input
+        tarArgs << "-xJpf" << "-" << "-C" << workDir;
+
+        // We bind to the end of the pipeline (tar) to know when we are completely done
+        connect(tarProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                 [=](int exitCode, QProcess::ExitStatus)
                 {
-                    innerTar->deleteLater();
-                    if (exitCode == 0)
+                    sslProcess->waitForFinished(2000); // Give SSL a moment to close properly
+
+                    if (exitCode == 0 && sslProcess->exitCode() == 0)
                     {
-                        QFile::remove(workDir + "/payload.tar.gz");
+                        QFile::remove(workDir + "/payload.enc");
                         restoreFiles();
                     }
                     else
                     {
-                        emit restoreFinished(false, tr("Restore failed. The backup contents may be damaged"));
+                        qDebug() << "[FATAL] Restore pipeline broken! Tar exit:" << exitCode << "OpenSSL exit:" << sslProcess->exitCode();
+                        emit restoreFinished(false, tr("Unable to unlock the backup. Please check your password"));
                     }
+
+                    sslProcess->deleteLater();
+                    tarProcess->deleteLater();
                 });
+
+        connect(sslProcess, &QProcess::errorOccurred, [=](QProcess::ProcessError error)
+                {
+            qDebug() << "[FATAL] OpenSSL decrypt process error:" << error << sslProcess->errorString();
+            emit restoreFinished(false, tr("Encryption tool failed to start. Is OpenSSL installed?"));
+            tarProcess->kill();
+            sslProcess->deleteLater();
+            tarProcess->deleteLater(); });
+
+        tarProcess->start("tar", tarArgs);
+        sslProcess->start("openssl", sslArgs);
     };
 
-    // Decrypt
-    auto runDecryptStep = [=]()
+    // Verify Checksum
+    auto runVerifyChecksumStep = [=](const QString &expectedChecksum)
     {
-        qDebug() << "Executing Step 2/3: Decrypting payload...";
-        QString password = selectedOptions.value("password").toString();
+        qDebug() << "Executing Step 3/4: Verifying SHA-256 checksum...";
+        QProcess *hashProc = new QProcess(this);
+        hashProc->setWorkingDirectory(workDir);
 
-        if (password.isEmpty())
-        {
-            emit restoreFinished(false, tr("Password required for this backup"));
-            return;
-        }
-        if (!QFile::exists(workDir + "/payload.enc"))
-        {
-            emit restoreFinished(false, tr("Restore failed. Invalid backup format"));
-            return;
-        }
-
-        QProcess *decryptProcess = new QProcess(this);
-        decryptProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
-        QStringList sslArgs;
-        sslArgs << "enc" << "-d" << "-aes-256-cbc" << "-pbkdf2"
-                << "-in" << workDir + "/payload.enc"
-                << "-out" << workDir + "/payload.tar.gz"
-                << "-pass" << "pass:" + password;
-
-        connect(decryptProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+        connect(hashProc, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                 [=](int exitCode, QProcess::ExitStatus)
                 {
-                    decryptProcess->deleteLater();
                     if (exitCode == 0)
                     {
-                        QFile::remove(workDir + "/payload.enc");
-                        runInnerExtract();
+                        QString output = QString(hashProc->readAllStandardOutput()).trimmed();
+                        QString actualChecksum = output.section(' ', 0, 0);
+                        hashProc->deleteLater();
+
+                        if (actualChecksum == expectedChecksum)
+                        {
+                            qDebug() << "Checksum verified successfully!";
+                            runStreamingExtractStep();
+                        }
+                        else
+                        {
+                            emit restoreFinished(false, tr("Backup may be damaged (Checksum mismatch)"));
+                        }
                     }
                     else
                     {
-                        emit restoreFinished(false, tr("Unable to unlock the backup. Please check your password"));
+                        emit restoreFinished(false, tr("Failed to verify checksum"));
+                        hashProc->deleteLater();
                     }
                 });
+        hashProc->start("sha256sum", {"payload.enc"});
+    };
 
-        connect(decryptProcess, &QProcess::errorOccurred, [=](QProcess::ProcessError error)
+    // Read YAML metadata
+    auto runReadYamlStep = [=]()
+    {
+        qDebug() << "Executing Step 2/4: Reading metadata for checksum...";
+        QFile yamlFile(workDir + "/content.yaml");
+        if (yamlFile.open(QIODevice::ReadOnly | QIODevice::Text))
+        {
+            QTextStream in(&yamlFile);
+            QString expectedChecksum = "";
+
+            while (!in.atEnd())
+            {
+                QString line = in.readLine();
+                if (line.startsWith("checksum: "))
                 {
-            qDebug() << "[FATAL] OpenSSL decrypt process error:" << error << decryptProcess->errorString();
-            emit restoreFinished(false, tr("Encryption tool failed to start. Is OpenSSL installed?"));
-            decryptProcess->deleteLater(); });
+                    expectedChecksum = line.split(": ")[1].trimmed().remove("\"");
+                    break;
+                }
+            }
+            yamlFile.close();
 
-        decryptProcess->start("openssl", sslArgs);
+            if (expectedChecksum.isEmpty())
+            {
+                qDebug() << "[FATAL] No checksum found in archive metadata.";
+                emit restoreFinished(false, tr("Invalid backup format. Checksum is missing"));
+                return;
+            }
+
+            runVerifyChecksumStep(expectedChecksum);
+        }
+        else
+        {
+            emit restoreFinished(false, tr("Failed to read backup metadata"));
+        }
     };
 
     // Outer Extract
-    qDebug() << "Executing Step 1/3: Extracting outer wrapper...";
+    qDebug() << "Executing Step 1/4: Extracting outer wrapper...";
+
+    QString password = selectedOptions.value("password").toString();
+    if (password.isEmpty())
+    {
+        emit restoreFinished(false, tr("Password required for this backup"));
+        return;
+    }
+
     QProcess *outerTarProcess = new QProcess(this);
     outerTarProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
     outerTarProcess->start("tar", {"-xf", backupFile, "-C", workDir});
@@ -596,7 +704,7 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
                 outerTarProcess->deleteLater();
                 if (exitCode == 0)
                 {
-                    runDecryptStep();
+                    runReadYamlStep();
                 }
                 else
                 {

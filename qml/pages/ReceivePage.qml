@@ -69,6 +69,7 @@ Page {
         contentHeight: column.height + Theme.paddingLarge
 
         PullDownMenu {
+            busy: netTransfer.isListening || isTransferRunning
             MenuItem {
                 // Show this option ONLY if a transfer is actively moving
                 visible: isTransferRunning

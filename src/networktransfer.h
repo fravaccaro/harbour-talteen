@@ -41,6 +41,7 @@ signals:
     void isDiscoveringChanged();
     void transferRequested(QString fileName, qint64 fileSize);
     void progressChanged(double progress);
+    void transferAborted();
 
 private slots:
     void acceptConnection();
@@ -66,6 +67,8 @@ private:
     QString m_pendingFileName;
     qint64 m_pendingFileSize;
     bool m_waitingForUser = false;
+
+    bool m_cancelledByUser = false;
 };
 
 #endif // NETWORKTRANSFER_H

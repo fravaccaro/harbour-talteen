@@ -178,6 +178,7 @@ Page {
 
         PullDownMenu {
             enabled: !isRestoreRunning
+            busy: isRestoreRunning
 
             MenuItem {
                 text: qsTr("Deselect all")

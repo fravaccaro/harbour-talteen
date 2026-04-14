@@ -1,4 +1,5 @@
 #include "networktransfer.h"
+#include <memory>
 #include <QDebug>
 #include <QFileInfo>
 #include <QNetworkInterface>
@@ -160,14 +161,39 @@ void NetworkTransfer::stopDiscovery()
 
 void NetworkTransfer::sendFile(QString targetIp, int port, QString filePath)
 {
+
+    m_cancelledByUser = false;
+
+    // Prevent Concurrency / Button Spamming
+    if (socket && socket->state() != QAbstractSocket::UnconnectedState)
+    {
+        qDebug() << "[WARNING] Send requested but a transfer is already in progress!";
+        return;
+    }
+
+    // Safely clean up old pointers if they survived a weird state
+    if (socket)
+    {
+        socket->deleteLater();
+        socket = nullptr;
+    }
+    if (file)
+    {
+        file->deleteLater();
+        file = nullptr;
+    }
+
     socket = new QTcpSocket(this);
-    file = new QFile(filePath);
+    file = new QFile(this);
+    file->setFileName(filePath);
 
     if (!file->open(QIODevice::ReadOnly))
     {
         emit statusChanged(tr("Unable to open file"));
         file->deleteLater();
+        file = nullptr;
         socket->deleteLater();
+        socket = nullptr;
         emit progressChanged(0.0);
         return;
     }
@@ -176,6 +202,20 @@ void NetworkTransfer::sendFile(QString targetIp, int port, QString filePath)
     QString fileName = fileInfo.fileName();
 
     totalBytes = fileInfo.size();
+
+    // Prevent the 0-byte Infinite Hang
+    if (totalBytes == 0)
+    {
+        emit statusChanged(tr("Error: Cannot send an empty file"));
+        file->close();
+        file->deleteLater();
+        file = nullptr;
+        socket->deleteLater();
+        socket = nullptr;
+        emit progressChanged(0.0);
+        return;
+    }
+
     processedBytes = 0;
     emit progressChanged(0.01);
 
@@ -189,17 +229,22 @@ void NetworkTransfer::sendFile(QString targetIp, int port, QString filePath)
         QString header = fileName + "|" + QString::number(totalBytes) + "\n";
         socket->write(header.toUtf8()); });
 
-    // Listen for the receiver's answer ("OK" or "REJECT")
-    connect(socket, &QTcpSocket::readyRead, this, [this]()
+    // Use a Smart Pointer to prevent memory leaks
+    auto responseBuffer = std::make_shared<QByteArray>();
+
+    connect(socket, &QTcpSocket::readyRead, this, [this, responseBuffer]()
             {
-        QByteArray answer = socket->readAll();
-        if (answer.contains("OK")) {
+        responseBuffer->append(socket->readAll());
+        
+        if (responseBuffer->contains("OK")) {
             emit statusChanged(tr("Accepted. Sending..."));
             socket->write(file->read(65536)); // Start the loop!
-        } else {
+            responseBuffer->clear();
+        } else if (responseBuffer->contains("REJECT")) {
             emit statusChanged(tr("Transfer cancelled by receiver"));
             emit progressChanged(0.0);
             socket->disconnectFromHost();
+            responseBuffer->clear();
         } });
 
     connect(socket, &QTcpSocket::bytesWritten, this, [this](qint64 bytes)
@@ -224,37 +269,68 @@ void NetworkTransfer::sendFile(QString targetIp, int port, QString filePath)
             {
         emit statusChanged(tr("Connection error: %1").arg(socket->errorString()));
         emit progressChanged(0.0);
-        if (file->isOpen()) file->close(); });
-
-    connect(socket, &QTcpSocket::disconnected, this, [this]()
-            {
-        if (file->isOpen()) file->close();
+        if (file && file->isOpen()) file->close(); 
         
-        // Only declare success if we actually finished sending the bytes
-        if (processedBytes >= totalBytes && totalBytes > 0) {
+        // Fix Memory Leak if it fails to connect
+        if (socket->state() == QAbstractSocket::UnconnectedState) {
+            if (file) { file->deleteLater(); file = nullptr; }
+            if (socket) { socket->deleteLater(); socket = nullptr; }
+        } });
+
+    connect(socket, &QTcpSocket::disconnected, this, [this, responseBuffer]()
+            {
+        if (file && file->isOpen()) file->close();
+        
+        // Check for a last-millisecond REJECT before assuming connection loss
+        if (socket->bytesAvailable() > 0) {
+            responseBuffer->append(socket->readAll());
+        }
+
+        if (responseBuffer->contains("REJECT")) {
+            emit statusChanged(tr("Transfer cancelled by receiver"));
+            emit progressChanged(0.0);
+        }
+        else if (processedBytes >= totalBytes && totalBytes > 0) {
             emit progressChanged(1.0);
             emit statusChanged(tr("Backup sent"));
+        } else if (!m_cancelledByUser) {
+            emit statusChanged(tr("Connection lost. Unable to send backup"));
+            emit progressChanged(0.0);
         }
         
-        file->deleteLater();
-        socket->deleteLater(); });
+        // Prevent Dangling Pointers
+        if (file) { file->deleteLater(); file = nullptr; }
+        if (socket) { socket->deleteLater(); socket = nullptr; } });
 }
 
 void NetworkTransfer::acceptConnection()
 {
-    socket = server->nextPendingConnection();
+    QTcpSocket *incomingSocket = server->nextPendingConnection();
+    if (!incomingSocket)
+        return;
 
-    if (!socket)
+    // Prevent Concurrency Hijacking
+    if (socket && (socket->state() == QAbstractSocket::ConnectedState || m_waitingForUser))
     {
-        qDebug() << "[FATAL ERROR] nextPendingConnection returned nullptr!";
+        qDebug() << "[WARNING] Rejected concurrent connection attempt. Server is busy.";
+        incomingSocket->disconnectFromHost();
+        incomingSocket->deleteLater();
         return;
     }
 
+    socket = incomingSocket;
+
     qDebug() << "[DEBUG] Incoming connection accepted!";
     broadcastTimer->stop();
+
+    // Safely clean up old file if it somehow survived
+    if (file)
+        file->deleteLater();
     file = new QFile(this);
+
     incomingData.clear();
-    m_waitingForUser = false; // Reset the wait state
+    m_waitingForUser = false;
+    m_cancelledByUser = false;
 
     totalBytes = 0;
     processedBytes = 0;
@@ -262,52 +338,76 @@ void NetworkTransfer::acceptConnection()
 
     connect(socket, &QTcpSocket::readyRead, this, [this]()
             {
-        if (!file->isOpen()) {
-            if (m_waitingForUser) return; // Do nothing until the user clicks Accept or Reject!
+                if (!file->isOpen())
+                {
+                    if (m_waitingForUser)
+                        return; // Do nothing until the user clicks Accept or Reject!
 
-            incomingData.append(socket->readAll());
-            int newlineIndex = incomingData.indexOf('\n');
-            
-            if (newlineIndex != -1) {
-                QString header = QString::fromUtf8(incomingData.left(newlineIndex)).trimmed();
-                qDebug() << "[DEBUG] Header received:" << header;
-                
-                m_pendingFileName = "incoming_backup.talteen";
+                    incomingData.append(socket->readAll());
+                    int newlineIndex = incomingData.indexOf('\n');
 
-                if (header.contains('|')) {
-                    QStringList parts = header.split('|');
-                    m_pendingFileName = parts[0];
-                    totalBytes = parts[1].toLongLong();
+                    if (newlineIndex != -1)
+                    {
+                        QString header = QString::fromUtf8(incomingData.left(newlineIndex)).trimmed();
+                        qDebug() << "[DEBUG] Header received:" << header;
+
+                        m_pendingFileName = "incoming_backup.talteen";
+
+                        if (header.contains('|'))
+                        {
+                            QStringList parts = header.split('|');
+                            m_pendingFileName = QFileInfo(parts[0]).fileName();
+                            totalBytes = parts[1].toLongLong();
+                        }
+
+                        m_pendingFileSize = totalBytes;
+
+                        // Save any extra bytes that accidentally arrived with the header
+                        incomingData = incomingData.mid(newlineIndex + 1);
+                        m_waitingForUser = true;
+
+                        // ASK THE QML UI WHAT TO DO
+                        emit transferRequested(m_pendingFileName, m_pendingFileSize);
+                    }
+                    else if (incomingData.size() > 1024)
+                    {
+                        qDebug() << "[SECURITY WARNING] Header is too long! Aborting connection.";
+                        emit statusChanged(tr("Error: Invalid data format"));
+                        emit progressChanged(0.0);
+                        socket->disconnectFromHost();
+                        incomingData.clear();
+                        return;
+                    }
                 }
+                else
+                {
+                    QByteArray newData = socket->readAll();
 
-                m_pendingFileSize = totalBytes;
-                
-                // Save any extra bytes that accidentally arrived with the header
-                incomingData = incomingData.mid(newlineIndex + 1);
-                m_waitingForUser = true; 
+                    // --- SECURITY FIX: Prevent Malicious Storage Exhaustion ---
+                    qint64 bytesRemaining = totalBytes - processedBytes;
 
-                // ASK THE QML UI WHAT TO DO
-                emit transferRequested(m_pendingFileName, m_pendingFileSize);
+                    if (newData.size() > bytesRemaining)
+                    {
+                        qDebug() << "[SECURITY WARNING] Sender sent more data than declared! Aborting.";
+                        // Write only up to the agreed limit, then instantly sever the connection
+                        file->write(newData.left(bytesRemaining));
+                        processedBytes += bytesRemaining;
+                        socket->disconnectFromHost();
+                    }
+                    else
+                    {
+                        file->write(newData);
+                        processedBytes += newData.size();
+                    }
 
-            } else if (incomingData.size() > 1024) {
-                qDebug() << "[SECURITY WARNING] Header is too long! Aborting connection.";
-                emit statusChanged(tr("Error: Invalid data format"));
-                emit progressChanged(0.0);
-                socket->disconnectFromHost();
-                incomingData.clear(); 
-                return;
-            }
-        } else {
-            QByteArray newData = socket->readAll();
-            file->write(newData);
-            processedBytes += newData.size();
-            
-            if (totalBytes > 0) {
-                double progress = static_cast<double>(processedBytes) / static_cast<double>(totalBytes);
-                if (progress > 1.0) progress = 1.0;
-                emit progressChanged(progress);
-            }
-        } });
+                    if (totalBytes > 0)
+                    {
+                        double progress = static_cast<double>(processedBytes) / static_cast<double>(totalBytes);
+                        if (progress > 1.0)
+                            progress = 1.0;
+                        emit progressChanged(progress);
+                    }
+                } });
 
     connect(socket, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QTcpSocket::error), this, [this](QAbstractSocket::SocketError err)
             {
@@ -316,7 +416,7 @@ void NetworkTransfer::acceptConnection()
         qDebug() << "[SOCKET ERROR]" << socket->errorString();
         emit statusChanged(tr("Network error"));
         emit progressChanged(0.0);
-        if (file->isOpen()) {
+        if (file && file->isOpen()) {
             file->close();
             file->remove();
         } });
@@ -324,14 +424,27 @@ void NetworkTransfer::acceptConnection()
     connect(socket, &QTcpSocket::disconnected, this, [this]()
             {
         qDebug() << "[DEBUG] Socket disconnected";
-        if (file->isOpen()) {
+        
+        // Handle sender dropping while prompt is open
+        if (m_waitingForUser) {
+            m_waitingForUser = false;
+            incomingData.clear();
+            emit statusChanged(tr("Sender disconnected"));
+            emit progressChanged(0.0);
+            emit transferAborted(); // Tell the UI to hide the dialog
+        }
+        else if (file && file->isOpen()) {
             QString savedPath = file->fileName(); 
             file->close();
 
             if (totalBytes > 0 && processedBytes < totalBytes) {
                 qDebug() << "[DEBUG] Incomplete transfer. Deleting file.";
                 file->remove();
-                emit statusChanged(tr("Connection lost. Unable to send backup"));
+                
+                // Prevent double-status if receiver cancelled
+                if (!m_cancelledByUser) {
+                    emit statusChanged(tr("Connection lost. Unable to receive backup"));
+                }
                 emit progressChanged(0.0);
             } else {
                 qDebug() << "[DEBUG] Transfer complete!";
@@ -339,14 +452,22 @@ void NetworkTransfer::acceptConnection()
                 emit progressChanged(1.0);
             }
         }
-        file->deleteLater();
-        socket->deleteLater();
+        
+        // Prevent Dangling Pointers
+        if (file) { file->deleteLater(); file = nullptr; }
+        if (socket) { socket->deleteLater(); socket = nullptr; }
+        
         stopReceiving(); });
 }
 
 void NetworkTransfer::acceptTransfer(bool useSdCard)
 {
+
     if (!socket || socket->state() != QAbstractSocket::ConnectedState)
+        return;
+
+    // Prevent Double-Tapping the Accept button
+    if (!m_waitingForUser)
         return;
 
     // Save the user's choice right when they click "Accept"
@@ -393,9 +514,24 @@ void NetworkTransfer::acceptTransfer(bool useSdCard)
     // Write any bytes we buffered while waiting for the user
     if (!incomingData.isEmpty())
     {
-        file->write(incomingData);
-        processedBytes += incomingData.size();
-        incomingData.clear();
+        // Bound the buffer write
+        qint64 bytesRemaining = m_pendingFileSize;
+
+        if (incomingData.size() > bytesRemaining)
+        {
+            qDebug() << "[SECURITY WARNING] Buffered data exceeded declared file size! Aborting.";
+            file->write(incomingData.left(bytesRemaining));
+            processedBytes += bytesRemaining;
+            incomingData.clear();
+            socket->disconnectFromHost();
+            return; // Exit immediately, do NOT send "OK"
+        }
+        else
+        {
+            file->write(incomingData);
+            processedBytes += incomingData.size();
+            incomingData.clear();
+        }
     }
 
     m_waitingForUser = false;
@@ -408,9 +544,13 @@ void NetworkTransfer::acceptTransfer(bool useSdCard)
 
 void NetworkTransfer::rejectTransfer()
 {
-    if (socket && socket->state() == QAbstractSocket::ConnectedState)
+    if (socket && socket->state() != QAbstractSocket::UnconnectedState) // <-- FIX
     {
-        socket->write("REJECT");
+        m_cancelledByUser = true;
+        if (socket->state() == QAbstractSocket::ConnectedState)
+        {
+            socket->write("REJECT");
+        }
         socket->disconnectFromHost();
     }
     m_waitingForUser = false;
@@ -421,10 +561,10 @@ void NetworkTransfer::rejectTransfer()
 
 void NetworkTransfer::cancelTransfer()
 {
-    // If the socket is currently connected and sending data, force it to disconnect!
-    if (socket && socket->state() == QAbstractSocket::ConnectedState)
+    if (socket && socket->state() != QAbstractSocket::UnconnectedState) // <-- FIX
     {
-        socket->disconnectFromHost();
+        m_cancelledByUser = true;
+        socket->disconnectFromHost(); // This safely aborts ConnectingState too!
         emit statusChanged(tr("Transfer cancelled"));
         emit progressChanged(0.0);
     }

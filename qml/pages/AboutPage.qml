@@ -35,7 +35,7 @@ Page {
                         id: appicon
 
                         anchors.horizontalCenter: parent.horizontalCenter
-                        source: "../../images/appinfo.png" // FIX 2: Responsive image sizing so it never overflows the screen
+                        source: "../../images/appinfo.png" // Responsive image sizing so it never overflows the screen
                         width: Math.min(512, parent.width - (Theme.paddingLarge * 2))
                         fillMode: Image.PreserveAspectFit
                         visible: status === Image.Ready

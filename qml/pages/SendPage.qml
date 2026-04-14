@@ -71,6 +71,8 @@ Page {
         PullDownMenu {
             enabled: !isTransferRunning
 
+            busy: netTransfer.isDiscovering || isTransferRunning
+
             MenuItem {
                 text: netTransfer.isDiscovering ? qsTr("Stop looking") : qsTr("Look for nearby devices")
                 onClicked: {

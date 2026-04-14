@@ -115,10 +115,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>App order</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Communication</source>
         <translation type="unfinished"></translation>
     </message>
@@ -191,15 +187,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enter a password to protect your data</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Repeat password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Re-enter password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>App grid layout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter a password</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -229,10 +229,6 @@
         <translation>Informazioni</translation>
     </message>
     <message>
-        <source>Receive from another device</source>
-        <translation>Ricevi da altro dispositivo</translation>
-    </message>
-    <message>
         <source>Send to a nearby device</source>
         <translation>Invia a dispositivo vicino</translation>
     </message>
@@ -243,6 +239,10 @@
     <message>
         <source>Deleting...</source>
         <translation>Eliminazione...</translation>
+    </message>
+    <message>
+        <source>Receive from a nearby device</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -305,10 +305,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Connection lost. Unable to send backup</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Not enough storage space</source>
         <translation type="unfinished"></translation>
     </message>
@@ -335,6 +331,22 @@ Saved to: %1</source>
     </message>
     <message>
         <source>Error: SD card not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connection lost. Unable to receive backup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error: Cannot send an empty file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connection lost. Unable to send backup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sender disconnected</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -377,10 +389,6 @@ Saved to: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Pull down to make device visible</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Stop transfer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -390,6 +398,10 @@ Saved to: %1</source>
     </message>
     <message>
         <source>Wait for backup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pull down to make this device visible</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -413,10 +425,6 @@ Saved to: %1</source>
     </message>
     <message>
         <source>App data</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>App order</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -465,10 +473,6 @@ Saved to: %1</source>
     </message>
     <message>
         <source>Restoring backup...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Talteen Backup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -529,6 +533,10 @@ Saved to: %1</source>
     </message>
     <message>
         <source>Enter the backup password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>App grid layout</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -669,19 +677,7 @@ Saved to: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Encryption failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Restore failed. The payload may be damaged</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Password required for this backup</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Restore failed. Invalid backup format</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -693,7 +689,39 @@ Saved to: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Unable to secure your backup. Is OpenSSL installed?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to write metadata file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to generate checksum</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to verify checksum</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to read backup metadata</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Unable to unlock the backup. Please check your password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Encryption or compression failed. Backup cancelled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Backup may be damaged (Checksum mismatch)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid backup format. Checksum is missing</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

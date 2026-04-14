@@ -103,7 +103,6 @@ Page {
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("RestorePage.qml"), {
                     "selectedBackupPath": model.path,
-                    "backupName": model.name,
                     "backupLabel": model.label,
                     "backupDate": model.date,
                     "backupSize": SharedUtils.formatBytes(model.size)

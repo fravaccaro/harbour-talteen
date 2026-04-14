@@ -114,7 +114,6 @@ Page {
     }
 
     SilicaFlickable {
-        // Disable while backup is ongoing
 
         id: backupView
 
@@ -123,6 +122,7 @@ Page {
 
         PullDownMenu {
             enabled: !isBackupRunning
+        busy: isBackupRunning
 
             MenuItem {
                 text: qsTr("Deselect all")
@@ -170,7 +170,7 @@ Page {
                 enabled: !isBackupRunning
                 width: parent.width
                 label: qsTr("Password")
-                placeholderText: qsTr("Enter a password to protect your data")
+                placeholderText: qsTr("Enter a password")
                 
                 // Move focus to the next field when Enter is pressed
                 EnterKey.iconSource: "image://theme/icon-m-enter-next"

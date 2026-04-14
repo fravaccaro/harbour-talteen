@@ -1,19 +1,22 @@
 Name:       harbour-talteen
 
 Summary:    Talteen
-Version:    0.1.0
-Release:    3
+Version:    0.1.1
+Release:    5
 License:    GPLv3
 URL:        https://github.com/fravaccaro/harbour-talteen
 Source0:    %{name}-%{version}.tar.bz2
 Requires:   sailfishsilica-qt5 >= 0.10.9
+Requires:   rsync
 Requires:   openssl
+Requires:   xz
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  desktop-file-utils
+Obsoletes: harbour-mydatatransfer
 
 %description
 Back up and transfer app data, documents, downloaded files, music, pictures and videos on your Sailfish OS devices.
