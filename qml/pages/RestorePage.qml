@@ -9,7 +9,6 @@ Page {
     id: restorePage
 
     property string selectedBackupPath: ""
-    property string backupName: ""
     property string backupLabel: ""
     property string backupDate: ""
     property string backupSize: ""
@@ -217,11 +216,6 @@ Page {
 
                 SectionHeader {
                     text: qsTr("Details")
-                }
-
-                DetailItem {
-                    label: qsTr("File")
-                    value: backupName
                 }
 
                 DetailItem {

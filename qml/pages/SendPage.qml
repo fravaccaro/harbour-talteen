@@ -125,12 +125,6 @@ Page {
             }
 
             DetailItem {
-                label: qsTr("File")
-                // Fallback to splitting the path if backupName is empty
-                value: backupName !== "" ? backupName : selectedFile.split('/').pop()
-            }
-
-            DetailItem {
                 label: qsTr("Label")
                 value: backupLabel
                 visible: backupLabel !== "" // Hide if missing

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="it_IT">
 <context>
     <name>AboutPage</name>
     <message>
@@ -57,7 +57,7 @@
     </message>
     <message>
         <source>About Talteen</source>
-        <translation type="unfinished"></translation>
+        <translation>Info su Talteen</translation>
     </message>
     <message>
         <source>Thanks to jgibbon for the icon and the cover graphics.</source>
@@ -168,7 +168,7 @@
     </message>
     <message>
         <source>New backup</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Nuovo backup</translation>
     </message>
     <message>
         <source>Label (optional)</source>
@@ -198,35 +198,35 @@
     <name>MainPage</name>
     <message>
         <source>New backup</source>
-        <translation type="unfinished"></translation>
+        <translation>Nuovo backup</translation>
     </message>
     <message>
         <source>No backups found</source>
-        <translation type="unfinished"></translation>
+        <translation>Nessun backup</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Elimina</translation>
     </message>
     <message>
         <source>About</source>
-        <translation type="unfinished"></translation>
+        <translation>Informazioni</translation>
     </message>
     <message>
         <source>Receive from another device</source>
-        <translation type="unfinished"></translation>
+        <translation>Ricevi da altro dispositivo</translation>
     </message>
     <message>
         <source>Send to a nearby device</source>
-        <translation type="unfinished"></translation>
+        <translation>Invia a dispositivo vicino</translation>
     </message>
     <message>
         <source>Pull down to back up your phone or receive a backup</source>
-        <translation type="unfinished"></translation>
+        <translation>Trascina per salvare o ricevere un backup</translation>
     </message>
     <message>
         <source>Deleting...</source>
-        <translation type="unfinished"></translation>
+        <translation>Eliminazione...</translation>
     </message>
 </context>
 <context>
@@ -464,10 +464,6 @@ Saved to: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Label</source>
         <translation type="unfinished"></translation>
     </message>
@@ -524,10 +520,6 @@ Saved to: %1</source>
     </message>
     <message>
         <source>Details</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -614,62 +606,62 @@ Saved to: %1</source>
     <name>Talteen</name>
     <message>
         <source>Backup verified</source>
-        <translation type="unfinished"></translation>
+        <translation>Backup verificato</translation>
     </message>
     <message>
         <source>Not enough storage space to save the backup</source>
-        <translation type="unfinished"></translation>
+        <translation>Spazio insufficiente per salvare il backup</translation>
     </message>
     <message>
         <source>Backup saved successfully</source>
-        <translation type="unfinished"></translation>
+        <translation>Backup salvato</translation>
     </message>
     <message>
         <source>Unable to save backup</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible salvare il backup</translation>
     </message>
     <message>
         <source>Unable to open backup</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible aprire il backup</translation>
     </message>
     <message>
         <source>Restore failed. The backup may be damaged</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripristino fallito. Il backup potrebbe essere danneggiato</translation>
     </message>
     <message>
         <source>Not enough storage space to restore</source>
-        <translation type="unfinished"></translation>
+        <translation>Spazio insufficiente per il ripristino</translation>
     </message>
     <message>
         <source>Backup restored successfully</source>
-        <translation type="unfinished"></translation>
+        <translation>Backup ripristinato</translation>
     </message>
     <message>
         <source>Unsupported backup version</source>
-        <translation type="unfinished"></translation>
+        <translation>Versione del backup non supportata</translation>
     </message>
 </context>
 <context>
     <name>TransferPromptDialog</name>
     <message>
         <source>Accept</source>
-        <translation type="unfinished"></translation>
+        <translation>Accetta</translation>
     </message>
     <message>
         <source>Incoming backup</source>
-        <translation type="unfinished"></translation>
+        <translation>Backup in arrivo</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Annulla</translation>
     </message>
     <message>
         <source>Save this backup to the SD card</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva questo backup sulla scheda SD</translation>
     </message>
     <message>
         <source>Save to SD card</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva sulla scheda SD</translation>
     </message>
 </context>
 </TS>
