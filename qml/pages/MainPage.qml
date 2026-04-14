@@ -88,7 +88,7 @@ Page {
             // Do not show "No backups found" while loading
             enabled: backupsModel.count === 0 && !isLoading
             text: qsTr("No backups found")
-            hintText: qsTr("Pull down to save a new backup or receive one from a nearby device")
+            hintText: qsTr("Pull down to back up your phone or receive a backup")
         }
 
         header: PageHeader {
@@ -147,7 +147,7 @@ Page {
                 MenuItem {
                     text: qsTr("Delete")
                     onClicked: {
-                        listItem.remorseAction(qsTr("Deleting"), function() {
+                        listItem.remorseAction(qsTr("Deleting..."), function() {
                             if (appCore.deleteBackup(model.path))
                                 backupsModel.remove(index);
 

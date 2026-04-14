@@ -8,5 +8,4 @@ Name=Talteen
 [X-Sailjail]
 OrganizationName=org.harbour-talteen
 ApplicationName=harbour-talteen
-Permissions=UserDirs;RemovableMedia;CommunicationHistory
-#Sandboxing=Disabled
+Sandboxing=Disabled

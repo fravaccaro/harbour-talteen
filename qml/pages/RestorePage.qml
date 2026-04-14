@@ -95,7 +95,7 @@ Page {
             isRestoreRunning = false;
             statusMessage = message;
             console.log(message);
-            appWindow.showNotification(success ? qsTr("Restore completed") : qsTr("Restore failed"), message);
+            appWindow.showNotification(success ? qsTr("Restore complete") : qsTr("Restore failed"), message);
         }
     }
 
@@ -181,7 +181,7 @@ Page {
             enabled: !isRestoreRunning
 
             MenuItem {
-                text: qsTr("Unselect all")
+                text: qsTr("Deselect all")
                 enabled: availableMetadata["version"] !== undefined && !noneSelected
                 onClicked: setAllSwitches(false)
             }
@@ -291,7 +291,7 @@ Page {
                         restoreOptions[item.key] = item.isChecked;
                     }
                     appCore.executeRestore(selectedBackupPath, restoreOptions);
-                    appWindow.showProgressNotification(qsTr("Talteen Backup"), qsTr("Restoring archive..."), Notification.ProgressIndeterminate);
+                    appWindow.showProgressNotification(qsTr("Talteen Backup"), qsTr("Restoring backup..."), Notification.ProgressIndeterminate);
                 }
             }
 

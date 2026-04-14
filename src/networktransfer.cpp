@@ -84,7 +84,7 @@ void NetworkTransfer::startReceiving(int port)
     }
     else
     {
-        emit statusChanged(tr("Error: cannot start listening"));
+        emit statusChanged(tr("Unable to start listening"));
     }
 }
 
@@ -136,11 +136,11 @@ void NetworkTransfer::discoverDevices()
         discoveryTimeoutTimer->start(60000);
 
         emit isDiscoveringChanged();
-        emit statusChanged(tr("Searching for nearby devices..."));
+        emit statusChanged(tr("Looking for nearby devices..."));
     }
     else
     {
-        emit statusChanged(tr("Cannot start search"));
+        emit statusChanged(tr("Unable to start search"));
     }
 }
 
@@ -154,7 +154,7 @@ void NetworkTransfer::stopDiscovery()
 
         m_isDiscovering = false;
         emit isDiscoveringChanged();
-        emit statusChanged(tr("Searching stopped"));
+        emit statusChanged(tr("Search stopped"));
     }
 }
 
@@ -165,7 +165,7 @@ void NetworkTransfer::sendFile(QString targetIp, int port, QString filePath)
 
     if (!file->open(QIODevice::ReadOnly))
     {
-        emit statusChanged(tr("Error: cannot open the file"));
+        emit statusChanged(tr("Unable to open file"));
         file->deleteLater();
         socket->deleteLater();
         emit progressChanged(0.0);
@@ -183,7 +183,7 @@ void NetworkTransfer::sendFile(QString targetIp, int port, QString filePath)
 
     connect(socket, &QTcpSocket::connected, this, [this, fileName]()
             {
-        emit statusChanged(tr("Accept on the other device. Waiting..."));
+        emit statusChanged(tr("Waiting for the other device to accept..."));
         
         // ONLY send the header. Do NOT send the file yet!
         QString header = fileName + "|" + QString::number(totalBytes) + "\n";
@@ -194,7 +194,7 @@ void NetworkTransfer::sendFile(QString targetIp, int port, QString filePath)
             {
         QByteArray answer = socket->readAll();
         if (answer.contains("OK")) {
-            emit statusChanged(tr("Accepted! Sending..."));
+            emit statusChanged(tr("Accepted. Sending..."));
             socket->write(file->read(65536)); // Start the loop!
         } else {
             emit statusChanged(tr("Transfer cancelled by receiver"));
@@ -233,7 +233,7 @@ void NetworkTransfer::sendFile(QString targetIp, int port, QString filePath)
         // Only declare success if we actually finished sending the bytes
         if (processedBytes >= totalBytes && totalBytes > 0) {
             emit progressChanged(1.0);
-            emit statusChanged(tr("Backup sent!"));
+            emit statusChanged(tr("Backup sent"));
         }
         
         file->deleteLater();
@@ -314,7 +314,7 @@ void NetworkTransfer::acceptConnection()
         if (err == QAbstractSocket::RemoteHostClosedError) return;
 
         qDebug() << "[SOCKET ERROR]" << socket->errorString();
-        emit statusChanged(tr("Network error!"));
+        emit statusChanged(tr("Network error"));
         emit progressChanged(0.0);
         if (file->isOpen()) {
             file->close();
@@ -331,11 +331,11 @@ void NetworkTransfer::acceptConnection()
             if (totalBytes > 0 && processedBytes < totalBytes) {
                 qDebug() << "[DEBUG] Incomplete transfer. Deleting file.";
                 file->remove();
-                emit statusChanged(tr("Error: connection lost. Cannot send backup"));
+                emit statusChanged(tr("Connection lost. Unable to send backup"));
                 emit progressChanged(0.0);
             } else {
-                qDebug() << "[DEBUG] Transfer completed!";
-                emit statusChanged(tr("Transfer completed!\nSaved in: %1").arg(savedPath));
+                qDebug() << "[DEBUG] Transfer complete!";
+                emit statusChanged(tr("Transfer complete\nSaved to: %1").arg(savedPath));
                 emit progressChanged(1.0);
             }
         }
@@ -358,11 +358,11 @@ void NetworkTransfer::acceptTransfer(bool useSdCard)
         baseFolder = getSdCardPath();
         if (baseFolder.isEmpty())
         {
-            emit statusChanged(tr("Error: SD Card not found"));
+            emit statusChanged(tr("Error: SD card not found"));
             rejectTransfer();
             return;
         }
-        baseFolder += "/TalteenBackup";
+        baseFolder += "/harbour-talteen";
     }
     else
     {
@@ -375,7 +375,7 @@ void NetworkTransfer::acceptTransfer(bool useSdCard)
     QStorageInfo storage(baseFolder);
     if (storage.bytesAvailable() < (m_pendingFileSize + 5242880))
     {
-        emit statusChanged(tr("Not enough free space!"));
+        emit statusChanged(tr("Not enough storage space"));
         rejectTransfer();
         return;
     }
@@ -385,7 +385,7 @@ void NetworkTransfer::acceptTransfer(bool useSdCard)
 
     if (!file->open(QIODevice::WriteOnly))
     {
-        emit statusChanged(tr("Error saving the file!"));
+        emit statusChanged(tr("Error saving file"));
         rejectTransfer();
         return;
     }

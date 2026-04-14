@@ -22,7 +22,7 @@ ValueButton {
     }
 
     label: qsTr("Destination")
-    value: saveToSdCard ? qsTr("SD card") : qsTr("Internal memory")
+    value: saveToSdCard ? qsTr("SD card") : qsTr("Internal storage")
     description: !isSdCardAvailable ? qsTr("SD card not detected") : qsTr("Available space:") + " " + formattedFreeSpace
     enabled: isSdCardAvailable && !isAppBusy
     opacity: enabled ? 1 : 0.3

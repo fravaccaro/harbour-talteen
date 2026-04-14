@@ -58,6 +58,9 @@ qint64 Talteen::getFreeSpace(bool onSdCard)
     if (path.isEmpty())
         return 0;
 
+    // Ensure the folder exists before checking space
+    QDir().mkpath(path);
+
     QStorageInfo storage(path);
     return storage.bytesAvailable();
 }
@@ -65,7 +68,9 @@ qint64 Talteen::getFreeSpace(bool onSdCard)
 void Talteen::startBackup(const QVariantMap &options)
 {
     QString homePath = QDir::homePath();
-    QString workDir = homePath + "/.talteen_workdir";
+
+    QString cachePath = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    QString workDir = cachePath + "/workdir";
 
     QString dateTimeString = QDateTime::currentDateTime().toString("yyyy-MM-dd_HH-mm");
 
@@ -104,13 +109,16 @@ void Talteen::startBackup(const QVariantMap &options)
     QString destOption = options.value("destination").toString();
     QString targetFolder = (destOption == "internal" || destOption.isEmpty()) ? homePath : destOption;
 
+    // Always ensure the directory exists before QStorageInfo checks it
+    QDir().mkpath(targetFolder);
+
     QStorageInfo storage(targetFolder);
     qint64 freeSpace = storage.bytesAvailable();
 
     if (freeSpace < (estimatedSize + 104857600))
     {
         qDebug() << "[ERROR] Not enough free space for backup. Need approx:" << estimatedSize << "Have:" << freeSpace;
-        emit backupFinished(false, tr("Not enough free space for saving the backup"));
+        emit backupFinished(false, tr("Not enough storage space to save the backup"));
         return;
     }
 
@@ -244,12 +252,12 @@ void Talteen::startBackup(const QVariantMap &options)
                     if (exitCode == 0 || exitCode == 1)
                     {
                         qDebug() << "Backup saved in:" << finalDestination << "(Exit code:" << exitCode << ")";
-                        emit backupFinished(true, tr("A new backup has been saved"));
+                        emit backupFinished(true, tr("Backup saved successfully"));
                     }
                     else
                     {
                         qDebug() << "Error tar (Exit code:" << exitCode << "):" << tarProcess->readAllStandardError();
-                        emit backupFinished(false, tr("Cannot save the backup"));
+                        emit backupFinished(false, tr("Unable to save backup"));
                     }
                     tarProcess->deleteLater();
                 });
@@ -307,7 +315,7 @@ void Talteen::analyzeArchive(const QString &backupFile)
             {
                 if (!yamlData->contains("EOF: true"))
                 {
-                    emit archiveAnalyzed(false, tr("Cannot open the backup"), QVariantMap());
+                    emit archiveAnalyzed(false, tr("Unable to open backup"), QVariantMap());
                     tarProcess->deleteLater();
                     delete yamlData;
                     return;
@@ -330,7 +338,7 @@ void Talteen::analyzeArchive(const QString &backupFile)
                 QString version = metadata.value("version").toString();
                 if (version != "1.0.0")
                 {
-                    emit archiveAnalyzed(false, tr("Backup version unsupported"), QVariantMap());
+                    emit archiveAnalyzed(false, tr("Unsupported backup version"), QVariantMap());
                 }
                 else
                 {
@@ -345,15 +353,22 @@ void Talteen::analyzeArchive(const QString &backupFile)
 void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selectedOptions)
 {
     QString homePath = QDir::homePath();
-    QString workDir = homePath + "/.talteen_restore_workdir";
+
+    QString cachePath = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    QString workDir = cachePath + "/restore_workdir"; // Ensure it exists
 
     QFileInfo archiveInfo(backupFile);
     qint64 requiredSpace = archiveInfo.size() * 1.5;
 
-    QStorageInfo internalStorage(homePath);
-    if (internalStorage.bytesAvailable() < (requiredSpace + 104857600))
+    // Ensure it exists
+    QDir().mkpath(cachePath);
+
+    // Create the storage info object using our cache path
+    QStorageInfo cacheStorage(cachePath);
+
+    if (cacheStorage.bytesAvailable() < (requiredSpace + 104857600))
     {
-        emit restoreFinished(false, tr("Not enough free space for restoring"));
+        emit restoreFinished(false, tr("Not enough storage space to restore"));
         return;
     }
 
@@ -370,7 +385,7 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
             {
                 if (exitCode != 0)
                 {
-                    emit restoreFinished(false, tr("Cannot complete the restore! The backup may be damaged"));
+                    emit restoreFinished(false, tr("Restore failed. The backup may be damaged"));
                     tarProcess->deleteLater();
                     return;
                 }
@@ -379,7 +394,7 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
                 auto finalCleanup = [=]()
                 {
                     QDir(workDir).removeRecursively();
-                    emit restoreFinished(true, tr("The backup has been restored"));
+                    emit restoreFinished(true, tr("Backup restored successfully"));
                 };
 
                 auto restoreMessages = [=]()
@@ -476,14 +491,14 @@ QVariantList Talteen::getBackupFiles()
 {
     QVariantList list;
 
-    QString cacheFile = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/harbour-talteen/labels.ini";
+    QString cacheFile = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/labels.ini";
     QSettings settings(cacheFile, QSettings::IniFormat);
 
     QStringList paths = {QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)};
     QString sdCard = getSdCardPath();
     if (!sdCard.isEmpty())
     {
-        paths << sdCard + "/TalteenBackup";
+        paths << sdCard + "/harbour-talteen";
     }
 
     for (const QString &path : paths)
@@ -552,7 +567,7 @@ bool Talteen::deleteBackup(const QString &filePath)
     if (QFile::remove(filePath))
     {
         // Keep the cache clean when files are deleted
-        QString cacheFile = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/harbour-talteen/labels.ini";
+        QString cacheFile = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/labels.ini";
         QSettings settings(cacheFile, QSettings::IniFormat);
         settings.remove(fileName);
 

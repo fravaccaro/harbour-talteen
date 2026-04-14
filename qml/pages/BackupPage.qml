@@ -47,7 +47,7 @@ Page {
         onBackupFinished: {
             isBackupRunning = false;
             console.log(message);
-            appWindow.showNotification(success ? qsTr("Backup completed") : qsTr("Backup failed"), message);
+            appWindow.showNotification(success ? qsTr("Backup complete") : qsTr("Backup failed"), message);
         }
     }
 
@@ -125,7 +125,7 @@ Page {
             enabled: !isBackupRunning
 
             MenuItem {
-                text: qsTr("Unselect all")
+                text: qsTr("Deselect all")
                 enabled: !noneSelected
                 onClicked: setAllSwitches(false)
             }

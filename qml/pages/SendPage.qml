@@ -13,7 +13,7 @@ Page {
     property string backupDate: ""
     property string backupSize: ""
     property bool isTransferRunning: false
-    property string statusMessage: qsTr("Searching for nearby devices..")
+    property string statusMessage: qsTr("Looking for nearby devices...")
     property real currentProgress: 0
 
     allowedOrientations: Orientation.All
@@ -36,10 +36,10 @@ Page {
             currentProgress = progress;
             // UPDATE THE LIVE NOTIFICATION
             if (progress > 0 && progress < 1) {
-                appWindow.showProgressNotification(qsTr("Transferring"), selectedFile.split('/').pop(), progress);
+                appWindow.showProgressNotification(qsTr("Sending"), selectedFile.split('/').pop(), progress);
             } else if (progress === 1) {
                 isTransferRunning = false;
-                appWindow.showNotification(qsTr("Transfer Complete"), qsTr("File sent successfully!"));
+                appWindow.showNotification(qsTr("Sending complete"), qsTr("Backup sent successfully"));
             } else if (progress === 0) {
                 isTransferRunning = false;
             }
@@ -72,7 +72,7 @@ Page {
             enabled: !isTransferRunning
 
             MenuItem {
-                text: netTransfer.isDiscovering ? qsTr("Stop search") : qsTr("Search for nearby devices")
+                text: netTransfer.isDiscovering ? qsTr("Stop looking") : qsTr("Look for nearby devices")
                 onClicked: {
                     if (netTransfer.isDiscovering) {
                         netTransfer.stopDiscovery();
@@ -92,7 +92,7 @@ Page {
             spacing: Theme.paddingMedium
 
             PageHeader {
-                title: qsTr("Send Backup")
+                title: qsTr("Send backup")
             }
 
             StatusLabel {
@@ -173,7 +173,7 @@ Page {
             }
 
             Button {
-                text: isTransferRunning ? qsTr("Cancel Transfer") : qsTr("Send")
+                text: isTransferRunning ? qsTr("Cancel sending") : qsTr("Send")
                 anchors.horizontalCenter: parent.horizontalCenter
                 enabled: (devicesModel.count > 0 && !isTransferRunning) || isTransferRunning
                 opacity: enabled ? 1 : 0.3

@@ -72,14 +72,14 @@ Page {
             MenuItem {
                 // Show this option ONLY if a transfer is actively moving
                 visible: isTransferRunning
-                text: qsTr("Stop Transfer")
+                text: qsTr("Stop transfer")
                 onClicked: netTransfer.stopReceiving()
             }
 
             MenuItem {
                 // Show this option ONLY when idle
                 visible: !isTransferRunning
-                text: netTransfer.isListening ? qsTr("Hide Device") : qsTr("Wait for Backup")
+                text: netTransfer.isListening ? qsTr("Hide device") : qsTr("Wait for backup")
                 onClicked: {
                     if (netTransfer.isListening)
                         netTransfer.stopReceiving();

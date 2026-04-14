@@ -47,7 +47,7 @@ Page {
                 }
 
                 LabelText {
-                    text: qsTr("Backup and transfer app data, documents, music, pictures and videos on your Sailfish OS devices.")
+                    text: qsTr("Back up and transfer app data, documents, downloaded files, music, pictures and videos on your Sailfish OS devices.")
                 }
 
                 LabelSpacer {
@@ -71,7 +71,7 @@ Page {
                 }
 
                 LabelText {
-                    text: "<ul>" + "<li>" + qsTr("Backup of Sailfish OS app data and files inside Documents, Music, Pictures and Videos folders.") + "</li>" + "<li>" + qsTr("Backup to SD card.") + " " + qsTr("Restore from a backup.") + ", " + qsTr("Over-the-air Wi-Fi transfer of backups.") + "</li>" + "</ul>"
+                    text: "<ul>" + "<li>" + qsTr("Back up Sailfish OS app data and files inside Documents, Downloads, Music, Pictures and Videos folders.") + "</li>" + "<li>" + qsTr("Back up to an SD card.") + " " + qsTr("Restore from a backup.") + ", " + qsTr("Over-the-air Wi-Fi transfer of backups.") + "</li>" + "</ul>"
                 }
 
                 SectionHeader {
@@ -116,7 +116,7 @@ Page {
                 }
 
                 LabelText {
-                    text: qsTr("Thanks to flypigahoy for his ispiring blog post about copying settings and files over a new device.")
+                    text: qsTr("Thanks to flypigahoy for his inspiring blog post about copying settings and files to a new device.")
                 }
 
                 LabelText {
@@ -125,7 +125,7 @@ Page {
 
                 LabelText {
                     visible: false
-                    text: qsTr("Apps backup by topias.")
+                    text: qsTr("Apps backup logic by topias.")
                 }
 
                 LabelText {

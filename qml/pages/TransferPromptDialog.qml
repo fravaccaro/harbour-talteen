@@ -34,8 +34,8 @@ Dialog {
         }
 
         TextSwitch {
-            text: qsTr("Save to SD Card")
-            description: qsTr("Save this backup on the external memory card")
+            text: qsTr("Save to SD card")
+            description: qsTr("Save this backup to the SD card")
             visible: hasSdCard // Only show if an SD card exists!
             checked: saveToSdCard
             onCheckedChanged: saveToSdCard = checked
