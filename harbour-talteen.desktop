@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+X-Nemo-Application-Type=silica-qt5
+Icon=harbour-talteen
+Exec=harbour-talteen
+Name=Talteen
+
+[X-Sailjail]
+OrganizationName=org.harbour-talteen
+ApplicationName=harbour-talteen
+Sandboxing=Disabled
