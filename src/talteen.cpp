@@ -107,7 +107,7 @@ void Talteen::startBackup(const QVariantMap &options)
     QDir().mkpath(targetFolder);
     QStorageInfo storage(targetFolder);
 
-    // 1. Check final destination space
+    // Check final destination space
     if (storage.bytesAvailable() < (estimatedSize + 104857600))
     {
         qDebug() << "[ERROR] Not enough free space in destination.";
@@ -115,7 +115,7 @@ void Talteen::startBackup(const QVariantMap &options)
         return;
     }
 
-    // 2. Check internal cache space (We need roughly 2x the size to hold the temporary encrypted payloads)
+    // Check internal cache space (We need roughly 2x the size to hold the temporary encrypted payloads)
     QDir().mkpath(cachePath);
     QStorageInfo cacheStorage(cachePath);
     if (cacheStorage.bytesAvailable() < (estimatedSize * 2 + 104857600))
@@ -175,7 +175,7 @@ void Talteen::startBackup(const QVariantMap &options)
     if (hasVideos)
         QFile::link(QStandardPaths::writableLocation(QStandardPaths::MoviesLocation), workDir + "/videos");
 
-    // --- STEP 3: Outer Wrapper ---
+    // Outer Wrapper
     auto runOuterTarStep = [=](const QString &payloadFileName)
     {
         qDebug() << "Executing Step 3/3: Packing final archive...";
@@ -207,7 +207,7 @@ void Talteen::startBackup(const QVariantMap &options)
                 });
     };
 
-    // --- STEP 2: Encryption ---
+    // Encryption
     auto runEncryptStep = [=]()
     {
         qDebug() << "Executing Step 2/3: Encrypting payload...";
@@ -244,7 +244,7 @@ void Talteen::startBackup(const QVariantMap &options)
         encryptProcess->start("openssl", sslArgs);
     };
 
-    // --- STEP 1: Inner Tar ---
+    // Inner Tar
     auto runInnerTarStep = [=]()
     {
         qDebug() << "Executing Step 1/3: Compressing raw data folders...";
@@ -511,7 +511,7 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
         }
     };
 
-    // --- STEP 3: Inner Extract ---
+    // Inner Extract
     auto runInnerExtract = [=]()
     {
         qDebug() << "Executing Step 3/3: Unpacking inner payload...";
@@ -535,7 +535,7 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
                 });
     };
 
-    // --- STEP 2: Decrypt ---
+    // Decrypt
     auto runDecryptStep = [=]()
     {
         qDebug() << "Executing Step 2/3: Decrypting payload...";
@@ -584,7 +584,7 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
         decryptProcess->start("openssl", sslArgs);
     };
 
-    // --- STEP 1: Outer Extract ---
+    // Outer Extract
     qDebug() << "Executing Step 1/3: Extracting outer wrapper...";
     QProcess *outerTarProcess = new QProcess(this);
     outerTarProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);

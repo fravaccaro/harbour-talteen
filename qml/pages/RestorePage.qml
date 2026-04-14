@@ -113,7 +113,7 @@ Page {
             });
             append({
                 "key": "apporder",
-                "name": qsTr("App order"),
+                "name": qsTr("App grid layout"),
                 "section": "",
                 "triggers": "",
                 "isChecked": false
@@ -258,7 +258,6 @@ Page {
 
                 delegate: Column {
                     width: parent.width
-                    //visible: availableMetadata[model.key] === "true"
                     visible: availableMetadata[model.key] === "true" || (model.section !== "" && isSectionVisible(model.triggers))
 
                     SectionHeader {

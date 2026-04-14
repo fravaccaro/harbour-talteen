@@ -64,7 +64,7 @@ Page {
             });
             append({
                 "key": "apporder",
-                "name": qsTr("App order"),
+                "name": qsTr("App grid layout"),
                 "section": "",
                 "isChecked": false
             });
