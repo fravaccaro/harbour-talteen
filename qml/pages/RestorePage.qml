@@ -182,18 +182,14 @@ Page {
             busy: isRestoreRunning
 
             MenuItem {
-                text: "[WIP] " + qsTr("Deselect all")
-
-                enabled: false
-               // enabled: availableMetadata["version"] !== undefined && !noneSelected
+                text: qsTr("Deselect all")
+                enabled: availableMetadata["version"] !== undefined && !noneSelected
                 onClicked: setAllSwitches(false)
             }
 
             MenuItem {
-                text: "[WIP] " + qsTr("Select all")
-
-                enabled: false
-               // enabled: availableMetadata["version"] !== undefined && !allSelected
+                text: qsTr("Select all")
+                enabled: availableMetadata["version"] !== undefined && !allSelected
                 onClicked: setAllSwitches(true)
             }
 
@@ -252,7 +248,7 @@ Page {
                 enabled: !isRestoreRunning
                 // Only show the field if the backup is actually valid
                 visible: availableMetadata["version"] !== undefined
-                label: (text.length > 0 && text.length < 6) ? qsTr("Password (min 6 characters)") : qsTr("Password")
+                label: qsTr("Password")
                 placeholderText: qsTr("Enter the backup password")
                 errorHighlight: text.length > 0 && text.length < 6
                 EnterKey.enabled: text.length >= 6
@@ -275,11 +271,14 @@ Page {
                     TextSwitch {
                         visible: availableMetadata[model.key] === "true"
                         text: model.name
-                        checked: model.isChecked
                         enabled: !isRestoreRunning
-                        onCheckedChanged: {
-                                restoreCategoriesModel.setProperty(index, "isChecked", checked);
-                                updateSelectionStates();
+                        checked: model.isChecked
+                        onClicked: {
+                            restoreCategoriesModel.setProperty(index, "isChecked", checked);
+                            checked = Qt.binding(function() {
+                                return model.isChecked;
+                            });
+                            updateSelectionStates();
                         }
                     }
 

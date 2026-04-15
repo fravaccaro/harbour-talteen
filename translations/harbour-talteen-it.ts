@@ -91,6 +91,14 @@
         <source>Easily move your data to a new device by copying the backup file via an SD card or over Wi-FI.</source>
         <translation>Sposta facilmente i tuoi dati su un nuovo dispositivo copiando il file di backup tramite scheda SD o rete Wi-Fi.</translation>
     </message>
+    <message>
+        <source>Disclaimer of liability</source>
+        <translation>Esclusione di responsabilità</translation>
+    </message>
+    <message>
+        <source>This software is provided &quot;as is&quot;, without warranty of any kind, express or implied. In no event shall the authors or copyright holders be liable for any claim, damages or other liability arising from, out of or in connection with the software. You are solely responsible for the safety of your data.</source>
+        <translation>Questo software è fornito &quot;così com&apos;è&quot;, senza garanzie di alcun tipo, espresse o implicite. In nessun caso gli autori o i titolari del copyright saranno ritenuti responsabili per qualsiasi reclamo, danno o altra responsabilità derivante da, fuori o in connessione con il software. Sei l&apos;unico responsabile per la sicurezza dei tuoi dati.</translation>
+    </message>
 </context>
 <context>
     <name>BackupPage</name>
@@ -183,14 +191,6 @@
         <translation>Password</translation>
     </message>
     <message>
-        <source>Repeat password</source>
-        <translation>Ripeti password</translation>
-    </message>
-    <message>
-        <source>Re-enter password</source>
-        <translation>Reinserisci password</translation>
-    </message>
-    <message>
         <source>App grid layout</source>
         <translation>Layout griglia app</translation>
     </message>
@@ -210,12 +210,43 @@
         <source>Passwords do not match</source>
         <translation>Le password non corrispondono</translation>
     </message>
+    <message>
+        <source>Confirm password</source>
+        <translation>Conferma password</translation>
+    </message>
+    <message>
+        <source>Confirm your password</source>
+        <translation>Conferma la tua password</translation>
+    </message>
 </context>
 <context>
     <name>CoverPage</name>
     <message>
         <source>Just a moment...</source>
         <translation>Un momento...</translation>
+    </message>
+</context>
+<context>
+    <name>DisclaimerDialog</name>
+    <message>
+        <source>Disclaimer</source>
+        <translation>Esclusione di responsabilità</translation>
+    </message>
+    <message>
+        <source>This software is provided &quot;as is&quot; without warranty of any kind. By using this app, you agree that the developers are not responsible for any data loss, file corruption, or device damage. Always keep multiple copies of your important backups.</source>
+        <translation>Questo software è fornito &quot;così com&apos;è&quot; senza alcuna garanzia. Utilizzando quest&apos;app, accetti che gli sviluppatori non sono responsabili per eventuali perdite di dati, corruzione di file o danni al dispositivo. Conserva sempre copie multiple dei tuoi backup importanti.</translation>
+    </message>
+    <message>
+        <source>I have read and accept the risks</source>
+        <translation>Ho letto e accettato i rischi</translation>
+    </message>
+    <message>
+        <source>Continue</source>
+        <translation>Continua</translation>
+    </message>
+    <message>
+        <source>Exit</source>
+        <translation>Esci</translation>
     </message>
 </context>
 <context>
@@ -548,10 +579,6 @@
     <message>
         <source>Backup is ready</source>
         <translation>Backup pronto</translation>
-    </message>
-    <message>
-        <source>Password (min 6 characters)</source>
-        <translation>Password (min. 6 caratteri)</translation>
     </message>
 </context>
 <context>

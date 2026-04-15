@@ -124,17 +124,14 @@ Page {
             busy: isBackupRunning
 
             MenuItem {
-                text: "[WIP] " + qsTr("Deselect all")
-
-                //enabled: !noneSelected
-                enabled: false
+                text: qsTr("Deselect all")
+                enabled: !noneSelected
                 onClicked: setAllSwitches(false)
             }
 
             MenuItem {
-                text: "[WIP] " + qsTr("Select all")
-                //enabled: !allSelected
-                enabled: false
+                text: qsTr("Select all")
+                enabled: !allSelected
                 onClicked: setAllSwitches(true)
             }
 
@@ -186,8 +183,8 @@ Page {
                 enabled: !isBackupRunning
                 width: parent.width
                 // Dynamically warn the user if the passwords don't match
-                label: (text.length > 0 && text !== passwordField.text) ? qsTr("Passwords do not match") : qsTr("Repeat password")
-                placeholderText: qsTr("Re-enter password")
+                label: (text.length > 0 && text !== passwordField.text) ? qsTr("Passwords do not match") : qsTr("Confirm password")
+                placeholderText: qsTr("Confirm your password")
                 errorHighlight: text.length > 0 && text !== passwordField.text
                 // Prevent from closing the keyboard if the passwords don't match
                 EnterKey.enabled: text === passwordField.text
@@ -219,9 +216,12 @@ Page {
                         text: model.name
                         enabled: !isBackupRunning
                         checked: model.isChecked
-                        onCheckedChanged: {
-                                categoriesModel.setProperty(index, "isChecked", checked);
-                                updateSelectionStates();
+                        onClicked: {
+                            categoriesModel.setProperty(index, "isChecked", checked);
+                            checked = Qt.binding(function() {
+                                return model.isChecked;
+                            });
+                            updateSelectionStates();
                         }
                     }
 

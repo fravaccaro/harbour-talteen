@@ -1,11 +1,21 @@
 import Nemo.Notifications 1.0
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import Nemo.Configuration 1.0
 import "components"
 import "pages"
 
 ApplicationWindow {
     id: appWindow
+
+    cover: Qt.resolvedUrl("cover/CoverPage.qml")
+    allowedOrientations: defaultAllowedOrientations
+
+ConfigurationValue {
+        id: disclaimerAccepted
+        key: "/apps/harbour-talteen/disclaimer_accepted"
+        defaultValue: false
+    }
 
     property bool isLightTheme: (Theme.colorScheme === Theme.LightOnDark) ? false : true
     property bool isAppWorking: false
@@ -23,8 +33,6 @@ ApplicationWindow {
         globalPopup.toast(body);
     }
 
-    cover: Qt.resolvedUrl("cover/CoverPage.qml")
-    allowedOrientations: defaultAllowedOrientations
 
     TalteenNotification {
         id: globalPopup
@@ -35,5 +43,25 @@ ApplicationWindow {
         }
 
     }
+
+
+Component.onCompleted: {
+        if (!disclaimerAccepted.value) {
+            var dialog = pageStack.push(Qt.resolvedUrl("pages/DisclaimerDialog.qml"));
+            
+            dialog.accepted.connect(function() {
+                disclaimerAccepted.value = true;
+            });
+            
+            dialog.rejected.connect(function() {
+                Qt.quit();
+            });
+        }
+}
+
+
+
+
+
 
 }

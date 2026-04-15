@@ -91,6 +91,14 @@
         <source>Easily move your data to a new device by copying the backup file via an SD card or over Wi-FI.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Disclaimer of liability</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This software is provided &quot;as is&quot;, without warranty of any kind, express or implied. In no event shall the authors or copyright holders be liable for any claim, damages or other liability arising from, out of or in connection with the software. You are solely responsible for the safety of your data.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>BackupPage</name>
@@ -183,14 +191,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Repeat password</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Re-enter password</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>App grid layout</source>
         <translation type="unfinished"></translation>
     </message>
@@ -210,11 +210,42 @@
         <source>Passwords do not match</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Confirm password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm your password</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CoverPage</name>
     <message>
         <source>Just a moment...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DisclaimerDialog</name>
+    <message>
+        <source>Disclaimer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This software is provided &quot;as is&quot; without warranty of any kind. By using this app, you agree that the developers are not responsible for any data loss, file corruption, or device damage. Always keep multiple copies of your important backups.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>I have read and accept the risks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Continue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -547,10 +578,6 @@
     </message>
     <message>
         <source>Backup is ready</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Password (min 6 characters)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
