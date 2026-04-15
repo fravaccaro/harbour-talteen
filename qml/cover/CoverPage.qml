@@ -45,10 +45,14 @@ CoverBackground {
 
         Label {
             anchors.horizontalCenter: parent.horizontalCenter
-            // Reads the dynamic text, with a fallback just in case
+            width: parent.width - Theme.paddingLarge * 2
             text: appWindow.appWorkingText !== "" ? appWindow.appWorkingText : qsTr("Just a moment...")
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+            maximumLineCount: 3
+            truncationMode: TruncationMode.Fade
             font.pixelSize: Theme.fontSizeSmall
-            color: Theme.secondaryColor
+            color: Theme.highlightColor
         }
 
     }

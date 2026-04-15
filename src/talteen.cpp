@@ -142,8 +142,6 @@ void Talteen::startBackup(const QVariantMap &options)
     if (hasAppdata)
     {
         QDir().mkpath(workDir + "/appdata");
-        QFile::link(homePath + "/.config", workDir + "/appdata/.config");
-        QFile::link(homePath + "/.local", workDir + "/appdata/.local");
     }
     if (hasPictures)
         QFile::link(QStandardPaths::writableLocation(QStandardPaths::PicturesLocation), workDir + "/pictures");
@@ -169,7 +167,7 @@ void Talteen::startBackup(const QVariantMap &options)
         outerTar->setWorkingDirectory(workDir);
         outerTar->setProcessChannelMode(QProcess::ForwardedErrorChannel);
 
-        outerTar->start("tar", {"-cf", finalDestination, "content.yaml", "payload.enc"});
+        outerTar->start("tar", {"-cf", finalDestination, "manifest.yaml", "payload.enc"});
 
         connect(outerTar, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                 [=](int exitCode, QProcess::ExitStatus)
@@ -188,11 +186,11 @@ void Talteen::startBackup(const QVariantMap &options)
                 });
     };
 
-    // STEP 3: Write YAML & Checksum
+    // Write YAML & Checksum
     auto writeYamlStep = [=](const QString &checksum)
     {
         qDebug() << "Executing Step 3/4: Writing metadata and checksum...";
-        QFile yamlFile(workDir + "/content.yaml");
+        QFile yamlFile(workDir + "/manifest.yaml");
         if (yamlFile.open(QIODevice::WriteOnly | QIODevice::Text))
         {
             QTextStream out(&yamlFile);
@@ -200,7 +198,7 @@ void Talteen::startBackup(const QVariantMap &options)
             out << "time: \"" << QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") << "\"\n";
             QString userLabel = options.value("label").toString().trimmed().replace("\"", "'");
             out << "label: \"" << (userLabel.isEmpty() ? "talteen_backup_" + dateTimeString : userLabel) << "\"\n";
-            out << "encrypted: \"true\"\n";
+            out << "encrypted: true\n";
             out << "checksum: \"" << checksum << "\"\n";
 
             QStringList allCategories = {"appdata", "apporder", "calls", "messages", "pictures", "documents", "downloads", "music", "videos"};
@@ -266,33 +264,29 @@ void Talteen::startBackup(const QVariantMap &options)
         tarProcess->setWorkingDirectory(workDir);
         sslProcess->setWorkingDirectory(workDir);
 
-        tarProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
-        sslProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
+        // tarProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
+        // sslProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
 
+        // Capture tar errors
+        connect(tarProcess, &QProcess::readyReadStandardError, [=]()
+                {
+            QByteArray errorOutput = tarProcess->readAllStandardError();
+            if (!errorOutput.trimmed().isEmpty()) {
+                qDebug() << "[TAR LOG]" << errorOutput.trimmed();
+            } });
+
+        // Capture SSL errors
+        connect(sslProcess, &QProcess::readyReadStandardError, [=]()
+                {
+            QByteArray errorOutput = sslProcess->readAllStandardError();
+            if (!errorOutput.trimmed().isEmpty()) {
+                qDebug() << "[SSL LOG]" << errorOutput.trimmed();
+            } });
         // Connect the pipe: tar stdout feeds directly into openssl stdin
         tarProcess->setStandardOutputProcess(sslProcess);
 
         QStringList tarArgs;
         tarArgs << "-cJhf" << "-";
-
-        if (hasAppdata)
-        {
-            QStringList excludePaths = {
-                "appdata/.config/Jolla", "appdata/.config/QtProject", "appdata/.config/dconf",
-                "appdata/.config/libaccounts-glib", "appdata/.config/lipstick", "appdata/.config/nemo",
-                "appdata/.config/nemomobile", "appdata/.config/pulse", "appdata/.config/signond",
-                "appdata/.config/systemd", "appdata/.config/tracker", "appdata/.config/user-dirs.dirs",
-                "appdata/.config/user-dirs.locale", "appdata/.config/.sailfish-gallery-reindex",
-                "appdata/.local/nemo-transferengine", "appdata/.local/share/ambienced", "appdata/.local/share/applications",
-                "appdata/.local/share/commhistory", "appdata/.local/share/dbus-1", "appdata/.local/share/gsettings-data-convert",
-                "appdata/.local/share/maliit-server", "*/.mozilla/lock", "*/.mozilla/.parentlock", "appdata/.local/share/system",
-                "appdata/.local/share/systemd", "appdata/.local/share/telepathy", "appdata/.local/share/system/privilege/Contacts",
-                "appdata/.local/share/tracker", "appdata/.local/share/xt9"};
-            for (const QString &path : excludePaths)
-            {
-                tarArgs << "--exclude=" + path;
-            }
-        }
 
         if (hasApporder)
             tarArgs << "apporder";
@@ -351,6 +345,7 @@ void Talteen::startBackup(const QVariantMap &options)
         tarProcess->start("tar", tarArgs);
     };
 
+    // Defined first so Calls knows about it
     auto runMessagesStep = [=]()
     {
         if (hasMessages)
@@ -365,6 +360,7 @@ void Talteen::startBackup(const QVariantMap &options)
         }
     };
 
+    // Defined second so Rsync knows about it
     auto runCallsStep = [=]()
     {
         if (hasCalls)
@@ -379,7 +375,70 @@ void Talteen::startBackup(const QVariantMap &options)
         }
     };
 
-    runCallsStep();
+    // Defined last because it is the first one to run
+    auto runRsyncAppdataStep = [=]()
+    {
+        if (!hasAppdata)
+        {
+            runCallsStep();
+            return;
+        }
+
+        qDebug() << "Executing Step 0: Syncing App Data to static snapshot...";
+        QProcess *rsyncProcess = new QProcess(this);
+        rsyncProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
+
+        QStringList rsyncArgs;
+        rsyncArgs << "-a" << "--no-specials" << "--delete";
+
+        QStringList excludePaths = {
+            ".local/share/harbour-talteen",
+            ".mozilla/lock", ".mozilla/.parentlock",
+            ".local/share/org.sailfishos/browser/.mozilla/cache2",
+            ".local/share/org.sailfishos/browser/.mozilla/startupCache",
+            ".local/share/org.sailfishos/browser/.mozilla/OfflineCache",
+            ".local/share/org.sailfishos/browser/.mozilla/safebrowsing",
+            ".local/share/org.sailfishos/browser/.mozilla/minidumps",
+            ".local/share/org.sailfishos/browser/.mozilla/crashes",
+            ".local/share/org.sailfishos/browser/.mozilla/storage/temporary",
+            ".config/Jolla", ".config/QtProject", ".config/dconf",
+            ".config/libaccounts-glib", ".config/lipstick", ".config/nemo",
+            ".config/nemomobile", ".config/pulse", ".config/signond",
+            ".config/systemd", ".config/tracker", ".config/user-dirs.dirs",
+            ".config/user-dirs.locale", ".config/.sailfish-gallery-reindex",
+            ".local/nemo-transferengine", ".local/share/ambienced", ".local/share/applications",
+            ".local/share/commhistory", ".local/share/dbus-1", ".local/share/gsettings-data-convert",
+            ".local/share/maliit-server", ".local/share/system",
+            ".local/share/systemd", ".local/share/telepathy", ".local/share/system/privilege/Contacts",
+            ".local/share/tracker", ".local/share/xt9"};
+
+        for (const QString &path : excludePaths)
+        {
+            rsyncArgs << "--exclude=" + path;
+        }
+
+        rsyncArgs << homePath + "/.config" << homePath + "/.local" << workDir + "/appdata/";
+
+        connect(rsyncProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                [=](int exitCode, QProcess::ExitStatus exitStatus)
+                {
+                    if (exitStatus == QProcess::NormalExit && (exitCode == 0 || exitCode == 24))
+                    {
+                        runCallsStep(); // Move to the next step safely
+                    }
+                    else
+                    {
+                        qDebug() << "[FATAL] Rsync failed with exit code:" << exitCode;
+                        emit backupFinished(false, tr("Unable to save app data"));
+                    }
+                    rsyncProcess->deleteLater();
+                });
+
+        rsyncProcess->start("rsync", rsyncArgs);
+    };
+
+    // Start the chain
+    runRsyncAppdataStep();
 }
 
 void Talteen::analyzeArchive(const QString &backupFile)
@@ -387,7 +446,7 @@ void Talteen::analyzeArchive(const QString &backupFile)
     QProcess *tarProcess = new QProcess(this);
     QByteArray *yamlData = new QByteArray();
 
-    tarProcess->start("tar", {"-xOf", backupFile, "content.yaml"});
+    tarProcess->start("tar", {"-xOf", backupFile, "manifest.yaml"});
 
     connect(tarProcess, &QProcess::readyReadStandardOutput, [=]()
             {
@@ -652,7 +711,7 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
     auto runReadYamlStep = [=]()
     {
         qDebug() << "Executing Step 2/4: Reading metadata for checksum...";
-        QFile yamlFile(workDir + "/content.yaml");
+        QFile yamlFile(workDir + "/manifest.yaml");
         if (yamlFile.open(QIODevice::ReadOnly | QIODevice::Text))
         {
             QTextStream in(&yamlFile);
@@ -754,7 +813,7 @@ QVariantList Talteen::getBackupFiles()
             else
             {
                 QProcess tar;
-                tar.start("tar", {"-xOf", file.absoluteFilePath(), "content.yaml"});
+                tar.start("tar", {"-xOf", file.absoluteFilePath(), "manifest.yaml"});
                 tar.waitForFinished(1000);
 
                 if (tar.exitStatus() == QProcess::NormalExit)

@@ -5,6 +5,7 @@ ButtonLayout {
     id: root
 
     property alias text: innerButton.text
+    property alias enabled: innerButton.enabled
 
     signal clicked()
 
@@ -13,7 +14,6 @@ ButtonLayout {
     Button {
         id: innerButton
 
-        opacity: enabled ? 1 : 0.3
         onClicked: root.clicked()
     }
 

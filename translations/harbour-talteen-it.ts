@@ -60,26 +60,6 @@
         <translation>Grazie a tutti i tester per essere stati coraggiosi e pazienti.</translation>
     </message>
     <message>
-        <source>Restore from a backup.</source>
-        <translation>Ripristina da un backup.</translation>
-    </message>
-    <message>
-        <source>Over-the-air Wi-Fi transfer of backups.</source>
-        <translation>Trasferimento dei backup via Wi-Fi (Over-the-air).</translation>
-    </message>
-    <message>
-        <source>Back up and transfer app data, documents, downloaded files, music, pictures and videos on your Sailfish OS devices.</source>
-        <translation>Esegui il backup e trasferisci i dati delle app, i documenti, i file scaricati, la musica, le immagini e i video sui tuoi dispositivi Sailfish OS.</translation>
-    </message>
-    <message>
-        <source>Back up Sailfish OS app data and files inside Documents, Downloads, Music, Pictures and Videos folders.</source>
-        <translation>Esegui il backup dei dati delle app Sailfish OS e dei file all&apos;interno delle cartelle Documenti, Download, Musica, Immagini e Video.</translation>
-    </message>
-    <message>
-        <source>Back up to an SD card.</source>
-        <translation>Esegui il backup su una scheda SD.</translation>
-    </message>
-    <message>
         <source>Thanks to flypigahoy for his inspiring blog post about copying settings and files to a new device.</source>
         <translation>Grazie a flypigahoy per il suo stimolante post sul blog su come copiare le impostazioni e i file su un nuovo dispositivo.</translation>
     </message>
@@ -90,6 +70,34 @@
     <message>
         <source>Released under the &lt;a href=&apos;https://github.com/fravaccaro/harbour-talteen/blob/main/LICENSE&apos;&gt;GNU GPLv3&lt;/a&gt; license.</source>
         <translation>Rilasciato sotto licenza &lt;a href=&apos;https://github.com/fravaccaro/harbour-talteen/blob/main/LICENSE&apos;&gt;GNU GPLv3&lt;/a&gt;.</translation>
+    </message>
+    <message>
+        <source>Talteen is a secure backup tool for Sailfish OS. It keeps your data safe, encrypted, and fully under your control. Designed with reliability in mind, it uses standard open-source tools so your data is never locked to this app.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose what you want to save, from your photo gallery and music to your SMS history and app configurations.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smart app data: safely backs up your apps while ignoring temporary browser caches to save space.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Complete coverage: saves your messages, call history, app grid layout, and media.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device transfer: easily move your data to a new phone by copying the backup file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Secure: locks your archives with standard AES-256 encryption.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No vendor lock-in: built on standard Linux formats (tar, openssl) so you can extract backups on any PC.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -380,7 +388,7 @@ Salvato in: %1</translation>
     </message>
     <message>
         <source>Start receiving</source>
-        <translation>Inizia ricezione</translation>
+        <translation>Avvia ricezione</translation>
     </message>
     <message>
         <source>Ready to receive</source>
@@ -388,7 +396,7 @@ Salvato in: %1</translation>
     </message>
     <message>
         <source>Receive mode off</source>
-        <translation>Modalità ricezione disattivata</translation>
+        <translation>Modalità ricezione interrotta</translation>
     </message>
     <message>
         <source>Pull down to stop receiving</source>
@@ -712,6 +720,10 @@ Salvato in: %1</translation>
     <message>
         <source>Invalid backup format. Checksum is missing</source>
         <translation>Formato backup non valido. Checksum mancante</translation>
+    </message>
+    <message>
+        <source>Unable to save app data</source>
+        <translation>Impossible salvare dati app</translation>
     </message>
 </context>
 <context>

@@ -30,7 +30,8 @@ Dialog {
         Label {
             width: parent.width - (Theme.paddingLarge * 2)
             text: incomingFileName + "\n(" + incomingFileSize + ")"
-            wrapMode: Text.WrapAnywhere
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+            truncationMode: TruncationMode.Fade
             anchors.horizontalCenter: parent.horizontalCenter
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: Theme.fontSizeExtraLarge

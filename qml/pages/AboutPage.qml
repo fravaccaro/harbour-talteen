@@ -47,7 +47,7 @@ Page {
                 }
 
                 LabelText {
-                    text: qsTr("Back up and transfer app data, documents, downloaded files, music, pictures and videos on your Sailfish OS devices.")
+                    text: qsTr("Talteen is a secure backup tool for Sailfish OS. It keeps your data safe, encrypted, and fully under your control. Designed with reliability in mind, it uses standard open-source tools so your data is never locked to this app.")
                 }
 
                 LabelSpacer {
@@ -70,7 +70,10 @@ Page {
                 }
 
                 LabelText {
-                    text: "<ul>" + "<li>" + qsTr("Back up Sailfish OS app data and files inside Documents, Downloads, Music, Pictures and Videos folders.") + "</li>" + "<li>" + qsTr("Back up to an SD card.") + " " + qsTr("Restore from a backup.") + ", " + qsTr("Over-the-air Wi-Fi transfer of backups.") + "</li>" + "</ul>"
+                    text: "<ul>" + "<li>" + qsTr("Choose what you want to save, from your photo gallery and music to your SMS history and app configurations.") + "</li>" + "<li>" + qsTr("Smart app data: safely backs up your apps while ignoring temporary browser caches to save space.") + "</li>" + "<li>" + qsTr("Complete coverage: saves your messages, call history, app grid layout, and media.") + "</li>" + "<li>" + qsTr("Device transfer: easily move your data to a new phone by copying the backup file.") + "</li>" + "<li>" + qsTr("Secure: locks your archives with standard AES-256 encryption.") + "</li>" + "<li>" + qsTr("No vendor lock-in: built on standard Linux formats (tar, openssl) so you can extract backups on any PC.") + "</li>" + "</ul>"
+                }
+
+                LabelSpacer {
                 }
 
                 SectionHeader {

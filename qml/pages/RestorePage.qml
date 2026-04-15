@@ -287,13 +287,13 @@ Page {
             }
 
             ActionButton {
+                // <-- Pass the password to C++!
+
                 id: restoreButton
 
                 text: isRestoreRunning ? qsTr("Restoring...") : qsTr("Start restore")
                 enabled: availableMetadata["version"] !== undefined && !noneSelected && !isRestoreRunning && restorePasswordField.text.length > 0
                 onClicked: {
-                    // <-- Pass the password to C++!
-
                     isRestoreRunning = true;
                     var restoreOptions = {
                         "password": restorePasswordField.text
