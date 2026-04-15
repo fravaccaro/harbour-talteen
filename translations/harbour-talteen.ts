@@ -229,7 +229,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Pull down to back up your phone or receive a backup</source>
+        <source>Pull down to start or receive a backup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

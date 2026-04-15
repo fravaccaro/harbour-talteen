@@ -88,7 +88,7 @@ Page {
             // Do not show "No backups found" while loading
             enabled: backupsModel.count === 0 && !isLoading
             text: qsTr("No backups found")
-            hintText: qsTr("Pull down to back up your phone or receive a backup")
+            hintText: qsTr("Pull down to start or receive a backup")
         }
 
         header: PageHeader {

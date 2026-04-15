@@ -229,8 +229,8 @@
         <translation>Invia a dispositivo vicino</translation>
     </message>
     <message>
-        <source>Pull down to back up your phone or receive a backup</source>
-        <translation>Trascina per salvare o ricevere un backup</translation>
+        <source>Pull down to start or receive a backup</source>
+        <translation>Trascina in basso per avviare o ricevere un backup</translation>
     </message>
     <message>
         <source>Deleting...</source>
