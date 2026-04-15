@@ -73,31 +73,23 @@
     </message>
     <message>
         <source>Talteen is a secure backup tool for Sailfish OS. It keeps your data safe, encrypted, and fully under your control. Designed with reliability in mind, it uses standard open-source tools so your data is never locked to this app.</source>
-        <translation type="unfinished"></translation>
+        <translation>Talteen è uno strumento di backup sicuro per Sailfish OS. Mantiene i tuoi dati al sicuro, crittografati e sotto il tuo pieno controllo. Progettato pensando all&apos;affidabilità, utilizza strumenti open source standard in modo che i tuoi dati non siano mai vincolati a questa app.</translation>
     </message>
     <message>
-        <source>Choose what you want to save, from your photo gallery and music to your SMS history and app configurations.</source>
-        <translation type="unfinished"></translation>
+        <source>Lock your archives with standard AES-256 encryption.</source>
+        <translation>Proteggi i tuoi archivi con la crittografia standard AES-256.</translation>
     </message>
     <message>
-        <source>Smart app data: safely backs up your apps while ignoring temporary browser caches to save space.</source>
-        <translation type="unfinished"></translation>
+        <source>Built on standard Linux formats (tar, openssl) so you can extract backups on any PC.</source>
+        <translation>Basato su formati Linux standard (tar, openssl), così puoi estrarre i backup su qualsiasi PC.</translation>
     </message>
     <message>
-        <source>Complete coverage: saves your messages, call history, app grid layout, and media.</source>
-        <translation type="unfinished"></translation>
+        <source>Save your messages, call history, app data, app grid layout, and media.</source>
+        <translation>Salva messaggi, cronologia chiamate, dati delle app, layout della griglia e contenuti multimediali.</translation>
     </message>
     <message>
-        <source>Device transfer: easily move your data to a new phone by copying the backup file.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Secure: locks your archives with standard AES-256 encryption.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No vendor lock-in: built on standard Linux formats (tar, openssl) so you can extract backups on any PC.</source>
-        <translation type="unfinished"></translation>
+        <source>Easily move your data to a new device by copying the backup file via an SD card or over Wi-FI.</source>
+        <translation>Sposta facilmente i tuoi dati su un nuovo dispositivo copiando il file di backup tramite scheda SD o rete Wi-Fi.</translation>
     </message>
 </context>
 <context>
@@ -206,6 +198,18 @@
         <source>Enter a password</source>
         <translation>Inserisci una password</translation>
     </message>
+    <message>
+        <source>Invalid label (min 3 chars, no spaces)</source>
+        <translation>Etichetta non valida (min. 3 car., no spazi)</translation>
+    </message>
+    <message>
+        <source>Password (min 6 characters)</source>
+        <translation>Password (min. 6 caratteri)</translation>
+    </message>
+    <message>
+        <source>Passwords do not match</source>
+        <translation>Le password non corrispondono</translation>
+    </message>
 </context>
 <context>
     <name>CoverPage</name>
@@ -254,16 +258,6 @@
     <message>
         <source>Connection error: %1</source>
         <translation>Errore connessione: %1</translation>
-    </message>
-    <message>
-        <source>Receiving...
-%1</source>
-        <translation>Ricezione..
-%1</translation>
-    </message>
-    <message>
-        <source>Search stopped</source>
-        <translation>Ricerca interrotta</translation>
     </message>
     <message>
         <source>Waiting for connections...</source>
@@ -318,12 +312,6 @@
         <translation>Impossible aprire file</translation>
     </message>
     <message>
-        <source>Transfer complete
-Saved to: %1</source>
-        <translation>Trasferimento completato
-Salvato in: %1</translation>
-    </message>
-    <message>
         <source>Error: SD card not found</source>
         <translation>Errore: scheda SD non trovata</translation>
     </message>
@@ -352,8 +340,24 @@ Salvato in: %1</translation>
         <translation>Impossibile avviare modalità ricezione</translation>
     </message>
     <message>
-        <source>Receive mode stopped</source>
-        <translation>Modalità ricezione interrotta</translation>
+        <source>Search off</source>
+        <translation>Ricerca terminata</translation>
+    </message>
+    <message>
+        <source>Receive mode off</source>
+        <translation>Modalità ricezione terminata</translation>
+    </message>
+    <message>
+        <source>Transfer declined by receiver</source>
+        <translation>Trasferimento annullato dal destinatario</translation>
+    </message>
+    <message>
+        <source>Transfer complete</source>
+        <translation>Trasferimento completato</translation>
+    </message>
+    <message>
+        <source>Receiving...</source>
+        <translation>Ricezione...</translation>
     </message>
 </context>
 <context>
@@ -367,10 +371,6 @@ Salvato in: %1</translation>
         <translation>Ricezione</translation>
     </message>
     <message>
-        <source>Receive</source>
-        <translation>Ricevi</translation>
-    </message>
-    <message>
         <source>Backup received</source>
         <translation>Backup ricevuto</translation>
     </message>
@@ -379,12 +379,16 @@ Salvato in: %1</translation>
         <translation>Backup ricevuto da un altro dispositivo</translation>
     </message>
     <message>
-        <source>Stop transfer</source>
-        <translation>Interrompi trasferimento</translation>
+        <source>Waiting for connections...</source>
+        <translation>In attesa di connessione...</translation>
+    </message>
+    <message>
+        <source>Receive mode off</source>
+        <translation>Modalità ricezione terminata</translation>
     </message>
     <message>
         <source>Stop receiving</source>
-        <translation>Interrompi ricezione</translation>
+        <translation>Termina ricezione</translation>
     </message>
     <message>
         <source>Start receiving</source>
@@ -395,16 +399,20 @@ Salvato in: %1</translation>
         <translation>Pronto a ricevere</translation>
     </message>
     <message>
-        <source>Receive mode off</source>
-        <translation>Modalità ricezione interrotta</translation>
-    </message>
-    <message>
         <source>Pull down to stop receiving</source>
-        <translation>Trascina per interrompere la ricezione</translation>
+        <translation>Trascina per terminare la ricezione</translation>
     </message>
     <message>
         <source>Pull down to start receiving</source>
         <translation>Trascina per avviare la ricezione</translation>
+    </message>
+    <message>
+        <source>Receive</source>
+        <translation>Ricevi</translation>
+    </message>
+    <message>
+        <source>Stop receive</source>
+        <translation>Termina ricezione</translation>
     </message>
 </context>
 <context>
@@ -541,12 +549,55 @@ Salvato in: %1</translation>
         <source>Backup is ready</source>
         <translation>Backup pronto</translation>
     </message>
+    <message>
+        <source>Password (min 6 characters)</source>
+        <translation>Password (min. 6 caratteri)</translation>
+    </message>
 </context>
 <context>
     <name>SendPage</name>
     <message>
         <source>Sending backup...</source>
         <translation>Invio backup...</translation>
+    </message>
+    <message>
+        <source>Sending</source>
+        <translation>Invio</translation>
+    </message>
+    <message>
+        <source>Sending complete</source>
+        <translation>Invio completato</translation>
+    </message>
+    <message>
+        <source>Backup sent successfully</source>
+        <translation>Backup inviato</translation>
+    </message>
+    <message>
+        <source>Looking for nearby devices...</source>
+        <translation>Ricerca dispositivi nelle vicinanze...</translation>
+    </message>
+    <message>
+        <source>Search off</source>
+        <translation>Ricerca terminata</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n device(s) found</source>
+        <translation>
+            <numerusform>%n dispositivo trovato</numerusform>
+            <numerusform>%n dispositivi trovati</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Stop looking</source>
+        <translation>Termina ricerca</translation>
+    </message>
+    <message>
+        <source>Look for nearby devices</source>
+        <translation>Cerca dispositivi nelle vicinanze</translation>
+    </message>
+    <message>
+        <source>Send backup</source>
+        <translation>Invia backup</translation>
     </message>
     <message>
         <source>Details</source>
@@ -573,39 +624,8 @@ Salvato in: %1</translation>
         <translation>Invia</translation>
     </message>
     <message>
-        <source>Backup sent successfully</source>
-        <translation>Backup inviato</translation>
-    </message>
-    <message>
-        <source>Sending</source>
-        <translation>Invio</translation>
-    </message>
-    <message>
-        <source>Sending complete</source>
-        <translation>Invio completato</translation>
-    </message>
-    <message>
-        <source>Send backup</source>
-        <translation>Invia backup</translation>
-    </message>
-    <message>
-        <source>Cancel sending</source>
-        <translation>Annulla invio</translation>
-    </message>
-    <message>
-        <source>Stop looking</source>
-        <translation>Interrompi ricerca</translation>
-    </message>
-    <message>
-        <source>Look for nearby devices</source>
-        <translation>Cerca dispositivi nelle vicinanze</translation>
-    </message>
-    <message numerus="yes">
-        <source>%n device(s) found</source>
-        <translation>
-            <numerusform>%n dispositivo trovato</numerusform>
-            <numerusform>%n dispositivi trovati</numerusform>
-        </translation>
+        <source>Stop sending</source>
+        <translation>Termina invio</translation>
     </message>
 </context>
 <context>

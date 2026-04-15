@@ -1,5 +1,7 @@
 * Wed Apr 15 2026 0.1.2-1
 - Password encrypted backups
+- UI polishing
+- Italian translation
 
 * Tue Apr 14 2026 0.1.1-1
 - Use xz for compression

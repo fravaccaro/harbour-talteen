@@ -240,16 +240,23 @@ Page {
 
             LabelSpacer {
             }
-
-            PasswordField {
+PasswordField {
                 id: restorePasswordField
 
                 width: parent.width
                 enabled: !isRestoreRunning
                 // Only show the field if the backup is actually valid
                 visible: availableMetadata["version"] !== undefined
-                label: qsTr("Password")
+                
+                label: (text.length > 0 && text.length < 6) 
+                       ? qsTr("Password (min 6 characters)") 
+                       : qsTr("Password")
+                       
                 placeholderText: qsTr("Enter the backup password")
+                
+                errorHighlight: text.length > 0 && text.length < 6
+                
+                EnterKey.enabled: text.length >= 6
                 EnterKey.iconSource: "image://theme/icon-m-enter-close"
                 EnterKey.onClicked: focus = false
             }
@@ -287,12 +294,11 @@ Page {
             }
 
             ActionButton {
-                // <-- Pass the password to C++!
 
                 id: restoreButton
 
                 text: isRestoreRunning ? qsTr("Restoring...") : qsTr("Start restore")
-                enabled: availableMetadata["version"] !== undefined && !noneSelected && !isRestoreRunning && restorePasswordField.text.length > 0
+                enabled: availableMetadata["version"] !== undefined && !noneSelected && !isRestoreRunning && restorePasswordField.text.length > 6
                 onClicked: {
                     isRestoreRunning = true;
                     var restoreOptions = {

@@ -3,32 +3,45 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import "Utils.js" as SharedUtils
 
-ValueButton {
+ComboBox {
     id: storageBtn
 
-    // Properties passed from the parent page
     property var backendEngine
     property bool isSdCardAvailable: false
     property bool saveToSdCard: false
     property bool isAppBusy: false
-    // Internal property for UI
     property string formattedFreeSpace: ""
 
     function updateFreeSpace() {
         if (backendEngine) {
-            var bytes = backendEngine.getFreeSpace(saveToSdCard);
+            // Check based on current selection
+            var bytes = backendEngine.getFreeSpace(currentIndex === 1);
             formattedFreeSpace = SharedUtils.formatBytes(bytes);
         }
     }
 
     label: qsTr("Destination")
-    value: saveToSdCard ? qsTr("SD card") : qsTr("Internal storage")
     description: !isSdCardAvailable ? qsTr("SD card not detected") : qsTr("Available space:") + " " + formattedFreeSpace
     enabled: isSdCardAvailable && !isAppBusy
-    opacity: enabled ? 1 : 0.3
-    onClicked: {
-        saveToSdCard = !saveToSdCard;
+    opacity: !isSdCardAvailable ? 0.2 : (isAppBusy ? 0.3 : 1)
+    // Keep state in sync with external saveToSdCard property
+    currentIndex: saveToSdCard ? 1 : 0
+    onCurrentIndexChanged: {
         updateFreeSpace();
     }
     Component.onCompleted: updateFreeSpace()
+
+    menu: ContextMenu {
+        MenuItem {
+            text: qsTr("Internal storage")
+            onClicked: saveToSdCard = false
+        }
+
+        MenuItem {
+            text: qsTr("SD card")
+            onClicked: saveToSdCard = true
+        }
+
+    }
+
 }

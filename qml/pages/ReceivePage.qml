@@ -38,7 +38,12 @@ Page {
         }
         onStatusChanged: {
             statusMessage = status;
-            appWindow.showToast(status);
+        }
+        onIsListeningChanged: {
+            if (isListening)
+                appWindow.showToast(qsTr("Waiting for connections..."));
+            else
+                appWindow.showToast(qsTr("Receive mode off"));
         }
         onTransferRequested: {
             // Save the filename so the Progress indicator can use it
@@ -125,7 +130,7 @@ Page {
             }
 
             ActionButton {
-                text: qsTr("Stop transfer")
+                text: qsTr("Stop receive")
                 visible: isTransferRunning
                 onClicked: netTransfer.cancelTransfer()
             }

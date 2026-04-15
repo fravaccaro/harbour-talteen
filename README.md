@@ -8,12 +8,10 @@ Available on [OpenRepos](https://openrepos.net/content/fravaccaro/tarkka-magnifi
 <br style="clear: both; height:5px;" />
 
 ## Features
-* Choose what you want to save, from your photo gallery and music to your SMS history and app configurations.
-* Smart app data: safely backs up your apps while ignoring temporary browser caches to save space.
-* Complete coverage: saves your messages, call history, app grid layout, and media.
-* Device transfer: easily move your data to a new phone by copying the backup file.
-* Secure: locks your archives with standard AES-256 encryption.
-* No vendor lock-in: built on standard Linux formats (tar, openssl) so you can extract backups on any PC.
+* Save your messages, call history, app data, app grid layout, and media.
+* Easily move your data to a new device by copying the backup file via an SD card or over Wi-FI.
+* Lock your archives with standard AES-256 encryption.
+* Built on standard Linux formats (tar, openssl) so you can extract backups on any PC.
 
 ### Under the hood
 Talteen acts as a frontend for:

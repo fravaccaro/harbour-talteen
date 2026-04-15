@@ -46,7 +46,12 @@ Page {
         }
         onStatusChanged: {
             statusMessage = status;
-            appWindow.showToast(status);
+        }
+        onIsDiscoveringChanged: {
+            if (isDiscovering)
+                appWindow.showToast(qsTr("Looking for nearby devices..."));
+            else
+                appWindow.showToast(qsTr("Search off"));
         }
         onDeviceDiscovered: {
             var found = false;
@@ -162,7 +167,7 @@ Page {
             }
 
             ActionButton {
-                text: isTransferRunning ? qsTr("Cancel sending") : qsTr("Send")
+                text: isTransferRunning ? qsTr("Stop sending") : qsTr("Send")
                 enabled: (devicesModel.count > 0 && !isTransferRunning) || isTransferRunning
                 onClicked: {
                     if (isTransferRunning) {

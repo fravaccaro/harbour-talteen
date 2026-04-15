@@ -76,27 +76,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Choose what you want to save, from your photo gallery and music to your SMS history and app configurations.</source>
+        <source>Lock your archives with standard AES-256 encryption.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Smart app data: safely backs up your apps while ignoring temporary browser caches to save space.</source>
+        <source>Built on standard Linux formats (tar, openssl) so you can extract backups on any PC.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Complete coverage: saves your messages, call history, app grid layout, and media.</source>
+        <source>Save your messages, call history, app data, app grid layout, and media.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Device transfer: easily move your data to a new phone by copying the backup file.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Secure: locks your archives with standard AES-256 encryption.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No vendor lock-in: built on standard Linux formats (tar, openssl) so you can extract backups on any PC.</source>
+        <source>Easily move your data to a new device by copying the backup file via an SD card or over Wi-FI.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -206,6 +198,18 @@
         <source>Enter a password</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Invalid label (min 3 chars, no spaces)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Password (min 6 characters)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Passwords do not match</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CoverPage</name>
@@ -253,15 +257,6 @@
     <name>NetworkTransfer</name>
     <message>
         <source>Connection error: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Receiving...
-%1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Search stopped</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -317,11 +312,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Transfer complete
-Saved to: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Error: SD card not found</source>
         <translation type="unfinished"></translation>
     </message>
@@ -350,7 +340,23 @@ Saved to: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Receive mode stopped</source>
+        <source>Search off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Receive mode off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Transfer declined by receiver</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Transfer complete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Receiving...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -365,10 +371,6 @@ Saved to: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Receive</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Backup received</source>
         <translation type="unfinished"></translation>
     </message>
@@ -377,7 +379,11 @@ Saved to: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Stop transfer</source>
+        <source>Waiting for connections...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Receive mode off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -393,15 +399,19 @@ Saved to: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Receive mode off</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Pull down to stop receiving</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Pull down to start receiving</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Receive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stop receive</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -539,11 +549,53 @@ Saved to: %1</source>
         <source>Backup is ready</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Password (min 6 characters)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SendPage</name>
     <message>
         <source>Sending backup...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sending</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sending complete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Backup sent successfully</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Looking for nearby devices...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n device(s) found</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Stop looking</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Look for nearby devices</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Send backup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -571,38 +623,8 @@ Saved to: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Backup sent successfully</source>
+        <source>Stop sending</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sending</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sending complete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Send backup</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cancel sending</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stop looking</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Look for nearby devices</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message numerus="yes">
-        <source>%n device(s) found</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-        </translation>
     </message>
 </context>
 <context>

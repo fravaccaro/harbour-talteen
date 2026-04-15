@@ -153,10 +153,10 @@ Page {
                 enabled: !isBackupRunning
                 focus: false
                 width: parent.width
-                label: qsTr("Label (optional)")
-                // Closes the keyboard when the user presses Enter
-                EnterKey.iconSource: "image://theme/icon-m-enter-close"
-                EnterKey.onClicked: focus = false
+                label: (text.length > 0 && !acceptableInput) ? qsTr("Invalid label (min 3 chars, no spaces)") : qsTr("Label (optional)")
+                errorHighlight: text.length > 0 && !acceptableInput
+                EnterKey.iconSource: "image://theme/icon-m-enter-next"
+                EnterKey.onClicked: passwordField.focus = true
 
                 validator: RegExpValidator {
                     regExp: /^$|^[a-zA-Z0-9+\-_]{3,}$/
@@ -169,9 +169,10 @@ Page {
 
                 enabled: !isBackupRunning
                 width: parent.width
-                label: qsTr("Password")
+                label: (text.length > 0 && text.length < 6) ? qsTr("Password (min 6 characters)") : qsTr("Password")
                 placeholderText: qsTr("Enter a password")
-                // Move focus to the next field when Enter is pressed
+                errorHighlight: text.length > 0 && text.length < 6
+                EnterKey.enabled: text.length >= 6
                 EnterKey.iconSource: "image://theme/icon-m-enter-next"
                 EnterKey.onClicked: repeatPasswordField.focus = true
             }
@@ -181,10 +182,12 @@ Page {
 
                 enabled: !isBackupRunning
                 width: parent.width
-                label: qsTr("Repeat password")
+                // Dynamically warn the user if the passwords don't match
+                label: (text.length > 0 && text !== passwordField.text) ? qsTr("Passwords do not match") : qsTr("Repeat password")
                 placeholderText: qsTr("Re-enter password")
-                // Highlight red if the user makes a typo
                 errorHighlight: text.length > 0 && text !== passwordField.text
+                // Prevent from closing the keyboard if the passwords don't match
+                EnterKey.enabled: text === passwordField.text
                 EnterKey.iconSource: "image://theme/icon-m-enter-close"
                 EnterKey.onClicked: focus = false
             }

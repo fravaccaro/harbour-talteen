@@ -34,7 +34,7 @@ NetworkTransfer::NetworkTransfer(QObject *parent)
             {
         if (m_isDiscovering) {
             stopDiscovery();
-            emit statusChanged(tr("Search stopped"));
+            emit statusChanged(tr("Search off"));
         } });
 
     connect(server, &QTcpServer::newConnection, this, &NetworkTransfer::acceptConnection);
@@ -97,7 +97,7 @@ void NetworkTransfer::stopReceiving()
         broadcastTimer->stop();
         broadcastCount = 0;
         emit isListeningChanged();
-        emit statusChanged(tr("Receive mode stopped"));
+        emit statusChanged(tr("Receive mode off"));
     }
 }
 
@@ -155,7 +155,7 @@ void NetworkTransfer::stopDiscovery()
 
         m_isDiscovering = false;
         emit isDiscoveringChanged();
-        emit statusChanged(tr("Search stopped"));
+        emit statusChanged(tr("Search off"));
     }
 }
 
@@ -241,7 +241,7 @@ void NetworkTransfer::sendFile(QString targetIp, int port, QString filePath)
             socket->write(file->read(65536)); // Start the loop!
             responseBuffer->clear();
         } else if (responseBuffer->contains("REJECT")) {
-            emit statusChanged(tr("Transfer cancelled by receiver"));
+            emit statusChanged(tr("Transfer declined by receiver"));
             emit progressChanged(0.0);
             socket->disconnectFromHost();
             responseBuffer->clear();
@@ -252,13 +252,14 @@ void NetworkTransfer::sendFile(QString targetIp, int port, QString filePath)
         // Don't trigger the file read if we just wrote the header string
         if (file->pos() == 0) return; 
 
+        processedBytes += bytes;
+
         if (!file->atEnd()) {
             socket->write(file->read(65536));
         } else if (socket->bytesToWrite() == 0) {
             socket->disconnectFromHost(); 
         }
 
-        processedBytes += bytes;
         if (totalBytes > 0) {
             double progress = static_cast<double>(processedBytes) / static_cast<double>(totalBytes);
             if (progress > 1.0) progress = 1.0;
@@ -423,41 +424,55 @@ void NetworkTransfer::acceptConnection()
 
     connect(socket, &QTcpSocket::disconnected, this, [this]()
             {
-        qDebug() << "[DEBUG] Socket disconnected";
-        
-        // Handle sender dropping while prompt is open
-        if (m_waitingForUser) {
-            m_waitingForUser = false;
-            incomingData.clear();
-            emit statusChanged(tr("Sender disconnected"));
-            emit progressChanged(0.0);
-            emit transferAborted(); // Tell the UI to hide the dialog
-        }
-        else if (file && file->isOpen()) {
-            QString savedPath = file->fileName(); 
-            file->close();
+                qDebug() << "[DEBUG] Socket disconnected";
 
-            if (totalBytes > 0 && processedBytes < totalBytes) {
-                qDebug() << "[DEBUG] Incomplete transfer. Deleting file.";
-                file->remove();
-                
-                // Prevent double-status if receiver cancelled
-                if (!m_cancelledByUser) {
-                    emit statusChanged(tr("Connection lost. Unable to receive backup"));
+                stopReceiving();
+
+                // Handle sender dropping while prompt is open
+                if (m_waitingForUser)
+                {
+                    m_waitingForUser = false;
+                    incomingData.clear();
+                    emit statusChanged(tr("Sender disconnected"));
+                    emit progressChanged(0.0);
+                    emit transferAborted(); // Tell the UI to hide the dialog
                 }
-                emit progressChanged(0.0);
-            } else {
-                qDebug() << "[DEBUG] Transfer complete!";
-                emit statusChanged(tr("Transfer complete\nSaved to: %1").arg(savedPath));
-                emit progressChanged(1.0);
-            }
-        }
-        
-        // Prevent Dangling Pointers
-        if (file) { file->deleteLater(); file = nullptr; }
-        if (socket) { socket->deleteLater(); socket = nullptr; }
-        
-        stopReceiving(); });
+                else if (file && file->isOpen())
+                {
+                    QString savedPath = file->fileName();
+                    file->close();
+
+                    if (totalBytes > 0 && processedBytes < totalBytes)
+                    {
+                        qDebug() << "[DEBUG] Incomplete transfer. Deleting file.";
+                        file->remove();
+
+                        // Prevent double-status if receiver cancelled
+                        if (!m_cancelledByUser)
+                        {
+                            emit statusChanged(tr("Connection lost. Unable to receive backup"));
+                        }
+                        emit progressChanged(0.0);
+                    }
+                    else
+                    {
+                        qDebug() << "[DEBUG] Transfer complete!";
+                        emit statusChanged(tr("Transfer complete"));
+                        emit progressChanged(1.0);
+                    }
+                }
+
+                // Prevent Dangling Pointers
+                if (file)
+                {
+                    file->deleteLater();
+                    file = nullptr;
+                }
+                if (socket)
+                {
+                    socket->deleteLater();
+                    socket = nullptr;
+                } });
 }
 
 void NetworkTransfer::acceptTransfer(bool useSdCard)
@@ -536,7 +551,7 @@ void NetworkTransfer::acceptTransfer(bool useSdCard)
 
     m_waitingForUser = false;
     totalBytes = m_pendingFileSize;
-    emit statusChanged(tr("Receiving...\n%1").arg(m_pendingFileName));
+    emit statusChanged(tr("Receiving..."));
 
     // TELL SENDER TO START
     socket->write("OK");

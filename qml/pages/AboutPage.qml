@@ -70,7 +70,7 @@ Page {
                 }
 
                 LabelText {
-                    text: "<ul>" + "<li>" + qsTr("Choose what you want to save, from your photo gallery and music to your SMS history and app configurations.") + "</li>" + "<li>" + qsTr("Smart app data: safely backs up your apps while ignoring temporary browser caches to save space.") + "</li>" + "<li>" + qsTr("Complete coverage: saves your messages, call history, app grid layout, and media.") + "</li>" + "<li>" + qsTr("Device transfer: easily move your data to a new phone by copying the backup file.") + "</li>" + "<li>" + qsTr("Secure: locks your archives with standard AES-256 encryption.") + "</li>" + "<li>" + qsTr("No vendor lock-in: built on standard Linux formats (tar, openssl) so you can extract backups on any PC.") + "</li>" + "</ul>"
+                    text: "<ul>" + "<li>" + qsTr("Save your messages, call history, app data, app grid layout, and media.") + "</li>" + "<li>" + qsTr("Easily move your data to a new device by copying the backup file via an SD card or over Wi-FI.") + "</li>" + "<li>" + qsTr("Lock your archives with standard AES-256 encryption.") + "</li>" + "<li>" + qsTr("Built on standard Linux formats (tar, openssl) so you can extract backups on any PC.") + "</li>" + "</ul>"
                 }
 
                 LabelSpacer {
