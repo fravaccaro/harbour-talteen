@@ -1,7 +1,7 @@
 # Talteen
 Talteen is your all-in-one backup companion for Sailfish OS. Whether you are switching devices or just playing it safe, Talteen bundles your most important data into a single, secure archive. Easily back up your messages, call history, photos, media, and even your app settings. Everything is locked behind strong encryption, giving you total peace of mind that your personal data stays yours.
 
-Available on [OpenRepos](https://openrepos.net/content/fravaccaro/tarkka-magnifier).
+Available on [OpenRepos](https://openrepos.net/content/fravaccaro/talteen-backup).
 
 <a href="screenshots/grayscale.png"><img width="25%" style="float: left;" src="screenshots/grayscale.png" /></a> <a href="screenshots/brightness.png"><img width="25%" style="float: left;" src="screenshots/brightness.png" /></a>
 <br style="clear: both; height:5px;" /> <a href="screenshots/contrast.png"><img width="25%" style="float: left;" src="screenshots/contrast.png" /></a>
@@ -48,7 +48,7 @@ You can extract any `.talteen` archive on any Linux terminal without using the a
 If you like my work and want to buy me a beer, [feel free to do it](https://www.paypal.me/fravaccaro)!
 
 ## Translate
-Request a new language or contribute to existing languages on the [Transifex project page](https://explore.transifex.com/fravaccaro/tarkka/).
+Request a new language or contribute to existing languages on the [Transifex project page](https://explore.transifex.com/fravaccaro/talteen/).
 
 ## Credits
 * Thanks to flypigahoy for his ispiring blog post about copying settings and files over a new device.

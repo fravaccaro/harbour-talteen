@@ -89,7 +89,7 @@ Page {
 
                 ActionButton {
                     text: qsTr("Issues")
-                    onClicked: Qt.openUrlExternally("https://github.com/fravaccaro/harbour-tarkka/issues")
+                    onClicked: Qt.openUrlExternally("https://github.com/fravaccaro/harbour-talteen/issues")
                 }
 
                 SectionHeader {
