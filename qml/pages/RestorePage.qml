@@ -182,14 +182,18 @@ Page {
             busy: isRestoreRunning
 
             MenuItem {
-                text: qsTr("Deselect all")
-                enabled: availableMetadata["version"] !== undefined && !noneSelected
+                text: "[WIP] " + qsTr("Deselect all")
+
+                enabled: false
+               // enabled: availableMetadata["version"] !== undefined && !noneSelected
                 onClicked: setAllSwitches(false)
             }
 
             MenuItem {
-                text: qsTr("Select all")
-                enabled: availableMetadata["version"] !== undefined && !allSelected
+                text: "[WIP] " + qsTr("Select all")
+
+                enabled: false
+               // enabled: availableMetadata["version"] !== undefined && !allSelected
                 onClicked: setAllSwitches(true)
             }
 
@@ -240,22 +244,17 @@ Page {
 
             LabelSpacer {
             }
-PasswordField {
+
+            PasswordField {
                 id: restorePasswordField
 
                 width: parent.width
                 enabled: !isRestoreRunning
                 // Only show the field if the backup is actually valid
                 visible: availableMetadata["version"] !== undefined
-                
-                label: (text.length > 0 && text.length < 6) 
-                       ? qsTr("Password (min 6 characters)") 
-                       : qsTr("Password")
-                       
+                label: (text.length > 0 && text.length < 6) ? qsTr("Password (min 6 characters)") : qsTr("Password")
                 placeholderText: qsTr("Enter the backup password")
-                
                 errorHighlight: text.length > 0 && text.length < 6
-                
                 EnterKey.enabled: text.length >= 6
                 EnterKey.iconSource: "image://theme/icon-m-enter-close"
                 EnterKey.onClicked: focus = false
@@ -279,10 +278,8 @@ PasswordField {
                         checked: model.isChecked
                         enabled: !isRestoreRunning
                         onCheckedChanged: {
-                            if (model.isChecked !== checked) {
                                 restoreCategoriesModel.setProperty(index, "isChecked", checked);
                                 updateSelectionStates();
-                            }
                         }
                     }
 
@@ -294,7 +291,6 @@ PasswordField {
             }
 
             ActionButton {
-
                 id: restoreButton
 
                 text: isRestoreRunning ? qsTr("Restoring...") : qsTr("Start restore")

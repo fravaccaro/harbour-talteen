@@ -124,14 +124,17 @@ Page {
             busy: isBackupRunning
 
             MenuItem {
-                text: qsTr("Deselect all")
-                enabled: !noneSelected
+                text: "[WIP] " + qsTr("Deselect all")
+
+                //enabled: !noneSelected
+                enabled: false
                 onClicked: setAllSwitches(false)
             }
 
             MenuItem {
-                text: qsTr("Select all")
-                enabled: !allSelected
+                text: "[WIP] " + qsTr("Select all")
+                //enabled: !allSelected
+                enabled: false
                 onClicked: setAllSwitches(true)
             }
 
@@ -159,7 +162,7 @@ Page {
                 EnterKey.onClicked: passwordField.focus = true
 
                 validator: RegExpValidator {
-                    regExp: /^$|^[a-zA-Z0-9+\-_]{3,}$/
+                    regExp: /^$|^[a-zA-Z0-9+\-_ ]{3,}$/
                 }
 
             }
@@ -217,10 +220,8 @@ Page {
                         enabled: !isBackupRunning
                         checked: model.isChecked
                         onCheckedChanged: {
-                            if (model.isChecked !== checked) {
                                 categoriesModel.setProperty(index, "isChecked", checked);
                                 updateSelectionStates();
-                            }
                         }
                     }
 

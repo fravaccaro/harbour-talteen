@@ -249,6 +249,9 @@ void NetworkTransfer::sendFile(QString targetIp, int port, QString filePath)
 
     connect(socket, &QTcpSocket::bytesWritten, this, [this](qint64 bytes)
             {
+
+                // If the user clicked stop, DO NOT read more of the file!
+        if (m_cancelledByUser) return;
         // Don't trigger the file read if we just wrote the header string
         if (file->pos() == 0) return; 
 
@@ -559,12 +562,15 @@ void NetworkTransfer::acceptTransfer(bool useSdCard)
 
 void NetworkTransfer::rejectTransfer()
 {
+
+    qDebug() << "[DEBUG] rejectTransfer() triggered";
     if (socket && socket->state() != QAbstractSocket::UnconnectedState) // <-- FIX
     {
         m_cancelledByUser = true;
         if (socket->state() == QAbstractSocket::ConnectedState)
         {
             socket->write("REJECT");
+            socket->flush();
         }
         socket->disconnectFromHost();
     }
@@ -576,10 +582,11 @@ void NetworkTransfer::rejectTransfer()
 
 void NetworkTransfer::cancelTransfer()
 {
+    qDebug() << "[DEBUG] cancelTransfer() triggered";
     if (socket && socket->state() != QAbstractSocket::UnconnectedState) // <-- FIX
     {
         m_cancelledByUser = true;
-        socket->disconnectFromHost(); // This safely aborts ConnectingState too!
+        socket->disconnectFromHost();
         emit statusChanged(tr("Transfer cancelled"));
         emit progressChanged(0.0);
     }
