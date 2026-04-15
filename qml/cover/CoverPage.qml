@@ -46,7 +46,7 @@ CoverBackground {
         Label {
             anchors.horizontalCenter: parent.horizontalCenter
             // Reads the dynamic text, with a fallback just in case
-            text: appWindow.appWorkingText !== "" ? appWindow.appWorkingText : qsTr("Working...")
+            text: appWindow.appWorkingText !== "" ? appWindow.appWorkingText : qsTr("Just a moment...")
             font.pixelSize: Theme.fontSizeSmall
             color: Theme.secondaryColor
         }

@@ -9,6 +9,16 @@ Notification {
         summary = title;
         body = message;
         progress = undefined;
+        isTransient = false;
+        publish();
+    }
+
+    // Function to trigger the toast notification
+    function toast(message) {
+        summary = "";
+        body = message;
+        progress = undefined;
+        isTransient = true;
         publish();
     }
 
@@ -17,10 +27,10 @@ Notification {
         summary = title;
         body = message;
         progress = progressValue;
+        isTransient = false;
         publish();
     }
 
     // Default settings that apply to all notifications
     appName: "Talteen"
-    isTransient: false
 }

@@ -85,7 +85,7 @@ void NetworkTransfer::startReceiving(int port)
     }
     else
     {
-        emit statusChanged(tr("Unable to start listening"));
+        emit statusChanged(tr("Unable to start receive mode"));
     }
 }
 
@@ -97,7 +97,7 @@ void NetworkTransfer::stopReceiving()
         broadcastTimer->stop();
         broadcastCount = 0;
         emit isListeningChanged();
-        emit statusChanged(tr("Listening stopped"));
+        emit statusChanged(tr("Receive mode stopped"));
     }
 }
 
@@ -206,7 +206,7 @@ void NetworkTransfer::sendFile(QString targetIp, int port, QString filePath)
     // Prevent the 0-byte Infinite Hang
     if (totalBytes == 0)
     {
-        emit statusChanged(tr("Error: Cannot send an empty file"));
+        emit statusChanged(tr("Error: unable to send empty file"));
         file->close();
         file->deleteLater();
         file = nullptr;
@@ -372,7 +372,7 @@ void NetworkTransfer::acceptConnection()
                     else if (incomingData.size() > 1024)
                     {
                         qDebug() << "[SECURITY WARNING] Header is too long! Aborting connection.";
-                        emit statusChanged(tr("Error: Invalid data format"));
+                        emit statusChanged(tr("Error: not a valid backup"));
                         emit progressChanged(0.0);
                         socket->disconnectFromHost();
                         incomingData.clear();

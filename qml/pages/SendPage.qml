@@ -13,7 +13,7 @@ Page {
     property string backupDate: ""
     property string backupSize: ""
     property bool isTransferRunning: false
-    property string statusMessage: qsTr("Looking for nearby devices...")
+    property string statusMessage
     property real currentProgress: 0
 
     allowedOrientations: Orientation.All
@@ -46,6 +46,7 @@ Page {
         }
         onStatusChanged: {
             statusMessage = status;
+            appWindow.showToast(status);
         }
         onDeviceDiscovered: {
             var found = false;
@@ -59,7 +60,9 @@ Page {
                 devicesModel.append({
                     "ipAddress": ipAddress
                 });
-                statusMessage = qsTr("Devices found:") + " " + devicesModel.count;
+                var msg = qsTr("%n device(s) found", "", devicesModel.count);
+                statusMessage = msg;
+                appWindow.showToast(msg);
             }
         }
     }
@@ -70,7 +73,6 @@ Page {
 
         PullDownMenu {
             enabled: !isTransferRunning
-
             busy: netTransfer.isDiscovering || isTransferRunning
 
             MenuItem {
@@ -101,22 +103,13 @@ Page {
                 text: statusMessage
             }
 
-            ProgressBar {
-                width: parent.width - (Theme.paddingLarge * 2)
-                anchors.horizontalCenter: parent.horizontalCenter
+            ProgressStatusBar {
                 minimumValue: 0
                 maximumValue: 1
                 value: currentProgress
                 valueText: Math.round(value * 100) + "%"
-                visible: isTransferRunning
+                enabled: isTransferRunning
                 opacity: isTransferRunning ? 1 : 0
-
-                Behavior on opacity {
-                    FadeAnimation {
-                    }
-
-                }
-
             }
 
             LabelSpacer {
@@ -168,16 +161,13 @@ Page {
 
             }
 
-            Button {
+            ActionButton {
                 text: isTransferRunning ? qsTr("Cancel sending") : qsTr("Send")
-                anchors.horizontalCenter: parent.horizontalCenter
                 enabled: (devicesModel.count > 0 && !isTransferRunning) || isTransferRunning
-                opacity: enabled ? 1 : 0.3
                 onClicked: {
                     if (isTransferRunning) {
                         netTransfer.cancelTransfer();
                         isTransferRunning = false;
-                        statusMessage = qsTr("Transfer cancelled");
                     } else {
                         var selectedIp = devicesModel.get(deviceSelector.currentIndex).ipAddress;
                         if (netTransfer.isDiscovering)

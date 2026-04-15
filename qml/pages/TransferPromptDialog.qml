@@ -19,18 +19,22 @@ Dialog {
         }
 
         Label {
-            text: qsTr("Incoming backup")
-            font.bold: true
-            color: Theme.highlightColor
+            width: parent.width - (Theme.paddingLarge * 2)
+            text: qsTr("Receive backup?")
+            font.pixelSize: Theme.fontSizeHuge
             anchors.horizontalCenter: parent.horizontalCenter
+            horizontalAlignment: Text.AlignHCenter
+            color: Theme.highlightColor
         }
 
         Label {
+            width: parent.width - (Theme.paddingLarge * 2)
             text: incomingFileName + "\n(" + incomingFileSize + ")"
+            wrapMode: Text.WrapAnywhere
             anchors.horizontalCenter: parent.horizontalCenter
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: Theme.fontSizeMedium
-            color: Theme.primaryColor
+            font.pixelSize: Theme.fontSizeExtraLarge
+            color: Theme.secondaryHighlightColor
         }
 
         TextSwitch {

@@ -717,7 +717,7 @@ QVariantList Talteen::getBackupFiles()
 {
     QVariantList list;
 
-    QString cacheFile = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/labels.ini";
+    QString cacheFile = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/labels.ini";
     QSettings settings(cacheFile, QSettings::IniFormat);
 
     QStringList paths = {QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)};
@@ -788,7 +788,7 @@ bool Talteen::deleteBackup(const QString &filePath)
 
     if (QFile::remove(filePath))
     {
-        QString cacheFile = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/labels.ini";
+        QString cacheFile = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/labels.ini";
         QSettings settings(cacheFile, QSettings::IniFormat);
         settings.remove(fileName);
 

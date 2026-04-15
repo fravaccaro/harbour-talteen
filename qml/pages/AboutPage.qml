@@ -54,14 +54,13 @@ Page {
                 }
 
                 LabelText {
-                    text: qsTr("Released under the <a href='https://github.com/fravaccaro/harbour-tarkka/blob/main/LICENSE'>GNU GPLv3</a> license.")
+                    text: qsTr("Released under the <a href='https://github.com/fravaccaro/harbour-talteen/blob/main/LICENSE'>GNU GPLv3</a> license.")
                 }
 
                 LabelSpacer {
                 }
 
-                Button {
-                    anchors.horizontalCenter: parent.horizontalCenter
+                ActionButton {
                     text: qsTr("Sources")
                     onClicked: Qt.openUrlExternally("https://github.com/fravaccaro/harbour-talteen")
                 }
@@ -85,8 +84,7 @@ Page {
                 LabelSpacer {
                 }
 
-                Button {
-                    anchors.horizontalCenter: parent.horizontalCenter
+                ActionButton {
                     text: qsTr("Issues")
                     onClicked: Qt.openUrlExternally("https://github.com/fravaccaro/harbour-tarkka/issues")
                 }
@@ -102,8 +100,7 @@ Page {
                 LabelSpacer {
                 }
 
-                Button {
-                    anchors.horizontalCenter: parent.horizontalCenter
+                ActionButton {
                     text: qsTr("Donate")
                     onClicked: Qt.openUrlExternally("https://www.paypal.me/fravaccaro")
                 }
@@ -148,9 +145,8 @@ Page {
                 LabelSpacer {
                 }
 
-                Button {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: qsTr("Transifex")
+                ActionButton {
+                    text: "Transifex"
                     onClicked: Qt.openUrlExternally("https://explore.transifex.com/fravaccaro/talteen/")
                 }
 

@@ -9,7 +9,7 @@ Page {
     id: receivePage
 
     property bool isTransferRunning: false
-    property string statusMessage: qsTr("Ready to receive")
+    property string statusMessage
     property real currentProgress: 0
     // Property to remember the incoming file name
     property string incomingFileName: ""
@@ -38,6 +38,7 @@ Page {
         }
         onStatusChanged: {
             statusMessage = status;
+            appWindow.showToast(status);
         }
         onTransferRequested: {
             // Save the filename so the Progress indicator can use it
@@ -62,6 +63,11 @@ Page {
                 netTransfer.rejectTransfer(); // Auto-reject so the socket doesn't hang
             }
         }
+        onTransferAborted: {
+            if (pageStack.currentPage.objectName === "TransferPromptDialog")
+                pageStack.pop();
+
+        }
     }
 
     SilicaFlickable {
@@ -69,18 +75,13 @@ Page {
         contentHeight: column.height + Theme.paddingLarge
 
         PullDownMenu {
+            enabled: !isTransferRunning
             busy: netTransfer.isListening || isTransferRunning
-            MenuItem {
-                // Show this option ONLY if a transfer is actively moving
-                visible: isTransferRunning
-                text: qsTr("Stop transfer")
-                onClicked: netTransfer.stopReceiving()
-            }
 
             MenuItem {
                 // Show this option ONLY when idle
                 visible: !isTransferRunning
-                text: netTransfer.isListening ? qsTr("Hide device") : qsTr("Wait for backup")
+                text: netTransfer.isListening ? qsTr("Stop receiving") : qsTr("Start receiving")
                 onClicked: {
                     if (netTransfer.isListening)
                         netTransfer.stopReceiving();
@@ -95,8 +96,8 @@ Page {
             // Only show the placeholder when no file is currently transferring
             enabled: !isTransferRunning
             // Dynamically change the text based on whether the server is on or off
-            text: netTransfer.isListening ? qsTr("Waiting for sender...") : qsTr("Device is hidden")
-            hintText: netTransfer.isListening ? qsTr("Pull down to hide this device") : qsTr("Pull down to make this device visible")
+            text: netTransfer.isListening ? qsTr("Ready to receive") : qsTr("Receive mode off")
+            hintText: netTransfer.isListening ? qsTr("Pull down to stop receiving") : qsTr("Pull down to start receiving")
         }
 
         Column {
@@ -114,22 +115,19 @@ Page {
                 visible: isTransferRunning
             }
 
-            ProgressBar {
-                width: parent.width - (Theme.paddingLarge * 2)
-                anchors.horizontalCenter: parent.horizontalCenter
+            ProgressStatusBar {
                 minimumValue: 0
                 maximumValue: 1
                 value: currentProgress
                 valueText: Math.round(value * 100) + "%"
-                visible: isTransferRunning
+                enabled: isTransferRunning
                 opacity: isTransferRunning ? 1 : 0
+            }
 
-                Behavior on opacity {
-                    FadeAnimation {
-                    }
-
-                }
-
+            ActionButton {
+                text: qsTr("Stop transfer")
+                visible: isTransferRunning
+                onClicked: netTransfer.cancelTransfer()
             }
 
             LabelSpacer {

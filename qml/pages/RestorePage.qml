@@ -63,7 +63,7 @@ Page {
     }
     Component.onCompleted: {
         if (selectedBackupPath !== "") {
-            statusMessage = qsTr("Validating backup...");
+            statusMessage = qsTr("Checking backup...");
             appCore.analyzeArchive(selectedBackupPath);
         }
     }
@@ -81,7 +81,8 @@ Page {
                 if (backupDate === "")
                     backupDate = metadata["time"] ? metadata["time"] : qsTr("Unknown");
 
-                statusMessage = qsTr("Backup is valid");
+                statusMessage = qsTr("Ready");
+                appWindow.showToast(qsTr("Backup is ready"));
                 setAllSwitches(false);
             } else {
                 statusMessage = qsTr("Error:") + " " + message;
@@ -209,7 +210,7 @@ Page {
                 visible: selectedBackupPath !== ""
 
                 StatusLabel {
-                    text: qsTr("Status:") + " " + statusMessage
+                    text: statusMessage
                 }
 
                 LabelSpacer {
@@ -242,12 +243,11 @@ Page {
 
             PasswordField {
                 id: restorePasswordField
+
                 width: parent.width
                 enabled: !isRestoreRunning
-                
                 // Only show the field if the backup is actually valid
                 visible: availableMetadata["version"] !== undefined
-                
                 label: qsTr("Password")
                 placeholderText: qsTr("Enter the backup password")
                 EnterKey.iconSource: "image://theme/icon-m-enter-close"
@@ -286,16 +286,17 @@ Page {
             LabelSpacer {
             }
 
-            Button {
+            ActionButton {
                 id: restoreButton
 
                 text: isRestoreRunning ? qsTr("Restoring...") : qsTr("Start restore")
-                anchors.horizontalCenter: parent.horizontalCenter
                 enabled: availableMetadata["version"] !== undefined && !noneSelected && !isRestoreRunning && restorePasswordField.text.length > 0
                 onClicked: {
+                    // <-- Pass the password to C++!
+
                     isRestoreRunning = true;
                     var restoreOptions = {
-                        "password": restorePasswordField.text // <-- Pass the password to C++!
+                        "password": restorePasswordField.text
                     };
                     for (var i = 0; i < restoreCategoriesModel.count; i++) {
                         var item = restoreCategoriesModel.get(i);
@@ -306,19 +307,10 @@ Page {
                 }
             }
 
-            ProgressBar {
-                width: parent.width - (Theme.horizontalPageMargin * 2)
-                anchors.horizontalCenter: parent.horizontalCenter
+            ProgressStatusBar {
                 indeterminate: true
-                visible: isRestoreRunning
+                enabled: isRestoreRunning
                 opacity: isRestoreRunning ? 1 : 0
-
-                Behavior on opacity {
-                    FadeAnimation {
-                    }
-
-                }
-
             }
 
             LabelSpacer {

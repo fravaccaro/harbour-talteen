@@ -10,7 +10,7 @@ Page {
 
     property bool isBackupRunning: false
     property bool allSelected: false
-    property bool noneSelected: true
+    property bool noneSelected: false
 
     // Helper functions for the pulley menu
     function setAllSwitches(state) {
@@ -60,13 +60,13 @@ Page {
                 "key": "appdata",
                 "name": qsTr("App data"),
                 "section": qsTr("Applications"),
-                "isChecked": false
+                "isChecked": true
             });
             append({
                 "key": "apporder",
                 "name": qsTr("App grid layout"),
                 "section": "",
-                "isChecked": false
+                "isChecked": true
             });
             append({
                 "key": "calls",
@@ -114,7 +114,6 @@ Page {
     }
 
     SilicaFlickable {
-
         id: backupView
 
         anchors.fill: parent
@@ -122,7 +121,7 @@ Page {
 
         PullDownMenu {
             enabled: !isBackupRunning
-        busy: isBackupRunning
+            busy: isBackupRunning
 
             MenuItem {
                 text: qsTr("Deselect all")
@@ -167,11 +166,11 @@ Page {
 
             PasswordField {
                 id: passwordField
+
                 enabled: !isBackupRunning
                 width: parent.width
                 label: qsTr("Password")
                 placeholderText: qsTr("Enter a password")
-                
                 // Move focus to the next field when Enter is pressed
                 EnterKey.iconSource: "image://theme/icon-m-enter-next"
                 EnterKey.onClicked: repeatPasswordField.focus = true
@@ -179,14 +178,13 @@ Page {
 
             PasswordField {
                 id: repeatPasswordField
+
                 enabled: !isBackupRunning
                 width: parent.width
                 label: qsTr("Repeat password")
                 placeholderText: qsTr("Re-enter password")
-                
                 // Highlight red if the user makes a typo
                 errorHighlight: text.length > 0 && text !== passwordField.text
-                
                 EnterKey.iconSource: "image://theme/icon-m-enter-close"
                 EnterKey.onClicked: focus = false
             }
@@ -230,9 +228,8 @@ Page {
             LabelSpacer {
             }
 
-            Button {
+            ActionButton {
                 text: isBackupRunning ? qsTr("Saving backup...") : qsTr("Start backup")
-                anchors.horizontalCenter: parent.horizontalCenter
                 // Disable the button while running so they can't spam it
                 enabled: !noneSelected && !isBackupRunning && backupLabelField.acceptableInput && passwordField.text.length > 0 && passwordField.text === repeatPasswordField.text
                 onClicked: {
@@ -251,20 +248,10 @@ Page {
                 }
             }
 
-            ProgressBar {
-                // width: parent.width
-                width: parent.width - (Theme.horizontalPageMargin * 2)
-                anchors.horizontalCenter: parent.horizontalCenter
+            ProgressStatusBar {
                 indeterminate: true
-                visible: isBackupRunning
+                enabled: isBackupRunning
                 opacity: isBackupRunning ? 1 : 0
-
-                Behavior on opacity {
-                    FadeAnimation {
-                    }
-
-                }
-
             }
 
             LabelSpacer {

@@ -4,56 +4,48 @@
 <context>
     <name>AboutPage</name>
     <message>
-        <source>Released under the &lt;a href=&apos;https://github.com/fravaccaro/harbour-tarkka/blob/main/LICENSE&apos;&gt;GNU GPLv3&lt;/a&gt; license.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Sources</source>
-        <translation type="unfinished"></translation>
+        <translation>Sorgenti</translation>
     </message>
     <message>
         <source>Key features</source>
-        <translation type="unfinished"></translation>
+        <translation>Caratteristiche principali</translation>
     </message>
     <message>
         <source>Feedback</source>
-        <translation type="unfinished"></translation>
+        <translation>Feedback</translation>
     </message>
     <message>
         <source>If you want to provide feedback or report an issue, please use GitHub.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se vuoi fornire un feedback o segnalare un problema, usa GitHub.</translation>
     </message>
     <message>
         <source>Issues</source>
-        <translation type="unfinished"></translation>
+        <translation>Segnalazioni</translation>
     </message>
     <message>
         <source>Support</source>
-        <translation type="unfinished"></translation>
+        <translation>Supporto</translation>
     </message>
     <message>
         <source>If you like my work and want to buy me a beer, feel free to do it!</source>
-        <translation type="unfinished"></translation>
+        <translation>Se ti piace il mio lavoro e vuoi offrirmi una birra, sentiti libero di farlo!</translation>
     </message>
     <message>
         <source>Donate</source>
-        <translation type="unfinished"></translation>
+        <translation>Dona</translation>
     </message>
     <message>
         <source>Credits</source>
-        <translation type="unfinished"></translation>
+        <translation>Riconoscimenti</translation>
     </message>
     <message>
         <source>Translations</source>
-        <translation type="unfinished"></translation>
+        <translation>Traduzioni</translation>
     </message>
     <message>
         <source>Request a new language or contribute to existing languages.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Transifex</source>
-        <translation type="unfinished"></translation>
+        <translation>Richiedi una nuova lingua o contribuisci a quelle esistenti.</translation>
     </message>
     <message>
         <source>About Talteen</source>
@@ -61,153 +53,157 @@
     </message>
     <message>
         <source>Thanks to jgibbon for the icon and the cover graphics.</source>
-        <translation type="unfinished"></translation>
+        <translation>Grazie a jgibbon per l&apos;icona e la grafica della cover.</translation>
     </message>
     <message>
         <source>Thanks to all the testers for being brave and patient.</source>
-        <translation type="unfinished"></translation>
+        <translation>Grazie a tutti i tester per essere stati coraggiosi e pazienti.</translation>
     </message>
     <message>
         <source>Restore from a backup.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripristina da un backup.</translation>
     </message>
     <message>
         <source>Over-the-air Wi-Fi transfer of backups.</source>
-        <translation type="unfinished"></translation>
+        <translation>Trasferimento dei backup via Wi-Fi (Over-the-air).</translation>
     </message>
     <message>
         <source>Back up and transfer app data, documents, downloaded files, music, pictures and videos on your Sailfish OS devices.</source>
-        <translation type="unfinished"></translation>
+        <translation>Esegui il backup e trasferisci i dati delle app, i documenti, i file scaricati, la musica, le immagini e i video sui tuoi dispositivi Sailfish OS.</translation>
     </message>
     <message>
         <source>Back up Sailfish OS app data and files inside Documents, Downloads, Music, Pictures and Videos folders.</source>
-        <translation type="unfinished"></translation>
+        <translation>Esegui il backup dei dati delle app Sailfish OS e dei file all&apos;interno delle cartelle Documenti, Download, Musica, Immagini e Video.</translation>
     </message>
     <message>
         <source>Back up to an SD card.</source>
-        <translation type="unfinished"></translation>
+        <translation>Esegui il backup su una scheda SD.</translation>
     </message>
     <message>
         <source>Thanks to flypigahoy for his inspiring blog post about copying settings and files to a new device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Grazie a flypigahoy per il suo stimolante post sul blog su come copiare le impostazioni e i file su un nuovo dispositivo.</translation>
     </message>
     <message>
         <source>Apps backup logic by topias.</source>
-        <translation type="unfinished"></translation>
+        <translation>Logica di backup delle app a cura di topias.</translation>
+    </message>
+    <message>
+        <source>Released under the &lt;a href=&apos;https://github.com/fravaccaro/harbour-talteen/blob/main/LICENSE&apos;&gt;GNU GPLv3&lt;/a&gt; license.</source>
+        <translation>Rilasciato sotto licenza &lt;a href=&apos;https://github.com/fravaccaro/harbour-talteen/blob/main/LICENSE&apos;&gt;GNU GPLv3&lt;/a&gt;.</translation>
     </message>
 </context>
 <context>
     <name>BackupPage</name>
     <message>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleziona tutto</translation>
     </message>
     <message>
         <source>Backup</source>
-        <translation type="unfinished"></translation>
+        <translation>Backup</translation>
     </message>
     <message>
         <source>Applications</source>
-        <translation type="unfinished"></translation>
+        <translation>Applicazioni</translation>
     </message>
     <message>
         <source>App data</source>
-        <translation type="unfinished"></translation>
+        <translation>Dati app</translation>
     </message>
     <message>
         <source>Communication</source>
-        <translation type="unfinished"></translation>
+        <translation>Comunicazione</translation>
     </message>
     <message>
         <source>Call history</source>
-        <translation type="unfinished"></translation>
+        <translation>Cronologia chiamate</translation>
     </message>
     <message>
         <source>Messages</source>
-        <translation type="unfinished"></translation>
+        <translation>Messaggi</translation>
     </message>
     <message>
         <source>Files</source>
-        <translation type="unfinished"></translation>
+        <translation>File</translation>
     </message>
     <message>
         <source>Documents</source>
-        <translation type="unfinished"></translation>
+        <translation>Documenti</translation>
     </message>
     <message>
         <source>Downloads</source>
-        <translation type="unfinished"></translation>
+        <translation>File scaricati</translation>
     </message>
     <message>
         <source>Media</source>
-        <translation type="unfinished"></translation>
+        <translation>Media</translation>
     </message>
     <message>
         <source>Pictures</source>
-        <translation type="unfinished"></translation>
+        <translation>Immagini</translation>
     </message>
     <message>
         <source>Videos</source>
-        <translation type="unfinished"></translation>
+        <translation>Video</translation>
     </message>
     <message>
         <source>Music</source>
-        <translation type="unfinished"></translation>
+        <translation>Musica</translation>
     </message>
     <message>
         <source>Start backup</source>
-        <translation type="unfinished"></translation>
+        <translation>Avvia backup</translation>
     </message>
     <message>
         <source>Backup failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Backup fallito</translation>
     </message>
     <message>
         <source>New backup</source>
-        <translation type="unfinished">Nuovo backup</translation>
+        <translation>Nuovo backup</translation>
     </message>
     <message>
         <source>Label (optional)</source>
-        <translation type="unfinished"></translation>
+        <translation>Etichetta (opzionale)</translation>
     </message>
     <message>
         <source>Saving backup...</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvataggio backup...</translation>
     </message>
     <message>
         <source>Backup complete</source>
-        <translation type="unfinished"></translation>
+        <translation>Backup completato</translation>
     </message>
     <message>
         <source>Deselect all</source>
-        <translation type="unfinished"></translation>
+        <translation>Deseleziona tutto</translation>
     </message>
     <message>
         <source>Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Password</translation>
     </message>
     <message>
         <source>Repeat password</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripeti password</translation>
     </message>
     <message>
         <source>Re-enter password</source>
-        <translation type="unfinished"></translation>
+        <translation>Reinserisci password</translation>
     </message>
     <message>
         <source>App grid layout</source>
-        <translation type="unfinished"></translation>
+        <translation>Layout griglia app</translation>
     </message>
     <message>
         <source>Enter a password</source>
-        <translation type="unfinished"></translation>
+        <translation>Inserisci una password</translation>
     </message>
 </context>
 <context>
     <name>CoverPage</name>
     <message>
-        <source>Working...</source>
-        <translation type="unfinished"></translation>
+        <source>Just a moment...</source>
+        <translation>Un momento...</translation>
     </message>
 </context>
 <context>
@@ -242,396 +238,389 @@
     </message>
     <message>
         <source>Receive from a nearby device</source>
-        <translation type="unfinished"></translation>
+        <translation>Ricevi da un dispositivo vicino</translation>
     </message>
 </context>
 <context>
     <name>NetworkTransfer</name>
     <message>
         <source>Connection error: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Errore connessione: %1</translation>
     </message>
     <message>
         <source>Receiving...
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ricezione..
+%1</translation>
     </message>
     <message>
         <source>Search stopped</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Listening stopped</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error: Invalid data format</source>
-        <translation type="unfinished"></translation>
+        <translation>Ricerca interrotta</translation>
     </message>
     <message>
         <source>Waiting for connections...</source>
-        <translation type="unfinished"></translation>
+        <translation>In attesa di connessione...</translation>
     </message>
     <message>
         <source>Transfer cancelled by receiver</source>
-        <translation type="unfinished"></translation>
+        <translation>Trasferimento annullato dal destinatario</translation>
     </message>
     <message>
         <source>Sending cancelled</source>
-        <translation type="unfinished"></translation>
+        <translation>Invio annullato</translation>
     </message>
     <message>
         <source>Transfer cancelled</source>
-        <translation type="unfinished"></translation>
+        <translation>Trasferimento annullato</translation>
     </message>
     <message>
         <source>Unable to start search</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile avviare ricerca</translation>
     </message>
     <message>
         <source>Waiting for the other device to accept...</source>
-        <translation type="unfinished"></translation>
+        <translation>In attesa che l&apos;altro dispositivo accetti...</translation>
     </message>
     <message>
         <source>Accepted. Sending...</source>
-        <translation type="unfinished"></translation>
+        <translation>Accettato. Invio...</translation>
     </message>
     <message>
         <source>Backup sent</source>
-        <translation type="unfinished"></translation>
+        <translation>Backup inviato</translation>
     </message>
     <message>
         <source>Network error</source>
-        <translation type="unfinished"></translation>
+        <translation>Errore di rete</translation>
     </message>
     <message>
         <source>Not enough storage space</source>
-        <translation type="unfinished"></translation>
+        <translation>Spazio di archiviazione insufficiente</translation>
     </message>
     <message>
         <source>Error saving file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unable to start listening</source>
-        <translation type="unfinished"></translation>
+        <translation>Errore salvataggio file</translation>
     </message>
     <message>
         <source>Looking for nearby devices...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ricerca dispositivi nelle vicinanze...</translation>
     </message>
     <message>
         <source>Unable to open file</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible aprire file</translation>
     </message>
     <message>
         <source>Transfer complete
 Saved to: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Trasferimento completato
+Salvato in: %1</translation>
     </message>
     <message>
         <source>Error: SD card not found</source>
-        <translation type="unfinished"></translation>
+        <translation>Errore: scheda SD non trovata</translation>
     </message>
     <message>
         <source>Connection lost. Unable to receive backup</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error: Cannot send an empty file</source>
-        <translation type="unfinished"></translation>
+        <translation>Connessione persa. Impossibile ricevere backup</translation>
     </message>
     <message>
         <source>Connection lost. Unable to send backup</source>
-        <translation type="unfinished"></translation>
+        <translation>Connessione persa. Impossibile inviare backup</translation>
     </message>
     <message>
         <source>Sender disconnected</source>
-        <translation type="unfinished"></translation>
+        <translation>Mittente disconnesso</translation>
+    </message>
+    <message>
+        <source>Error: unable to send empty file</source>
+        <translation>Errore: impossibile inviare un file vuoto</translation>
+    </message>
+    <message>
+        <source>Error: not a valid backup</source>
+        <translation>Errore: backup non valido</translation>
+    </message>
+    <message>
+        <source>Unable to start receive mode</source>
+        <translation>Impossibile avviare modalità ricezione</translation>
+    </message>
+    <message>
+        <source>Receive mode stopped</source>
+        <translation>Modalità ricezione interrotta</translation>
     </message>
 </context>
 <context>
     <name>ReceivePage</name>
     <message>
-        <source>Ready to receive</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Receiving file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ricezione file...</translation>
     </message>
     <message>
         <source>Receiving</source>
-        <translation type="unfinished"></translation>
+        <translation>Ricezione</translation>
     </message>
     <message>
         <source>Receive</source>
-        <translation type="unfinished"></translation>
+        <translation>Ricevi</translation>
     </message>
     <message>
         <source>Backup received</source>
-        <translation type="unfinished"></translation>
+        <translation>Backup ricevuto</translation>
     </message>
     <message>
         <source>Backup received from another device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Waiting for sender...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Device is hidden</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Pull down to hide this device</source>
-        <translation type="unfinished"></translation>
+        <translation>Backup ricevuto da un altro dispositivo</translation>
     </message>
     <message>
         <source>Stop transfer</source>
-        <translation type="unfinished"></translation>
+        <translation>Interrompi trasferimento</translation>
     </message>
     <message>
-        <source>Hide device</source>
-        <translation type="unfinished"></translation>
+        <source>Stop receiving</source>
+        <translation>Interrompi ricezione</translation>
     </message>
     <message>
-        <source>Wait for backup</source>
-        <translation type="unfinished"></translation>
+        <source>Start receiving</source>
+        <translation>Inizia ricezione</translation>
     </message>
     <message>
-        <source>Pull down to make this device visible</source>
-        <translation type="unfinished"></translation>
+        <source>Ready to receive</source>
+        <translation>Pronto a ricevere</translation>
+    </message>
+    <message>
+        <source>Receive mode off</source>
+        <translation>Modalità ricezione disattivata</translation>
+    </message>
+    <message>
+        <source>Pull down to stop receiving</source>
+        <translation>Trascina per interrompere la ricezione</translation>
+    </message>
+    <message>
+        <source>Pull down to start receiving</source>
+        <translation>Trascina per avviare la ricezione</translation>
     </message>
 </context>
 <context>
     <name>RestorePage</name>
     <message>
-        <source>Validating backup...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleziona tutto</translation>
     </message>
     <message>
         <source>Restore</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripristina</translation>
     </message>
     <message>
         <source>Applications</source>
-        <translation type="unfinished"></translation>
+        <translation>Applicazioni</translation>
     </message>
     <message>
         <source>App data</source>
-        <translation type="unfinished"></translation>
+        <translation>Dati app</translation>
     </message>
     <message>
         <source>Communication</source>
-        <translation type="unfinished"></translation>
+        <translation>Comunicazione</translation>
     </message>
     <message>
         <source>Call history</source>
-        <translation type="unfinished"></translation>
+        <translation>Cronologia chiamate</translation>
     </message>
     <message>
         <source>Messages</source>
-        <translation type="unfinished"></translation>
+        <translation>Messaggi</translation>
     </message>
     <message>
         <source>Files</source>
-        <translation type="unfinished"></translation>
+        <translation>File</translation>
     </message>
     <message>
         <source>Documents</source>
-        <translation type="unfinished"></translation>
+        <translation>Documenti</translation>
     </message>
     <message>
         <source>Downloads</source>
-        <translation type="unfinished"></translation>
+        <translation>File scaricati</translation>
     </message>
     <message>
         <source>Media</source>
-        <translation type="unfinished"></translation>
+        <translation>Media</translation>
     </message>
     <message>
         <source>Pictures</source>
-        <translation type="unfinished"></translation>
+        <translation>Immagini</translation>
     </message>
     <message>
         <source>Videos</source>
-        <translation type="unfinished"></translation>
+        <translation>Video</translation>
     </message>
     <message>
         <source>Music</source>
-        <translation type="unfinished"></translation>
+        <translation>Musica</translation>
     </message>
     <message>
         <source>Start restore</source>
-        <translation type="unfinished"></translation>
+        <translation>Inizia ripristino</translation>
     </message>
     <message>
         <source>Restoring backup...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripristino backup...</translation>
     </message>
     <message>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Nessuno</translation>
     </message>
     <message>
         <source>Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>Sconosciuto</translation>
     </message>
     <message>
         <source>Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Etichetta</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Data</translation>
     </message>
     <message>
         <source>Size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Backup is valid</source>
-        <translation type="unfinished"></translation>
+        <translation>Dimensione</translation>
     </message>
     <message>
         <source>Details</source>
-        <translation type="unfinished"></translation>
+        <translation>Dettagli</translation>
     </message>
     <message>
         <source>Restore failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripristino fallito</translation>
     </message>
     <message>
         <source>Error:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Status:</source>
-        <translation type="unfinished"></translation>
+        <translation>Errore:</translation>
     </message>
     <message>
         <source>Restoring...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripristino...</translation>
     </message>
     <message>
         <source>Restore complete</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripristino completato</translation>
     </message>
     <message>
         <source>Deselect all</source>
-        <translation type="unfinished"></translation>
+        <translation>Deseleziona tutto</translation>
     </message>
     <message>
         <source>Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Password</translation>
     </message>
     <message>
         <source>Enter the backup password</source>
-        <translation type="unfinished"></translation>
+        <translation>Inserisci la password del backup</translation>
     </message>
     <message>
         <source>App grid layout</source>
-        <translation type="unfinished"></translation>
+        <translation>Layout griglia app</translation>
+    </message>
+    <message>
+        <source>Ready</source>
+        <translation>Pronto</translation>
+    </message>
+    <message>
+        <source>Checking backup...</source>
+        <translation>Controllo backup...</translation>
+    </message>
+    <message>
+        <source>Backup is ready</source>
+        <translation>Backup pronto</translation>
     </message>
 </context>
 <context>
     <name>SendPage</name>
     <message>
         <source>Sending backup...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Devices found:</source>
-        <translation type="unfinished"></translation>
+        <translation>Invio backup...</translation>
     </message>
     <message>
         <source>Details</source>
-        <translation type="unfinished"></translation>
+        <translation>Dettagli</translation>
     </message>
     <message>
         <source>Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Etichetta</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Data</translation>
     </message>
     <message>
         <source>Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Dimensione</translation>
     </message>
     <message>
         <source>Send to</source>
-        <translation type="unfinished"></translation>
+        <translation>Invia a</translation>
     </message>
     <message>
         <source>Send</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Transfer cancelled</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Looking for nearby devices...</source>
-        <translation type="unfinished"></translation>
+        <translation>Invia</translation>
     </message>
     <message>
         <source>Backup sent successfully</source>
-        <translation type="unfinished"></translation>
+        <translation>Backup inviato</translation>
     </message>
     <message>
         <source>Sending</source>
-        <translation type="unfinished"></translation>
+        <translation>Invio</translation>
     </message>
     <message>
         <source>Sending complete</source>
-        <translation type="unfinished"></translation>
+        <translation>Invio completato</translation>
     </message>
     <message>
         <source>Send backup</source>
-        <translation type="unfinished"></translation>
+        <translation>Invia backup</translation>
     </message>
     <message>
         <source>Cancel sending</source>
-        <translation type="unfinished"></translation>
+        <translation>Annulla invio</translation>
     </message>
     <message>
         <source>Stop looking</source>
-        <translation type="unfinished"></translation>
+        <translation>Interrompi ricerca</translation>
     </message>
     <message>
         <source>Look for nearby devices</source>
-        <translation type="unfinished"></translation>
+        <translation>Cerca dispositivi nelle vicinanze</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n device(s) found</source>
+        <translation>
+            <numerusform>%n dispositivo trovato</numerusform>
+            <numerusform>%n dispositivi trovati</numerusform>
+        </translation>
     </message>
 </context>
 <context>
     <name>StorageDestinationButton</name>
     <message>
         <source>Destination</source>
-        <translation type="unfinished"></translation>
+        <translation>Destinazione</translation>
     </message>
     <message>
         <source>SD card</source>
-        <translation type="unfinished"></translation>
+        <translation>Scheda SD</translation>
     </message>
     <message>
         <source>SD card not detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Scheda SD non rilevata</translation>
     </message>
     <message>
         <source>Available space:</source>
-        <translation type="unfinished"></translation>
+        <translation>Spazio disponibile:</translation>
     </message>
     <message>
         <source>Internal storage</source>
-        <translation type="unfinished"></translation>
+        <translation>Memoria interna</translation>
     </message>
 </context>
 <context>
@@ -674,55 +663,55 @@ Saved to: %1</source>
     </message>
     <message>
         <source>A password is required to save a backup</source>
-        <translation type="unfinished"></translation>
+        <translation>È richiesta una password per salvare un backup</translation>
     </message>
     <message>
         <source>Password required for this backup</source>
-        <translation type="unfinished"></translation>
+        <translation>Password richiesta per questo backup</translation>
     </message>
     <message>
         <source>Not enough internal storage space to prepare the backup</source>
-        <translation type="unfinished"></translation>
+        <translation>Spazio di archiviazione interno insufficiente per preparare il backup</translation>
     </message>
     <message>
         <source>Encryption tool failed to start. Is OpenSSL installed?</source>
-        <translation type="unfinished"></translation>
+        <translation>Avvio dello strumento di crittografia fallito. OpenSSL è installato?</translation>
     </message>
     <message>
         <source>Unable to secure your backup. Is OpenSSL installed?</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile proteggere il backup. OpenSSL è installato?</translation>
     </message>
     <message>
         <source>Failed to write metadata file</source>
-        <translation type="unfinished"></translation>
+        <translation>Scrittura file metadati fallita</translation>
     </message>
     <message>
         <source>Failed to generate checksum</source>
-        <translation type="unfinished"></translation>
+        <translation>Generazione checksum fallita</translation>
     </message>
     <message>
         <source>Failed to verify checksum</source>
-        <translation type="unfinished"></translation>
+        <translation>Verifica checksum fallita</translation>
     </message>
     <message>
         <source>Failed to read backup metadata</source>
-        <translation type="unfinished"></translation>
+        <translation>Lettura metadati backup fallita</translation>
     </message>
     <message>
         <source>Unable to unlock the backup. Please check your password</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile sbloccare il backup. Controlla la password</translation>
     </message>
     <message>
         <source>Encryption or compression failed. Backup cancelled</source>
-        <translation type="unfinished"></translation>
+        <translation>Crittografia o compressione fallita. Backup annullato</translation>
     </message>
     <message>
         <source>Backup may be damaged (Checksum mismatch)</source>
-        <translation type="unfinished"></translation>
+        <translation>Backup forse danneggiato (Errore checksum)</translation>
     </message>
     <message>
         <source>Invalid backup format. Checksum is missing</source>
-        <translation type="unfinished"></translation>
+        <translation>Formato backup non valido. Checksum mancante</translation>
     </message>
 </context>
 <context>
@@ -730,10 +719,6 @@ Saved to: %1</source>
     <message>
         <source>Accept</source>
         <translation>Accetta</translation>
-    </message>
-    <message>
-        <source>Incoming backup</source>
-        <translation>Backup in arrivo</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -746,6 +731,10 @@ Saved to: %1</source>
     <message>
         <source>Save to SD card</source>
         <translation>Salva sulla scheda SD</translation>
+    </message>
+    <message>
+        <source>Receive backup?</source>
+        <translation>Ricevere il backup?</translation>
     </message>
 </context>
 </TS>

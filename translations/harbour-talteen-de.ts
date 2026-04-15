@@ -4,10 +4,6 @@
 <context>
     <name>AboutPage</name>
     <message>
-        <source>Released under the &lt;a href=&apos;https://github.com/fravaccaro/harbour-tarkka/blob/main/LICENSE&apos;&gt;GNU GPLv3&lt;/a&gt; license.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Sources</source>
         <translation type="unfinished"></translation>
     </message>
@@ -52,10 +48,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Transifex</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>About Talteen</source>
         <translation type="unfinished"></translation>
     </message>
@@ -93,6 +85,10 @@
     </message>
     <message>
         <source>Apps backup logic by topias.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Released under the &lt;a href=&apos;https://github.com/fravaccaro/harbour-talteen/blob/main/LICENSE&apos;&gt;GNU GPLv3&lt;/a&gt; license.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -206,7 +202,7 @@
 <context>
     <name>CoverPage</name>
     <message>
-        <source>Working...</source>
+        <source>Just a moment...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -261,14 +257,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Listening stopped</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error: Invalid data format</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Waiting for connections...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -313,10 +301,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Unable to start listening</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Looking for nearby devices...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -338,10 +322,6 @@ Saved to: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Error: Cannot send an empty file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Connection lost. Unable to send backup</source>
         <translation type="unfinished"></translation>
     </message>
@@ -349,13 +329,25 @@ Saved to: %1</source>
         <source>Sender disconnected</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Error: unable to send empty file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error: not a valid backup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to start receive mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Receive mode stopped</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ReceivePage</name>
-    <message>
-        <source>Ready to receive</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Receiving file...</source>
         <translation type="unfinished"></translation>
@@ -377,40 +369,36 @@ Saved to: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Waiting for sender...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Device is hidden</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Pull down to hide this device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Stop transfer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Hide device</source>
+        <source>Stop receiving</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Wait for backup</source>
+        <source>Start receiving</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Pull down to make this device visible</source>
+        <source>Ready to receive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Receive mode off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pull down to stop receiving</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pull down to start receiving</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>RestorePage</name>
-    <message>
-        <source>Validating backup...</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Select all</source>
         <translation type="unfinished"></translation>
@@ -496,10 +484,6 @@ Saved to: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Backup is valid</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Details</source>
         <translation type="unfinished"></translation>
     </message>
@@ -509,10 +493,6 @@ Saved to: %1</source>
     </message>
     <message>
         <source>Error:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Status:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -539,15 +519,23 @@ Saved to: %1</source>
         <source>App grid layout</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Ready</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Checking backup...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Backup is ready</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SendPage</name>
     <message>
         <source>Sending backup...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Devices found:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -572,14 +560,6 @@ Saved to: %1</source>
     </message>
     <message>
         <source>Send</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Transfer cancelled</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Looking for nearby devices...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -609,6 +589,12 @@ Saved to: %1</source>
     <message>
         <source>Look for nearby devices</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n device(s) found</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
     </message>
 </context>
 <context>
@@ -732,10 +718,6 @@ Saved to: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Incoming backup</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
@@ -745,6 +727,10 @@ Saved to: %1</source>
     </message>
     <message>
         <source>Save to SD card</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Receive backup?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

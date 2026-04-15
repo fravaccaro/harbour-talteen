@@ -19,6 +19,10 @@ ApplicationWindow {
         globalPopup.updateProgress(summary, body, progressValue);
     }
 
+    function showToast(body) {
+        globalPopup.toast(body);
+    }
+
     cover: Qt.resolvedUrl("cover/CoverPage.qml")
     allowedOrientations: defaultAllowedOrientations
 
