@@ -271,6 +271,7 @@ Page {
                     TextSwitch {
                         visible: availableMetadata[model.key] === "true"
                         text: model.name
+                        description: model.key === "apporder" ? qsTr("Takes effect after restarting the home screen or device") : ""
                         enabled: !isRestoreRunning
                         checked: model.isChecked
                         onClicked: {

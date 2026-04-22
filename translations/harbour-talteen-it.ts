@@ -580,6 +580,10 @@
         <source>Backup is ready</source>
         <translation>Backup pronto</translation>
     </message>
+    <message>
+        <source>Takes effect after restarting the home screen or device</source>
+        <translation>Richiede il riavvio della schermata home o del dispositivo per avere effetto</translation>
+    </message>
 </context>
 <context>
     <name>SendPage</name>

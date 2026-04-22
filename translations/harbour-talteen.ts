@@ -580,6 +580,10 @@
         <source>Backup is ready</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Takes effect after restarting the home screen or device</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SendPage</name>
