@@ -9,6 +9,8 @@
 #include <QStorageInfo>
 #include <QStandardPaths>
 #include <QSettings>
+#include <functional>
+#include <QSharedPointer>
 
 Talteen::Talteen(QObject *parent) : QObject(parent)
 {
@@ -157,6 +159,7 @@ void Talteen::startBackup(const QVariantMap &options)
     // Outer Wrapper
     auto runOuterTarStep = [=]()
     {
+        emit progressUpdate(tr("Saving final archive..."));
         qDebug() << "Executing Step 4/4: Packing final archive...";
 
         QString backupFolder = (destOption == "internal" || destOption.isEmpty()) ? QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) : destOption + "/harbour-talteen";
@@ -189,6 +192,7 @@ void Talteen::startBackup(const QVariantMap &options)
     // Write YAML & Checksum
     auto writeYamlStep = [=](const QString &checksum)
     {
+        emit progressUpdate(tr("Writing metadata..."));
         qDebug() << "Executing Step 3/4: Writing metadata and checksum...";
         QFile yamlFile(workDir + "/manifest.yaml");
         if (yamlFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -220,6 +224,7 @@ void Talteen::startBackup(const QVariantMap &options)
     // Calculate Checksum
     auto runChecksumStep = [=]()
     {
+        emit progressUpdate(tr("Generating checksum..."));
         qDebug() << "Executing Step 2/4: Generating SHA-256 checksum...";
         QProcess *hashProc = new QProcess(this);
         hashProc->setWorkingDirectory(workDir);
@@ -230,7 +235,7 @@ void Talteen::startBackup(const QVariantMap &options)
                     if (exitCode == 0)
                     {
                         QString output = QString(hashProc->readAllStandardOutput()).trimmed();
-                        QString checksum = output.section(' ', 0, 0); // Isolate the hash
+                        QString checksum = output.section(' ', 0, 0);
                         hashProc->deleteLater();
                         writeYamlStep(checksum);
                     }
@@ -246,26 +251,22 @@ void Talteen::startBackup(const QVariantMap &options)
     // Stream Tar -> XZ -> OpenSSL
     auto runStreamingTarStep = [=]()
     {
+        emit progressUpdate(tr("Compressing and encrypting files..."));
         qDebug() << "Executing Step 1/4: Compressing (XZ) and encrypting payload stream...";
 
         QProcess *tarProcess = new QProcess(this);
         QProcess *sslProcess = new QProcess(this);
 
-        // Fix missing /etc/crypto-policies/back-ends/opensslcnf.config
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
         env.insert("OPENSSL_CONF", "/dev/null");
         sslProcess->setProcessEnvironment(env);
 
-        // Force XZ to use Level 1 compression
         QProcessEnvironment tarEnv = QProcessEnvironment::systemEnvironment();
-        tarEnv.insert("XZ_OPT", "-1"); // -1 is fast, -9 is maximum compression
+        tarEnv.insert("XZ_OPT", "-1");
         tarProcess->setProcessEnvironment(tarEnv);
 
         tarProcess->setWorkingDirectory(workDir);
         sslProcess->setWorkingDirectory(workDir);
-
-        // tarProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
-        // sslProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
 
         // Capture tar errors
         connect(tarProcess, &QProcess::readyReadStandardError, [=]()
@@ -324,7 +325,7 @@ void Talteen::startBackup(const QVariantMap &options)
                     else
                     {
                         qDebug() << "[FATAL] Pipeline broken! OpenSSL exit:" << exitCode << "Tar exit:" << tarProcess->exitCode();
-                        QFile::remove(workDir + "/payload.enc"); // Delete the broken file instantly
+                        QFile::remove(workDir + "/payload.enc");
                         emit backupFinished(false, tr("Encryption or compression failed. Backup cancelled"));
                     }
 
@@ -340,7 +341,6 @@ void Talteen::startBackup(const QVariantMap &options)
             tarProcess->deleteLater();
             sslProcess->deleteLater(); });
 
-        // Downstream processes must start before upstream ones in a pipe
         sslProcess->start("openssl", sslArgs);
         tarProcess->start("tar", tarArgs);
     };
@@ -350,6 +350,7 @@ void Talteen::startBackup(const QVariantMap &options)
     {
         if (hasMessages)
         {
+            emit progressUpdate(tr("Saving messages..."));
             qDebug() << "Exporting messages database...";
             QDir().mkpath(workDir + "/messages");
             Spawner::execute("commhistory-tool", {"export", "-groups", workDir + "/messages/groups.dat"}, runStreamingTarStep);
@@ -360,11 +361,11 @@ void Talteen::startBackup(const QVariantMap &options)
         }
     };
 
-    // Defined second so Rsync knows about it
     auto runCallsStep = [=]()
     {
         if (hasCalls)
         {
+            emit progressUpdate(tr("Saving call history..."));
             qDebug() << "Exporting calls database...";
             QDir().mkpath(workDir + "/calls");
             Spawner::execute("commhistory-tool", {"export", "-calls", workDir + "/calls/calls.dat"}, runMessagesStep);
@@ -384,6 +385,7 @@ void Talteen::startBackup(const QVariantMap &options)
             return;
         }
 
+        emit progressUpdate(tr("Saving app data..."));
         qDebug() << "Executing Step 0: Syncing App Data to static snapshot...";
         QProcess *rsyncProcess = new QProcess(this);
         rsyncProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
@@ -525,6 +527,7 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
     {
         if (selectedOptions.value("messages").toBool() && QFile::exists(workDir + "/messages/groups.dat"))
         {
+            emit progressUpdate(tr("Restoring messages..."));
             qDebug() << "Importing messages...";
             Spawner::execute("commhistory-tool", {"import", "-groups", workDir + "/messages/groups.dat"}, finalCleanup);
         }
@@ -538,6 +541,7 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
     {
         if (selectedOptions.value("calls").toBool() && QFile::exists(workDir + "/calls/calls.dat"))
         {
+            emit progressUpdate(tr("Restoring call history..."));
             qDebug() << "Importing calls...";
             Spawner::execute("commhistory-tool", {"import", "-calls", workDir + "/calls/calls.dat"}, restoreMessages);
         }
@@ -550,73 +554,88 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
     auto restoreFiles = [=]()
     {
         qDebug() << "Moving extracted files to their final destinations...";
-        QProcess *copyProcess = new QProcess(this);
-        copyProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
 
-        QStringList syncCmds;
-
-        if (selectedOptions.value("appdata").toBool() && QDir(workDir + "/appdata").exists())
-        {
-            syncCmds << QString("rsync -a \"%1/appdata/.config\" \"%2/\"").arg(workDir, homePath);
-            syncCmds << QString("rsync -a \"%1/appdata/.local\" \"%2/\"").arg(workDir, homePath);
-        }
+        // Handle apporder immediately
         if (selectedOptions.value("apporder").toBool() && QDir(workDir + "/apporder").exists())
         {
+            emit progressUpdate(tr("Restoring app grid layout..."));
             QDir().mkpath(homePath + "/.config/lipstick");
             QString destMenu = homePath + "/.config/lipstick/applications.menu";
-            // QFile::copy will fail if the file already exists, so we must delete it first!
             QFile::remove(destMenu);
             QFile::copy(workDir + "/apporder/applications.menu", destMenu);
         }
+
+        // Use standard Qt StringLists to completely avoid the "incomplete struct" C++ compilation error
+        QSharedPointer<QStringList> syncCmds(new QStringList());
+        QSharedPointer<QStringList> syncMsgs(new QStringList());
+
+        if (selectedOptions.value("appdata").toBool() && QDir(workDir + "/appdata").exists())
+        {
+            syncCmds->append(QString("rsync -a \"%1/appdata/.config\" \"%2/\" && rsync -a \"%1/appdata/.local\" \"%2/\"").arg(workDir, homePath));
+            syncMsgs->append(tr("Restoring app data..."));
+        }
         if (selectedOptions.value("pictures").toBool() && QDir(workDir + "/pictures").exists())
         {
-            syncCmds << QString("rsync -a \"%1/pictures/\" \"%2/\"").arg(workDir, QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
+            syncCmds->append(QString("rsync -a \"%1/pictures/\" \"%2/\"").arg(workDir, QStandardPaths::writableLocation(QStandardPaths::PicturesLocation)));
+            syncMsgs->append(tr("Restoring pictures..."));
         }
         if (selectedOptions.value("documents").toBool() && QDir(workDir + "/documents").exists())
         {
-            syncCmds << QString("rsync -a \"%1/documents/\" \"%2/\"").arg(workDir, QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
+            syncCmds->append(QString("rsync -a \"%1/documents/\" \"%2/\"").arg(workDir, QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)));
+            syncMsgs->append(tr("Restoring documents..."));
         }
         if (selectedOptions.value("downloads").toBool() && QDir(workDir + "/downloads").exists())
         {
-            syncCmds << QString("rsync -a \"%1/downloads/\" \"%2/\"").arg(workDir, QStandardPaths::writableLocation(QStandardPaths::DownloadLocation));
+            syncCmds->append(QString("rsync -a \"%1/downloads/\" \"%2/\"").arg(workDir, QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)));
+            syncMsgs->append(tr("Restoring downloads..."));
         }
         if (selectedOptions.value("music").toBool() && QDir(workDir + "/music").exists())
         {
-            syncCmds << QString("rsync -a \"%1/music/\" \"%2/\"").arg(workDir, QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
+            syncCmds->append(QString("rsync -a \"%1/music/\" \"%2/\"").arg(workDir, QStandardPaths::writableLocation(QStandardPaths::MusicLocation)));
+            syncMsgs->append(tr("Restoring music..."));
         }
         if (selectedOptions.value("videos").toBool() && QDir(workDir + "/videos").exists())
         {
-            syncCmds << QString("rsync -a \"%1/videos/\" \"%2/\"").arg(workDir, QStandardPaths::writableLocation(QStandardPaths::MoviesLocation));
+            syncCmds->append(QString("rsync -a \"%1/videos/\" \"%2/\"").arg(workDir, QStandardPaths::writableLocation(QStandardPaths::MoviesLocation)));
+            syncMsgs->append(tr("Restoring videos..."));
         }
 
-        if (!syncCmds.isEmpty())
+        // Execute the commands one by one
+        QSharedPointer<std::function<void()>> runNextTask(new std::function<void()>());
+        *runNextTask = [=]()
         {
+            if (syncCmds->isEmpty())
+            {
+                restoreCalls(); // Queue finished, move to next step
+                return;
+            }
+
+            QString cmd = syncCmds->takeFirst();
+            QString msg = syncMsgs->takeFirst();
+            emit progressUpdate(msg);
+
+            QProcess *copyProcess = new QProcess(this);
             connect(copyProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                     [=](int, QProcess::ExitStatus)
                     {
                         copyProcess->deleteLater();
-                        restoreCalls();
+                        (*runNextTask)();
                     });
-            // Execute all the rsync commands sequentially safely
-            copyProcess->start("sh", {"-c", syncCmds.join(" && ")});
-        }
-        else
-        {
-            copyProcess->deleteLater();
-            restoreCalls();
-        }
+            copyProcess->start("sh", {"-c", cmd});
+        };
+
+        (*runNextTask)();
     };
 
-    // Stream OpenSSL -> XZ -> Tar
     auto runStreamingExtractStep = [=]()
     {
+        emit progressUpdate(tr("Decrypting and decompressing..."));
         qDebug() << "Executing Step 4/4: Decrypting and extracting (XZ) on the fly...";
         QString password = selectedOptions.value("password").toString();
 
         QProcess *sslProcess = new QProcess(this);
         QProcess *tarProcess = new QProcess(this);
 
-        // Fix missing /etc/crypto-policies/back-ends/opensslcnf.config
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
         env.insert("OPENSSL_CONF", "/dev/null");
         sslProcess->setProcessEnvironment(env);
@@ -627,7 +646,6 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
         sslProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
         tarProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
 
-        // Connect the pipe: openssl stdout feeds directly into tar stdin
         sslProcess->setStandardOutputProcess(tarProcess);
 
         QStringList sslArgs;
@@ -675,6 +693,7 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
     // Verify Checksum
     auto runVerifyChecksumStep = [=](const QString &expectedChecksum)
     {
+        emit progressUpdate(tr("Verifying checksum..."));
         qDebug() << "Executing Step 3/4: Verifying SHA-256 checksum...";
         QProcess *hashProc = new QProcess(this);
         hashProc->setWorkingDirectory(workDir);
@@ -710,6 +729,7 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
     // Read YAML metadata
     auto runReadYamlStep = [=]()
     {
+        emit progressUpdate(tr("Reading metadata..."));
         qDebug() << "Executing Step 2/4: Reading metadata for checksum...";
         QFile yamlFile(workDir + "/manifest.yaml");
         if (yamlFile.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -744,6 +764,7 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
     };
 
     // Outer Extract
+    emit progressUpdate(tr("Extracting backup archive..."));
     qDebug() << "Executing Step 1/4: Extracting outer wrapper...";
 
     QString password = selectedOptions.value("password").toString();

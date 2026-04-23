@@ -33,6 +33,8 @@ signals:
     void archiveAnalyzed(bool isValid, const QString &message, const QVariantMap &metadata);
 
     void restoreFinished(bool success, const QString &message);
+
+    void progressUpdate(const QString &statusMessage);
 };
 
 #endif // TALTEEN_H

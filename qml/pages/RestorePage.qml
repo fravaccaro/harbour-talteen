@@ -91,6 +91,15 @@ Page {
                 setAllSwitches(false);
             }
         }
+        
+onProgressUpdate: {
+    restorePage.statusMessage = statusMessage;
+            
+            appWindow.appWorkingText = statusMessage;
+            
+            appWindow.showProgressNotification(qsTr("Restore in progress"), statusMessage, Notification.ProgressIndeterminate);
+        }
+
         onRestoreFinished: {
             isRestoreRunning = false;
             statusMessage = message;
@@ -305,7 +314,7 @@ Page {
                         restoreOptions[item.key] = item.isChecked;
                     }
                     appCore.executeRestore(selectedBackupPath, restoreOptions);
-                    appWindow.showProgressNotification(qsTr("Restore"), qsTr("Restoring backup..."), Notification.ProgressIndeterminate);
+                    appWindow.showProgressNotification(qsTr("Restore in progress"), qsTr("Restoring backup..."), Notification.ProgressIndeterminate);
                 }
             }
 

@@ -41,8 +41,13 @@ Page {
         appWindow.appWorkingText = qsTr("Saving backup...");
     }
 
-    Talteen {
+Talteen {
         id: appCore
+
+        onProgressUpdate: {
+            appWindow.appWorkingText = statusMessage;
+            appWindow.showProgressNotification(qsTr("Backup in progress"), statusMessage, Notification.ProgressIndeterminate);
+        }
 
         onBackupFinished: {
             isBackupRunning = false;
@@ -248,7 +253,7 @@ Page {
                         backupOptions[item.key] = item.isChecked;
                     }
                     appCore.startBackup(backupOptions);
-                    appWindow.showProgressNotification(qsTr("Backup"), qsTr("Saving backup..."), Notification.ProgressIndeterminate);
+                    appWindow.showProgressNotification(qsTr("Backup in progress"), qsTr("Saving backup..."), Notification.ProgressIndeterminate);
                 }
             }
 

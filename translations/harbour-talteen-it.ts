@@ -218,6 +218,10 @@
         <source>Confirm your password</source>
         <translation>Conferma la tua password</translation>
     </message>
+    <message>
+        <source>Backup in progress</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CoverPage</name>
@@ -584,6 +588,10 @@
         <source>Takes effect after restarting the home screen or device</source>
         <translation>Richiede il riavvio della schermata home o del dispositivo per avere effetto</translation>
     </message>
+    <message>
+        <source>Restore in progress</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SendPage</name>
@@ -775,6 +783,86 @@
     <message>
         <source>Unable to save app data</source>
         <translation>Impossible salvare dati app</translation>
+    </message>
+    <message>
+        <source>Saving final archive...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Writing metadata...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generating checksum...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Compressing and encrypting files...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saving messages...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saving call history...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saving app data...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restoring messages...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restoring call history...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restoring app grid layout...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restoring app data...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restoring pictures...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restoring documents...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restoring downloads...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restoring music...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restoring videos...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decrypting and decompressing...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Verifying checksum...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reading metadata...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extracting backup archive...</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
