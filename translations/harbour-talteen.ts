@@ -659,7 +659,7 @@
         <source>Search off</source>
         <translation type="unfinished"></translation>
     </message>
-    <message numerus="yes">
+        <message numerus="yes">
         <source>%n device(s) found</source>
         <translation type="unfinished">
             <numerusform></numerusform>
