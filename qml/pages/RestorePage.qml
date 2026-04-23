@@ -91,15 +91,11 @@ Page {
                 setAllSwitches(false);
             }
         }
-        
-onProgressUpdate: {
-    restorePage.statusMessage = statusMessage;
-            
+        onProgressUpdate: {
+            restorePage.statusMessage = statusMessage;
             appWindow.appWorkingText = statusMessage;
-            
             appWindow.showProgressNotification(qsTr("Restore in progress"), statusMessage, Notification.ProgressIndeterminate);
         }
-
         onRestoreFinished: {
             isRestoreRunning = false;
             statusMessage = message;
@@ -218,14 +214,13 @@ onProgressUpdate: {
                 width: parent.width
                 visible: selectedBackupPath !== ""
 
-
-
                 LabelInfo {
                     text: qsTr("Enter the backup password and select the items you want to restore.")
                 }
 
-            LabelSpacer {
-            }
+                LabelSpacer {
+                }
+
                 SectionHeader {
                     text: qsTr("Details")
                 }
@@ -248,12 +243,10 @@ onProgressUpdate: {
 
             }
 
-
-
-
-SectionHeader {
+            SectionHeader {
                 text: qsTr("Security")
             }
+
             PasswordField {
                 id: restorePasswordField
 
@@ -271,6 +264,7 @@ SectionHeader {
 
             LabelSpacer {
             }
+
             Repeater {
                 model: restoreCategoriesModel
 
@@ -319,19 +313,17 @@ SectionHeader {
                         var item = restoreCategoriesModel.get(i);
                         restoreOptions[item.key] = item.isChecked;
                     }
-                    
                     appWindow.showProgressNotification(qsTr("Restore in progress"), qsTr("Preparing restore..."), Notification.ProgressIndeterminate);
                     appCore.executeRestore(selectedBackupPath, restoreOptions);
                 }
             }
 
-
             LabelSpacer {
             }
-            
-                StatusLabel {
-                    text: statusMessage
-                }
+
+            StatusLabel {
+                text: statusMessage
+            }
 
             ProgressStatusBar {
                 indeterminate: true

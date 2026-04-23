@@ -42,7 +42,7 @@ Page {
         appWindow.appWorkingText = qsTr("Saving backup...");
     }
 
-Talteen {
+    Talteen {
         id: appCore
 
         onProgressUpdate: {
@@ -50,10 +50,8 @@ Talteen {
             appWindow.appWorkingText = statusMessage;
             appWindow.showProgressNotification(qsTr("Backup in progress"), statusMessage, Notification.ProgressIndeterminate);
         }
-
         onBackupFinished: {
             isBackupRunning = false;
-
             backupPage.statusMessage = message;
             console.log(message);
             appWindow.showNotification(success ? qsTr("Backup complete") : qsTr("Backup failed"), message);
@@ -156,15 +154,14 @@ Talteen {
                 title: qsTr("New backup")
             }
 
-                LabelInfo {
-                    text: qsTr("Choose items to back up. Do not forget your password, as it cannot be recovered.")
-                }
+            LabelInfo {
+                text: qsTr("Choose items to back up. Do not forget your password, as it cannot be recovered.")
+            }
 
             LabelSpacer {
             }
 
-
-SectionHeader {
+            SectionHeader {
                 text: qsTr("Details")
             }
 
@@ -185,8 +182,7 @@ SectionHeader {
 
             }
 
-
-SectionHeader {
+            SectionHeader {
                 text: qsTr("Security")
             }
 
@@ -218,12 +214,13 @@ SectionHeader {
                 EnterKey.onClicked: focus = false
             }
 
-
             LabelSpacer {
             }
-SectionHeader {
-                text: qsTr("Destination") 
+
+            SectionHeader {
+                text: qsTr("Destination")
             }
+
             StorageDestinationButton {
                 id: storageBtn
 
@@ -232,7 +229,6 @@ SectionHeader {
                 isSdCardAvailable: appCore.getSdCardPath() !== ""
                 isAppBusy: isBackupRunning
             }
-
 
             LabelSpacer {
             }
@@ -283,20 +279,17 @@ SectionHeader {
                         var item = categoriesModel.get(i);
                         backupOptions[item.key] = item.isChecked;
                     }
-                    
                     appWindow.showProgressNotification(qsTr("Backup in progress"), qsTr("Preparing backup..."), Notification.ProgressIndeterminate);
-                    
                     appCore.startBackup(backupOptions);
                 }
             }
 
-
             LabelSpacer {
             }
-            
-                StatusLabel {
-                    text: statusMessage
-                }
+
+            StatusLabel {
+                text: statusMessage
+            }
 
             ProgressStatusBar {
                 indeterminate: true

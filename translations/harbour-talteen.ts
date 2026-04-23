@@ -943,18 +943,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The archive structure</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An AES-256 encrypted, XZ-compressed stream containing the actual files and folders.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>A human-readable file containing the metadata necessary for the app to understand what is inside the encrypted payload without having to decrypt it first.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Manual backup extraction</source>
         <translation type="unfinished"></translation>
     </message>
@@ -971,10 +959,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You can extract any .talteen archive on any Linux terminal without using the app:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Unpack the container:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -988,6 +972,22 @@
     </message>
     <message>
         <source>The app creates a standard tar archive with the extension &lt;code&gt;.talteen&lt;/code&gt; holding two files:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Archive structure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>an AES-256 encrypted, XZ-compressed stream containing the actual files and folders.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>a human-readable file containing the metadata necessary for the app to understand what is inside the encrypted payload without having to decrypt it first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You can extract any &lt;code&gt;.talteen&lt;/code&gt; archive on any Linux terminal without using the app:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

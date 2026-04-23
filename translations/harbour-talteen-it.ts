@@ -101,7 +101,7 @@
     </message>
     <message>
         <source>Technical details</source>
-        <translation type="unfinished"></translation>
+        <translation>Dettagli tecnici</translation>
     </message>
 </context>
 <context>
@@ -921,75 +921,75 @@
     <name>TechnicalDetailsPage</name>
     <message>
         <source>Technical details</source>
-        <translation type="unfinished"></translation>
+        <translation>Dettagli tecnici</translation>
     </message>
     <message>
         <source>Under the hood</source>
-        <translation type="unfinished"></translation>
+        <translation>Sotto il cofano</translation>
     </message>
     <message>
         <source>Talteen acts as a frontend for:</source>
-        <translation type="unfinished"></translation>
+        <translation>Talteen funge da frontend per:</translation>
     </message>
     <message>
         <source>Archiving:</source>
-        <translation type="unfinished"></translation>
+        <translation>Archiviazione:</translation>
     </message>
     <message>
         <source>Compression:</source>
-        <translation type="unfinished"></translation>
+        <translation>Compressione:</translation>
     </message>
     <message>
         <source>Encryption:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The archive structure</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An AES-256 encrypted, XZ-compressed stream containing the actual files and folders.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>A human-readable file containing the metadata necessary for the app to understand what is inside the encrypted payload without having to decrypt it first.</source>
-        <translation type="unfinished"></translation>
+        <translation>Crittografia:</translation>
     </message>
     <message>
         <source>Manual backup extraction</source>
-        <translation type="unfinished"></translation>
+        <translation>Estrazione manuale del backup</translation>
     </message>
     <message>
         <source>The backup files are saved to:</source>
-        <translation type="unfinished"></translation>
+        <translation>I file di backup vengono salvati in:</translation>
     </message>
     <message>
         <source>Internal storage:</source>
-        <translation type="unfinished"></translation>
+        <translation>Memoria interna:</translation>
     </message>
     <message>
         <source>SD card:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>You can extract any .talteen archive on any Linux terminal without using the app:</source>
-        <translation type="unfinished"></translation>
+        <translation>Scheda SD:</translation>
     </message>
     <message>
         <source>Unpack the container:</source>
-        <translation type="unfinished"></translation>
+        <translation>Estrai il contenitore:</translation>
     </message>
     <message>
         <source>Decrypt and unpack the payload:</source>
-        <translation type="unfinished"></translation>
+        <translation>Decifra ed estrai il payload:</translation>
     </message>
     <message>
         <source>A custom &lt;code&gt;QTcpServer/QTcpSocket&lt;/code&gt; implementation is used to facilitate device-to-device transfers over the local network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Un&apos;implementazione personalizzata di &lt;code&gt;QTcpServer/QTcpSocket&lt;/code&gt; viene utilizzata per facilitare i trasferimenti tra dispositivi sulla rete locale.</translation>
     </message>
     <message>
         <source>The app creates a standard tar archive with the extension &lt;code&gt;.talteen&lt;/code&gt; holding two files:</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;app crea un archivio tar standard con estensione &lt;code&gt;.talteen&lt;/code&gt; contenente due file:</translation>
+    </message>
+    <message>
+        <source>Archive structure</source>
+        <translation>Struttura dell&apos;archivio</translation>
+    </message>
+    <message>
+        <source>an AES-256 encrypted, XZ-compressed stream containing the actual files and folders.</source>
+        <translation>un flusso crittografato AES-256 e compresso XZ contenente i file e le cartelle effettivi.</translation>
+    </message>
+    <message>
+        <source>a human-readable file containing the metadata necessary for the app to understand what is inside the encrypted payload without having to decrypt it first.</source>
+        <translation>un file leggibile contenente i metadati necessari all&apos;app per comprendere il contenuto del payload crittografato senza doverlo prima decifrare.</translation>
+    </message>
+    <message>
+        <source>You can extract any &lt;code&gt;.talteen&lt;/code&gt; archive on any Linux terminal without using the app:</source>
+        <translation>È possibile estrarre qualsiasi archivio &lt;code&gt;.talteen&lt;/code&gt; su qualsiasi terminale Linux senza utilizzare l&apos;app:</translation>
     </message>
 </context>
 <context>

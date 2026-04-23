@@ -5,6 +5,8 @@ import Sailfish.Silica 1.0
 Page {
     id: aboutpage
 
+    allowedOrientations: Orientation.All
+
     SilicaFlickable {
         id: flickable
 
@@ -72,7 +74,6 @@ Page {
                 LabelText {
                     text: "<ul>" + "<li>" + qsTr("Save your messages, call history, app data, app grid layout, and media.") + "</li>" + "<li>" + qsTr("Easily move your data to a new device by copying the backup file via an SD card or over Wi-FI.") + "</li>" + "<li>" + qsTr("Lock your archives with standard AES-256 encryption.") + "</li>" + "<li>" + qsTr("Built on standard Linux formats (tar, openssl) so you can extract backups on any PC.") + "</li>" + "</ul>"
                 }
-
 
                 ActionButton {
                     text: qsTr("Technical details")

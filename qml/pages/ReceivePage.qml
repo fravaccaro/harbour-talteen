@@ -35,9 +35,9 @@ Page {
                 appWindow.showNotification(qsTr("Backup received"), qsTr("Backup received from another device"));
             } else if (progress === 0) {
                 // If it drops to 0 while running, show the error/interruption
-if (isTransferRunning) {
+                if (isTransferRunning)
                     appWindow.showNotification(qsTr("Receiving incomplete"), statusMessage);
-                }
+
                 isTransferRunning = false;
             }
         }

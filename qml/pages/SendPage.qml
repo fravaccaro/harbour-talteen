@@ -42,9 +42,9 @@ Page {
                 appWindow.showNotification(qsTr("Sending complete"), qsTr("Backup sent successfully"));
             } else if (progress === 0) {
                 // If it drops to 0 while running, show the error/interruption
-                if (isTransferRunning) {
+                if (isTransferRunning)
                     appWindow.showNotification(qsTr("Sending incomplete"), statusMessage);
-                }
+
                 isTransferRunning = false;
             }
         }
