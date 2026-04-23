@@ -20,10 +20,10 @@ ComboBox {
         }
     }
 
-    label: qsTr("Destination")
-    description: !isSdCardAvailable ? qsTr("SD card not detected") : qsTr("Available space:") + " " + formattedFreeSpace
+    label: qsTr("Save to")
+    description: !isSdCardAvailable ? qsTr("SD card not detected") : qsTr("Available space: %1").arg(formattedFreeSpace)
     enabled: isSdCardAvailable && !isAppBusy
-    opacity: !isSdCardAvailable ? 0.2 : (isAppBusy ? 0.3 : 1)
+    opacity: !isSdCardAvailable ? 0.3 : (isAppBusy ? 0.3 : 1)
     // Keep state in sync with external saveToSdCard property
     currentIndex: saveToSdCard ? 1 : 0
     onCurrentIndexChanged: {

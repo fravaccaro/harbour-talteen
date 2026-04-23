@@ -21,7 +21,7 @@ Talteen acts as a frontend for:
 * A custom `QTcpServer`/`QTcpSocket` implementation to facilitate device-to-device transfers over the local network.
 
 
-## The archive structure
+## Archive structure
 The app creates a standard `tar` archive with extension `.talteen` holding two files:
 * `payload.enc`: An AES-256 encrypted, XZ-compressed stream containing the actual files and folders.
 * `manifest.yaml`: a human-readable file containing the metadata necessary for the app to understand what is inside the encrypted payload without having to decrypt it first.

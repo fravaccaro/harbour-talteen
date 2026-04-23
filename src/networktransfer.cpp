@@ -159,7 +159,8 @@ void NetworkTransfer::stopDiscovery()
     }
 }
 
-void NetworkTransfer::sendFile(QString targetIp, int port, QString filePath)
+// FIX 1: Updated signature to include fileLabel
+void NetworkTransfer::sendFile(QString targetIp, int port, QString filePath, QString fileLabel)
 {
 
     m_cancelledByUser = false;
@@ -221,12 +222,13 @@ void NetworkTransfer::sendFile(QString targetIp, int port, QString filePath)
 
     socket->connectToHost(targetIp, port);
 
-    connect(socket, &QTcpSocket::connected, this, [this, fileName]()
+    // FIX 2: Added the variables to the lambda capture, and constructed the 3-part header
+    connect(socket, &QTcpSocket::connected, this, [this, fileName, fileLabel, fileInfo]()
             {
         emit statusChanged(tr("Waiting for the other device to accept..."));
         
-        // ONLY send the header. Do NOT send the file yet!
-        QString header = fileName + "|" + QString::number(totalBytes) + "\n";
+        QString labelToSend = fileLabel.isEmpty() ? fileInfo.completeBaseName() : fileLabel;
+        QString header = fileName + "|" + QString::number(totalBytes) + "|" + labelToSend + "\n";
         socket->write(header.toUtf8()); });
 
     // Use a Smart Pointer to prevent memory leaks
@@ -356,12 +358,19 @@ void NetworkTransfer::acceptConnection()
                         qDebug() << "[DEBUG] Header received:" << header;
 
                         m_pendingFileName = "incoming_backup.talteen";
+                        
+                        // FIX 3: Parse the 3-part header and set a fallback label
+                        QString m_pendingFileLabel = m_pendingFileName;
 
                         if (header.contains('|'))
                         {
                             QStringList parts = header.split('|');
                             m_pendingFileName = QFileInfo(parts[0]).fileName();
                             totalBytes = parts[1].toLongLong();
+                            
+                            if (parts.size() > 2) {
+                                m_pendingFileLabel = parts[2];
+                            }
                         }
 
                         m_pendingFileSize = totalBytes;
@@ -371,7 +380,7 @@ void NetworkTransfer::acceptConnection()
                         m_waitingForUser = true;
 
                         // ASK THE QML UI WHAT TO DO
-                        emit transferRequested(m_pendingFileName, m_pendingFileSize);
+                        emit transferRequested(m_pendingFileName, m_pendingFileSize, m_pendingFileLabel);
                     }
                     else if (incomingData.size() > 1024)
                     {

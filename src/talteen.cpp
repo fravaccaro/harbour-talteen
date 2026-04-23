@@ -71,6 +71,7 @@ void Talteen::startBackup(const QVariantMap &options)
     QString cachePath = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
     QString workDir = cachePath + "/workdir";
     QString dateTimeString = QDateTime::currentDateTime().toString("yyyy-MM-dd_HH-mm");
+    QString baseFileName = "talteen_backup_" + dateTimeString;
 
     QDir(workDir).removeRecursively();
     QDir().mkpath(workDir);
@@ -159,12 +160,12 @@ void Talteen::startBackup(const QVariantMap &options)
     // Outer Wrapper
     auto runOuterTarStep = [=]()
     {
-        emit progressUpdate(tr("Saving final archive..."));
+        emit progressUpdate(tr("Finishing up..."));
         qDebug() << "Executing Step 4/4: Packing final archive...";
 
         QString backupFolder = (destOption == "internal" || destOption.isEmpty()) ? QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) : destOption + "/harbour-talteen";
         QDir().mkpath(backupFolder);
-        QString finalDestination = backupFolder + "/talteen_backup_" + dateTimeString + ".talteen";
+        QString finalDestination = backupFolder + "/" + baseFileName + ".talteen";
 
         QProcess *outerTar = new QProcess(this);
         outerTar->setWorkingDirectory(workDir);
@@ -192,7 +193,7 @@ void Talteen::startBackup(const QVariantMap &options)
     // Write YAML & Checksum
     auto writeYamlStep = [=](const QString &checksum)
     {
-        emit progressUpdate(tr("Writing metadata..."));
+        emit progressUpdate(tr("Saving backup information..."));
         qDebug() << "Executing Step 3/4: Writing metadata and checksum...";
         QFile yamlFile(workDir + "/manifest.yaml");
         if (yamlFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -201,7 +202,7 @@ void Talteen::startBackup(const QVariantMap &options)
             out << "version: \"1.0.0\"\n";
             out << "time: \"" << QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") << "\"\n";
             QString userLabel = options.value("label").toString().trimmed().replace("\"", "'");
-            out << "label: \"" << (userLabel.isEmpty() ? "talteen_backup_" + dateTimeString : userLabel) << "\"\n";
+            out << "label: \"" << (userLabel.isEmpty() ? baseFileName : userLabel) << "\"\n";
             out << "encrypted: true\n";
             out << "checksum: \"" << checksum << "\"\n";
 
@@ -224,7 +225,7 @@ void Talteen::startBackup(const QVariantMap &options)
     // Calculate Checksum
     auto runChecksumStep = [=]()
     {
-        emit progressUpdate(tr("Generating checksum..."));
+        emit progressUpdate(tr("Creating integrity check..."));
         qDebug() << "Executing Step 2/4: Generating SHA-256 checksum...";
         QProcess *hashProc = new QProcess(this);
         hashProc->setWorkingDirectory(workDir);
@@ -251,7 +252,7 @@ void Talteen::startBackup(const QVariantMap &options)
     // Stream Tar -> XZ -> OpenSSL
     auto runStreamingTarStep = [=]()
     {
-        emit progressUpdate(tr("Compressing and encrypting files..."));
+        emit progressUpdate(tr("Creating secure backup..."));
         qDebug() << "Executing Step 1/4: Compressing (XZ) and encrypting payload stream...";
 
         QProcess *tarProcess = new QProcess(this);
@@ -629,7 +630,7 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
 
     auto runStreamingExtractStep = [=]()
     {
-        emit progressUpdate(tr("Decrypting and decompressing..."));
+        emit progressUpdate(tr("Preparing files for restore..."));
         qDebug() << "Executing Step 4/4: Decrypting and extracting (XZ) on the fly...";
         QString password = selectedOptions.value("password").toString();
 
@@ -693,7 +694,7 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
     // Verify Checksum
     auto runVerifyChecksumStep = [=](const QString &expectedChecksum)
     {
-        emit progressUpdate(tr("Verifying checksum..."));
+        emit progressUpdate(tr("Verifying backup integrity..."));
         qDebug() << "Executing Step 3/4: Verifying SHA-256 checksum...";
         QProcess *hashProc = new QProcess(this);
         hashProc->setWorkingDirectory(workDir);
@@ -729,7 +730,7 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
     // Read YAML metadata
     auto runReadYamlStep = [=]()
     {
-        emit progressUpdate(tr("Reading metadata..."));
+        emit progressUpdate(tr("Loading backup details..."));
         qDebug() << "Executing Step 2/4: Reading metadata for checksum...";
         QFile yamlFile(workDir + "/manifest.yaml");
         if (yamlFile.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -764,7 +765,7 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
     };
 
     // Outer Extract
-    emit progressUpdate(tr("Extracting backup archive..."));
+    emit progressUpdate(tr("Opening backup..."));
     qDebug() << "Executing Step 1/4: Extracting outer wrapper...";
 
     QString password = selectedOptions.value("password").toString();

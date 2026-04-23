@@ -85,7 +85,7 @@ Page {
                 appWindow.showToast(qsTr("Backup is ready"));
                 setAllSwitches(false);
             } else {
-                statusMessage = qsTr("Error:") + " " + message;
+                statusMessage = qsTr("Error: %1").arg(message);
                 availableMetadata = ({
                 });
                 setAllSwitches(false);
@@ -218,13 +218,14 @@ onProgressUpdate: {
                 width: parent.width
                 visible: selectedBackupPath !== ""
 
-                StatusLabel {
-                    text: statusMessage
+
+
+                LabelInfo {
+                    text: qsTr("Enter the backup password and select the items you want to restore.")
                 }
 
-                LabelSpacer {
-                }
-
+            LabelSpacer {
+            }
                 SectionHeader {
                     text: qsTr("Details")
                 }
@@ -247,9 +248,12 @@ onProgressUpdate: {
 
             }
 
-            LabelSpacer {
-            }
 
+
+
+SectionHeader {
+                text: qsTr("Security")
+            }
             PasswordField {
                 id: restorePasswordField
 
@@ -265,6 +269,8 @@ onProgressUpdate: {
                 EnterKey.onClicked: focus = false
             }
 
+            LabelSpacer {
+            }
             Repeater {
                 model: restoreCategoriesModel
 
@@ -303,7 +309,7 @@ onProgressUpdate: {
                 id: restoreButton
 
                 text: isRestoreRunning ? qsTr("Restoring...") : qsTr("Start restore")
-                enabled: availableMetadata["version"] !== undefined && !noneSelected && !isRestoreRunning && restorePasswordField.text.length > 6
+                enabled: availableMetadata["version"] !== undefined && !noneSelected && !isRestoreRunning && restorePasswordField.text.length > 5
                 onClicked: {
                     isRestoreRunning = true;
                     var restoreOptions = {
@@ -313,10 +319,19 @@ onProgressUpdate: {
                         var item = restoreCategoriesModel.get(i);
                         restoreOptions[item.key] = item.isChecked;
                     }
+                    
+                    appWindow.showProgressNotification(qsTr("Restore in progress"), qsTr("Preparing restore..."), Notification.ProgressIndeterminate);
                     appCore.executeRestore(selectedBackupPath, restoreOptions);
-                    appWindow.showProgressNotification(qsTr("Restore in progress"), qsTr("Restoring backup..."), Notification.ProgressIndeterminate);
                 }
             }
+
+
+            LabelSpacer {
+            }
+            
+                StatusLabel {
+                    text: statusMessage
+                }
 
             ProgressStatusBar {
                 indeterminate: true

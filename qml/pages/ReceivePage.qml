@@ -11,8 +11,9 @@ Page {
     property bool isTransferRunning: false
     property string statusMessage
     property real currentProgress: 0
-    // Property to remember the incoming file name
+    // Property to remember the incoming file name and label
     property string incomingFileName: ""
+    property string incomingFileLabel: ""
 
     allowedOrientations: Orientation.All
     backNavigation: !isTransferRunning
@@ -28,11 +29,15 @@ Page {
         onProgressChanged: {
             currentProgress = progress;
             if (progress > 0 && progress < 1) {
-                appWindow.showProgressNotification(qsTr("Receiving"), incomingFileName, progress);
+                appWindow.showProgressNotification(qsTr("Receiving in progress"), qsTr("Receiving %1...").arg(incomingFileLabel), progress);
             } else if (progress === 1) {
                 isTransferRunning = false;
                 appWindow.showNotification(qsTr("Backup received"), qsTr("Backup received from another device"));
             } else if (progress === 0) {
+                // If it drops to 0 while running, show the error/interruption
+if (isTransferRunning) {
+                    appWindow.showNotification(qsTr("Receiving incomplete"), statusMessage);
+                }
                 isTransferRunning = false;
             }
         }
@@ -48,9 +53,11 @@ Page {
         onTransferRequested: {
             // Save the filename so the Progress indicator can use it
             incomingFileName = fileName;
+            incomingFileLabel = fileLabel;
             var dialog = pageStack.push(Qt.resolvedUrl("TransferPromptDialog.qml"), {
                 "incomingFileName": fileName,
                 "incomingFileSize": SharedUtils.formatBytes(fileSize),
+                "incomingFileLabel": fileLabel,
                 "hasSdCard": netTransfer.hasSdCard()
             });
             // Safety check so it doesn't crash if the file is missing

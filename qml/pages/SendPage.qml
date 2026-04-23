@@ -36,11 +36,15 @@ Page {
             currentProgress = progress;
             // UPDATE THE LIVE NOTIFICATION
             if (progress > 0 && progress < 1) {
-                appWindow.showProgressNotification(qsTr("Sending"), selectedFile.split('/').pop(), progress);
+                appWindow.showProgressNotification(qsTr("Sending in progress"), qsTr("Sending %1...").arg(sendPage.backupLabel), progress);
             } else if (progress === 1) {
                 isTransferRunning = false;
                 appWindow.showNotification(qsTr("Sending complete"), qsTr("Backup sent successfully"));
             } else if (progress === 0) {
+                // If it drops to 0 while running, show the error/interruption
+                if (isTransferRunning) {
+                    appWindow.showNotification(qsTr("Sending incomplete"), statusMessage);
+                }
                 isTransferRunning = false;
             }
         }
@@ -179,7 +183,7 @@ Page {
                             netTransfer.stopDiscovery();
 
                         isTransferRunning = true;
-                        netTransfer.sendFile(selectedIp, 45455, selectedFile);
+                        netTransfer.sendFile(selectedIp, 45455, selectedFile, backupLabel);
                     }
                 }
             }

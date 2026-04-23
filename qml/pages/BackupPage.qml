@@ -9,6 +9,7 @@ Page {
     id: backupPage
 
     property bool isBackupRunning: false
+    property string statusMessage: qsTr("Ready")
     property bool allSelected: false
     property bool noneSelected: false
 
@@ -45,12 +46,15 @@ Talteen {
         id: appCore
 
         onProgressUpdate: {
+            backupPage.statusMessage = statusMessage;
             appWindow.appWorkingText = statusMessage;
             appWindow.showProgressNotification(qsTr("Backup in progress"), statusMessage, Notification.ProgressIndeterminate);
         }
 
         onBackupFinished: {
             isBackupRunning = false;
+
+            backupPage.statusMessage = message;
             console.log(message);
             appWindow.showNotification(success ? qsTr("Backup complete") : qsTr("Backup failed"), message);
         }
@@ -152,6 +156,18 @@ Talteen {
                 title: qsTr("New backup")
             }
 
+                LabelInfo {
+                    text: qsTr("Choose items to back up. Do not forget your password, as it cannot be recovered.")
+                }
+
+            LabelSpacer {
+            }
+
+
+SectionHeader {
+                text: qsTr("Details")
+            }
+
             TextField {
                 id: backupLabelField
 
@@ -167,6 +183,11 @@ Talteen {
                     regExp: /^$|^[a-zA-Z0-9+\-_ ]{3,}$/
                 }
 
+            }
+
+
+SectionHeader {
+                text: qsTr("Security")
             }
 
             PasswordField {
@@ -197,6 +218,12 @@ Talteen {
                 EnterKey.onClicked: focus = false
             }
 
+
+            LabelSpacer {
+            }
+SectionHeader {
+                text: qsTr("Destination") 
+            }
             StorageDestinationButton {
                 id: storageBtn
 
@@ -204,6 +231,10 @@ Talteen {
                 backendEngine: appCore
                 isSdCardAvailable: appCore.getSdCardPath() !== ""
                 isAppBusy: isBackupRunning
+            }
+
+
+            LabelSpacer {
             }
 
             Repeater {
@@ -252,10 +283,20 @@ Talteen {
                         var item = categoriesModel.get(i);
                         backupOptions[item.key] = item.isChecked;
                     }
+                    
+                    appWindow.showProgressNotification(qsTr("Backup in progress"), qsTr("Preparing backup..."), Notification.ProgressIndeterminate);
+                    
                     appCore.startBackup(backupOptions);
-                    appWindow.showProgressNotification(qsTr("Backup in progress"), qsTr("Saving backup..."), Notification.ProgressIndeterminate);
                 }
             }
+
+
+            LabelSpacer {
+            }
+            
+                StatusLabel {
+                    text: statusMessage
+                }
 
             ProgressStatusBar {
                 indeterminate: true

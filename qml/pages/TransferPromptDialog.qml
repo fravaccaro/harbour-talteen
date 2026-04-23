@@ -6,6 +6,7 @@ Dialog {
 
     property string incomingFileName: ""
     property string incomingFileSize: ""
+    property string incomingFileLabel: ""
     property bool hasSdCard: false
     property bool saveToSdCard: false
 
@@ -29,7 +30,7 @@ Dialog {
 
         Label {
             width: parent.width - (Theme.paddingLarge * 2)
-            text: incomingFileName + "\n(" + incomingFileSize + ")"
+            text: incomingFileLabel + "\n(" + incomingFileSize + ")"
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
             truncationMode: TruncationMode.Fade
             anchors.horizontalCenter: parent.horizontalCenter

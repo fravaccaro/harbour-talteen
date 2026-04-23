@@ -99,15 +99,43 @@
         <source>This software is provided &quot;as is&quot;, without warranty of any kind, express or implied. In no event shall the authors or copyright holders be liable for any claim, damages or other liability arising from, out of or in connection with the software. You are solely responsible for the safety of your data.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Technical details</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>BackupPage</name>
+    <message>
+        <source>Ready</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saving backup...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Backup in progress</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Backup complete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Backup failed</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>App data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Applications</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>App grid layout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -151,19 +179,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Deselect all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Backup</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start backup</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Backup failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -171,31 +191,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Label (optional)</source>
+        <source>Choose items to back up. Do not forget your password, as it cannot be recovered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Saving backup...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Backup complete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Deselect all</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Password</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>App grid layout</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter a password</source>
+        <source>Details</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -203,7 +203,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Label (optional)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Security</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Password (min 6 characters)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter a password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -219,7 +235,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Backup in progress</source>
+        <source>Destination</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start backup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preparing backup...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -402,10 +426,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Receiving</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Backup received</source>
         <translation type="unfinished"></translation>
     </message>
@@ -447,6 +467,18 @@
     </message>
     <message>
         <source>Stop receive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Receiving in progress</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Receiving incomplete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Receiving %1...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -545,10 +577,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Error:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Restoring...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -592,15 +620,27 @@
         <source>Restore in progress</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Preparing restore...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter the backup password and select the items you want to restore.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Security</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SendPage</name>
     <message>
         <source>Sending backup...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sending</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -665,13 +705,21 @@
         <source>Stop sending</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Sending in progress</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sending incomplete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sending %1...</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>StorageDestinationButton</name>
-    <message>
-        <source>Destination</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>SD card</source>
         <translation type="unfinished"></translation>
@@ -681,11 +729,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Available space:</source>
+        <source>Internal storage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Internal storage</source>
+        <source>Available space: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save to</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -784,22 +836,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Saving final archive...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Writing metadata...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Generating checksum...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Compressing and encrypting files...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Saving messages...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -848,19 +884,110 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Decrypting and decompressing...</source>
+        <source>Finishing up...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Verifying checksum...</source>
+        <source>Saving backup information...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Reading metadata...</source>
+        <source>Creating integrity check...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Extracting backup archive...</source>
+        <source>Creating secure backup...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preparing files for restore...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Verifying backup integrity...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loading backup details...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opening backup...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TechnicalDetailsPage</name>
+    <message>
+        <source>Technical details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Under the hood</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Talteen acts as a frontend for:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Archiving:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Compression:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Encryption:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The archive structure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An AES-256 encrypted, XZ-compressed stream containing the actual files and folders.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A human-readable file containing the metadata necessary for the app to understand what is inside the encrypted payload without having to decrypt it first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Manual backup extraction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The backup files are saved to:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Internal storage:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SD card:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You can extract any .talteen archive on any Linux terminal without using the app:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unpack the container:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decrypt and unpack the payload:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A custom &lt;code&gt;QTcpServer/QTcpSocket&lt;/code&gt; implementation is used to facilitate device-to-device transfers over the local network.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The app creates a standard tar archive with the extension &lt;code&gt;.talteen&lt;/code&gt; holding two files:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

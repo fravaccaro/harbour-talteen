@@ -99,56 +99,76 @@
         <source>This software is provided &quot;as is&quot;, without warranty of any kind, express or implied. In no event shall the authors or copyright holders be liable for any claim, damages or other liability arising from, out of or in connection with the software. You are solely responsible for the safety of your data.</source>
         <translation>Questo software è fornito &quot;così com&apos;è&quot;, senza garanzie di alcun tipo, espresse o implicite. In nessun caso gli autori o i titolari del copyright saranno ritenuti responsabili per qualsiasi reclamo, danno o altra responsabilità derivante da, fuori o in connessione con il software. Sei l&apos;unico responsabile per la sicurezza dei tuoi dati.</translation>
     </message>
+    <message>
+        <source>Technical details</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>BackupPage</name>
     <message>
-        <source>Select all</source>
-        <translation>Seleziona tutto</translation>
+        <source>Ready</source>
+        <translation>Pronto</translation>
     </message>
     <message>
-        <source>Backup</source>
-        <translation>Backup</translation>
+        <source>Saving backup...</source>
+        <translation>Salvataggio backup...</translation>
     </message>
     <message>
-        <source>Applications</source>
-        <translation>Applicazioni</translation>
+        <source>Backup in progress</source>
+        <translation>Backup in corso</translation>
+    </message>
+    <message>
+        <source>Backup complete</source>
+        <translation>Backup completato</translation>
+    </message>
+    <message>
+        <source>Backup failed</source>
+        <translation>Backup fallito</translation>
     </message>
     <message>
         <source>App data</source>
         <translation>Dati app</translation>
     </message>
     <message>
-        <source>Communication</source>
-        <translation>Comunicazione</translation>
+        <source>Applications</source>
+        <translation>Applicazioni</translation>
+    </message>
+    <message>
+        <source>App grid layout</source>
+        <translation>Layout griglia app</translation>
     </message>
     <message>
         <source>Call history</source>
         <translation>Cronologia chiamate</translation>
     </message>
     <message>
-        <source>Messages</source>
-        <translation>Messaggi</translation>
+        <source>Communication</source>
+        <translation>Comunicazione</translation>
     </message>
     <message>
-        <source>Files</source>
-        <translation>File</translation>
+        <source>Messages</source>
+        <translation>Messaggi</translation>
     </message>
     <message>
         <source>Documents</source>
         <translation>Documenti</translation>
     </message>
     <message>
+        <source>Files</source>
+        <translation>File</translation>
+    </message>
+    <message>
         <source>Downloads</source>
         <translation>File scaricati</translation>
     </message>
     <message>
-        <source>Media</source>
-        <translation>Media</translation>
-    </message>
-    <message>
         <source>Pictures</source>
         <translation>Immagini</translation>
+    </message>
+    <message>
+        <source>Media</source>
+        <translation>Media</translation>
     </message>
     <message>
         <source>Videos</source>
@@ -159,52 +179,48 @@
         <translation>Musica</translation>
     </message>
     <message>
-        <source>Start backup</source>
-        <translation>Avvia backup</translation>
+        <source>Deselect all</source>
+        <translation>Deseleziona tutto</translation>
     </message>
     <message>
-        <source>Backup failed</source>
-        <translation>Backup fallito</translation>
+        <source>Select all</source>
+        <translation>Seleziona tutto</translation>
     </message>
     <message>
         <source>New backup</source>
         <translation>Nuovo backup</translation>
     </message>
     <message>
-        <source>Label (optional)</source>
-        <translation>Etichetta (opzionale)</translation>
+        <source>Choose items to back up. Do not forget your password, as it cannot be recovered.</source>
+        <translation>Scegli gli elementi di cui fare il backup. Non dimenticare la password, non può essere recuperata.</translation>
     </message>
     <message>
-        <source>Saving backup...</source>
-        <translation>Salvataggio backup...</translation>
-    </message>
-    <message>
-        <source>Backup complete</source>
-        <translation>Backup completato</translation>
-    </message>
-    <message>
-        <source>Deselect all</source>
-        <translation>Deseleziona tutto</translation>
-    </message>
-    <message>
-        <source>Password</source>
-        <translation>Password</translation>
-    </message>
-    <message>
-        <source>App grid layout</source>
-        <translation>Layout griglia app</translation>
-    </message>
-    <message>
-        <source>Enter a password</source>
-        <translation>Inserisci una password</translation>
+        <source>Details</source>
+        <translation>Dettagli</translation>
     </message>
     <message>
         <source>Invalid label (min 3 chars, no spaces)</source>
         <translation>Etichetta non valida (min. 3 car., no spazi)</translation>
     </message>
     <message>
+        <source>Label (optional)</source>
+        <translation>Etichetta (opzionale)</translation>
+    </message>
+    <message>
+        <source>Security</source>
+        <translation>Sicurezza</translation>
+    </message>
+    <message>
         <source>Password (min 6 characters)</source>
         <translation>Password (min. 6 caratteri)</translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation>Password</translation>
+    </message>
+    <message>
+        <source>Enter a password</source>
+        <translation>Inserisci una password</translation>
     </message>
     <message>
         <source>Passwords do not match</source>
@@ -219,8 +235,16 @@
         <translation>Conferma la tua password</translation>
     </message>
     <message>
-        <source>Backup in progress</source>
-        <translation type="unfinished"></translation>
+        <source>Destination</source>
+        <translation>Destinazione</translation>
+    </message>
+    <message>
+        <source>Start backup</source>
+        <translation>Avvia backup</translation>
+    </message>
+    <message>
+        <source>Preparing backup...</source>
+        <translation>Preparazione backup...</translation>
     </message>
 </context>
 <context>
@@ -402,10 +426,6 @@
         <translation>Ricezione file...</translation>
     </message>
     <message>
-        <source>Receiving</source>
-        <translation>Ricezione</translation>
-    </message>
-    <message>
         <source>Backup received</source>
         <translation>Backup ricevuto</translation>
     </message>
@@ -448,6 +468,18 @@
     <message>
         <source>Stop receive</source>
         <translation>Termina ricezione</translation>
+    </message>
+    <message>
+        <source>Receiving in progress</source>
+        <translation>Ricezione in corso</translation>
+    </message>
+    <message>
+        <source>Receiving incomplete</source>
+        <translation>Ricezione incompleta</translation>
+    </message>
+    <message>
+        <source>Receiving %1...</source>
+        <translation>Ricezione %1...</translation>
     </message>
 </context>
 <context>
@@ -545,10 +577,6 @@
         <translation>Ripristino fallito</translation>
     </message>
     <message>
-        <source>Error:</source>
-        <translation>Errore:</translation>
-    </message>
-    <message>
         <source>Restoring...</source>
         <translation>Ripristino...</translation>
     </message>
@@ -590,7 +618,23 @@
     </message>
     <message>
         <source>Restore in progress</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripristino in corso</translation>
+    </message>
+    <message>
+        <source>Preparing restore...</source>
+        <translation>Preparazione ripristino...</translation>
+    </message>
+    <message>
+        <source>Error: %1</source>
+        <translation>Errore: %1</translation>
+    </message>
+    <message>
+        <source>Enter the backup password and select the items you want to restore.</source>
+        <translation>Inserisci la password del backup e seleziona gli elementi che desideri ripristinare.</translation>
+    </message>
+    <message>
+        <source>Security</source>
+        <translation>Sicurezza</translation>
     </message>
 </context>
 <context>
@@ -598,10 +642,6 @@
     <message>
         <source>Sending backup...</source>
         <translation>Invio backup...</translation>
-    </message>
-    <message>
-        <source>Sending</source>
-        <translation>Invio</translation>
     </message>
     <message>
         <source>Sending complete</source>
@@ -666,13 +706,21 @@
         <source>Stop sending</source>
         <translation>Termina invio</translation>
     </message>
+    <message>
+        <source>Sending in progress</source>
+        <translation>Invio in corso</translation>
+    </message>
+    <message>
+        <source>Sending incomplete</source>
+        <translation>Invio incompleto</translation>
+    </message>
+    <message>
+        <source>Sending %1...</source>
+        <translation>Invio %1...</translation>
+    </message>
 </context>
 <context>
     <name>StorageDestinationButton</name>
-    <message>
-        <source>Destination</source>
-        <translation>Destinazione</translation>
-    </message>
     <message>
         <source>SD card</source>
         <translation>Scheda SD</translation>
@@ -682,12 +730,16 @@
         <translation>Scheda SD non rilevata</translation>
     </message>
     <message>
-        <source>Available space:</source>
-        <translation>Spazio disponibile:</translation>
-    </message>
-    <message>
         <source>Internal storage</source>
         <translation>Memoria interna</translation>
+    </message>
+    <message>
+        <source>Available space: %1</source>
+        <translation>Spazio disponibile: %1</translation>
+    </message>
+    <message>
+        <source>Save to</source>
+        <translation>Salva in</translation>
     </message>
 </context>
 <context>
@@ -785,83 +837,158 @@
         <translation>Impossible salvare dati app</translation>
     </message>
     <message>
-        <source>Saving final archive...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Writing metadata...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Generating checksum...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Compressing and encrypting files...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Saving messages...</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvataggio messaggi...</translation>
     </message>
     <message>
         <source>Saving call history...</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvataggio cronologia chiamate...</translation>
     </message>
     <message>
         <source>Saving app data...</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvataggio dati app...</translation>
     </message>
     <message>
         <source>Restoring messages...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripristino messaggi...</translation>
     </message>
     <message>
         <source>Restoring call history...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripristino cronologia chiamate...</translation>
     </message>
     <message>
         <source>Restoring app grid layout...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripristino layout griglia app...</translation>
     </message>
     <message>
         <source>Restoring app data...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripristino dati app...</translation>
     </message>
     <message>
         <source>Restoring pictures...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripristino immagini...</translation>
     </message>
     <message>
         <source>Restoring documents...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripristino documenti...</translation>
     </message>
     <message>
         <source>Restoring downloads...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripristino file scaricati...</translation>
     </message>
     <message>
         <source>Restoring music...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripristino musica...</translation>
     </message>
     <message>
         <source>Restoring videos...</source>
+        <translation>Ripristino video...</translation>
+    </message>
+    <message>
+        <source>Finishing up...</source>
+        <translation>Completamento in corso...</translation>
+    </message>
+    <message>
+        <source>Saving backup information...</source>
+        <translation>Salvataggio informazioni del backup...</translation>
+    </message>
+    <message>
+        <source>Creating integrity check...</source>
+        <translation>Creazione controllo di integrità...</translation>
+    </message>
+    <message>
+        <source>Creating secure backup...</source>
+        <translation>Creazione backup sicuro...</translation>
+    </message>
+    <message>
+        <source>Preparing files for restore...</source>
+        <translation>Preparazione file per il ripristino...</translation>
+    </message>
+    <message>
+        <source>Verifying backup integrity...</source>
+        <translation>Verifica integrità del backup...</translation>
+    </message>
+    <message>
+        <source>Loading backup details...</source>
+        <translation>Caricamento dettagli del backup...</translation>
+    </message>
+    <message>
+        <source>Opening backup...</source>
+        <translation>Apertura backup...</translation>
+    </message>
+</context>
+<context>
+    <name>TechnicalDetailsPage</name>
+    <message>
+        <source>Technical details</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Decrypting and decompressing...</source>
+        <source>Under the hood</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Verifying checksum...</source>
+        <source>Talteen acts as a frontend for:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Reading metadata...</source>
+        <source>Archiving:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Extracting backup archive...</source>
+        <source>Compression:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Encryption:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The archive structure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An AES-256 encrypted, XZ-compressed stream containing the actual files and folders.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A human-readable file containing the metadata necessary for the app to understand what is inside the encrypted payload without having to decrypt it first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Manual backup extraction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The backup files are saved to:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Internal storage:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SD card:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You can extract any .talteen archive on any Linux terminal without using the app:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unpack the container:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decrypt and unpack the payload:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A custom &lt;code&gt;QTcpServer/QTcpSocket&lt;/code&gt; implementation is used to facilitate device-to-device transfers over the local network.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The app creates a standard tar archive with the extension &lt;code&gt;.talteen&lt;/code&gt; holding two files:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
