@@ -1,6 +1,7 @@
 # Working files
 talteen_backup_*
 **/talteen_backup_*
+**/debug*
 
 # C++ objects and libs
 *.slo

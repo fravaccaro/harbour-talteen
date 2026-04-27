@@ -166,7 +166,7 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
             }
 
             // Natively refresh PackageKit cache
-            qDebug() << "Refreshing PackageKit cache natively...";
+            qDebug() << "Refreshing PackageKit cache...";
 
             auto refreshTrans = PackageKit::Daemon::refreshCache(true);
 
