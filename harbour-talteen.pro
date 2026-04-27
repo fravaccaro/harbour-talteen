@@ -31,7 +31,11 @@ SOURCES += \
     src/main.cpp \
     src/spawner.cpp \
     src/networktransfer.cpp \
-    src/talteen.cpp
+    src/talteen.cpp \
+    src/talteen_device.cpp \
+    src/talteen_backup.cpp \
+    src/talteen_restore.cpp \
+    src/talteen_archive.cpp
 
 DISTFILES += qml/harbour-talteen.qml \
     qml/cover/*.qml \
