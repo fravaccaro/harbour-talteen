@@ -928,6 +928,10 @@
         <source>Saving apps and repositories...</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Restoring apps and repositories (this may take a while)...</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>TechnicalDetailsPage</name>

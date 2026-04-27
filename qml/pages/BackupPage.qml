@@ -72,7 +72,7 @@ Page {
             append({
                 "key": "appdata",
                 "name": qsTr("App data"),
-                "section": qsTr("Applications"),
+                "section": "",
                 "isChecked": true
             });
             append({

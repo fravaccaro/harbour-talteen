@@ -461,7 +461,7 @@ void Talteen::startBackup(const QVariantMap &options)
         qDebug() << "Executing Step 0: Exporting apps and repositories...";
         QDir().mkpath(workDir + "/appinstalled");
 
-        // Command 1: Repositories
+        // Repositories
         QProcess *repoProc = new QProcess(this);
         connect(repoProc, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                 [=](int, QProcess::ExitStatus)
@@ -474,7 +474,7 @@ void Talteen::startBackup(const QVariantMap &options)
                     }
                     repoProc->deleteLater();
 
-                    // Command 2: Installed Apps (Runs only after Repos finish)
+                    // Installed Apps (Runs only after Repos finish)
                     QProcess *appProc = new QProcess(this);
                     connect(appProc, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                             [=](int, QProcess::ExitStatus)
@@ -582,17 +582,219 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
         emit restoreFinished(true, tr("Backup restored successfully"));
     };
 
+    auto restoreApps = [=]()
+    {
+        if (selectedOptions.value("appinstalled").toBool() && QDir(workDir + "/appinstalled").exists())
+        {
+            emit progressUpdate(tr("Restoring apps and repositories (this may take a while)..."));
+            qDebug() << "Restoring repositories and applications...";
+
+            // Add repositories via D-Bus
+            QProcess ssuProc;
+            ssuProc.start("ssu", {"lr"});
+            ssuProc.waitForFinished();
+            QString currentRepos = QString(ssuProc.readAllStandardOutput());
+
+            QFile repoFile(workDir + "/appinstalled/repositories.txt");
+            if (repoFile.open(QIODevice::ReadOnly | QIODevice::Text))
+            {
+                // Connect to the SSU System Daemon
+                QDBusInterface ssuInterface(
+                    "org.nemo.ssu",
+                    "/org/nemo/ssu",
+                    "org.nemo.ssu",
+                    QDBusConnection::systemBus());
+
+                QTextStream in(&repoFile);
+                while (!in.atEnd())
+                {
+                    QString line = in.readLine().trimmed();
+                    if (!line.isEmpty())
+                    {
+                        QStringList parts = line.split(" ", QString::SkipEmptyParts);
+                        if (parts.size() >= 2)
+                        {
+                            QString repoAlias = parts[0];
+                            QString repoUrl = parts[1];
+
+                            // Check if the system already has this repo
+                            if (currentRepos.contains(repoAlias))
+                            {
+                                qDebug() << "Repository already enabled, skipping:" << repoAlias;
+                                continue;
+                            }
+
+                            // Trigger the D-Bus addRepo method synchronously
+                            QDBusReply<void> reply = ssuInterface.call("addRepo", repoAlias, repoUrl);
+                            if (!reply.isValid())
+                            {
+                                qDebug() << "D-Bus SSU Error for" << repoAlias << ":" << reply.error().message();
+                            }
+                            else
+                            {
+                                qDebug() << "Successfully added repo via D-Bus:" << repoAlias;
+                            }
+                        }
+                    }
+                }
+                repoFile.close();
+            }
+
+            // Read installed packages from backup
+            QFile appFile(workDir + "/appinstalled/appinstalled.txt");
+            QStringList packageNames;
+            if (appFile.open(QIODevice::ReadOnly | QIODevice::Text))
+            {
+                QTextStream in(&appFile);
+                while (!in.atEnd())
+                {
+                    QString pkg = in.readLine().trimmed();
+                    if (!pkg.isEmpty() && !packageNames.contains(pkg))
+                    {
+                        packageNames.append(pkg);
+                    }
+                }
+                appFile.close();
+            }
+
+            qDebug() << "Apps found in backup file:" << packageNames.size();
+            // If you want to see exactly what is in the file, uncomment the next line:
+            // qDebug() << "Backup list:" << packageNames;
+
+            if (packageNames.isEmpty())
+            {
+                qDebug() << "[WARNING] The appinstalled.txt file in this backup is empty!";
+                finalCleanup();
+                return;
+            }
+
+            // Exclude packages that are already installed on this device
+            QProcess rpmProc;
+            rpmProc.start("sh", {"-c", "rpm -qa --qf '%{NAME}\n'"});
+            rpmProc.waitForFinished();
+
+            if (rpmProc.exitStatus() == QProcess::NormalExit)
+            {
+                QStringList currentApps = QString(rpmProc.readAllStandardOutput()).split('\n', QString::SkipEmptyParts);
+                qDebug() << "Apps currently installed on phone:" << currentApps.size();
+
+                for (const QString &app : currentApps)
+                {
+                    packageNames.removeAll(app.trimmed());
+                }
+            }
+            else
+            {
+                qDebug() << "[ERROR] Failed to run rpm command!";
+            }
+
+            qDebug() << "Apps missing and ready to be installed:" << packageNames.size();
+            qDebug() << "Missing list:" << packageNames;
+
+            if (packageNames.isEmpty())
+            {
+                qDebug() << "No missing packages found. Everything is already installed!";
+                finalCleanup();
+                return;
+            }
+
+            // Natively refresh PackageKit cache
+            qDebug() << "Refreshing PackageKit cache natively...";
+
+            auto refreshTrans = PackageKit::Daemon::refreshCache(true);
+
+            // Handle the case where the user cancels or the system blocks the refresh
+            connect(refreshTrans, &PackageKit::Transaction::errorCode, this, [=](PackageKit::Transaction::Error error, const QString &details)
+                    {
+                        qDebug() << "[PackageKit Refresh Error]" << error << "-" << details;
+                        // We continue anyway, because a stale cache is better than no restore at all.
+                    });
+
+            connect(refreshTrans, &PackageKit::Transaction::finished, this, [=](PackageKit::Transaction::Exit, uint)
+                    {
+                        qDebug() << "Cache refresh attempt finished.";
+
+                        // One-by-one search to prevent Zypper batch crashes
+                        QSharedPointer<QStringList> packageIds(new QStringList());
+                        QSharedPointer<QStringList> remainingNames(new QStringList(packageNames));
+
+                        // Use QSharedPointer so the lambda can safely capture itself
+                        QSharedPointer<std::function<void()>> resolveNext(new std::function<void()>());
+
+                        *resolveNext = [=]()
+                        {
+                            if (remainingNames->isEmpty())
+                            {
+                                if (packageIds->isEmpty())
+                                {
+                                    qDebug() << "[ERROR] No valid packages found.";
+                                    finalCleanup();
+                                    return;
+                                }
+
+                                // Install the valid packages!
+                                auto installTrans = PackageKit::Daemon::installPackages(*packageIds);
+
+                                connect(installTrans, &PackageKit::Transaction::errorCode, this, [=](PackageKit::Transaction::Error error, const QString &details)
+                                        { qDebug() << "[PackageKit Install Error]" << error << "-" << details; });
+
+                                connect(installTrans, &PackageKit::Transaction::finished, this, [=](PackageKit::Transaction::Exit exitStatus, uint)
+                                        {
+                                            if (exitStatus == PackageKit::Transaction::ExitSuccess) {
+                                                qDebug() << "Apps restored successfully.";
+                                            } else {
+                                                qDebug() << "App restore failed.";
+                                            }
+                                            finalCleanup(); });
+                                return;
+                            }
+
+                            // Process the next package
+                            QString currentPkg = remainingNames->takeFirst();
+                            const PackageKit::Transaction::Filters searchFilters =
+                                PackageKit::Transaction::FilterNewest | PackageKit::Transaction::FilterNotInstalled;
+                            auto searchTrans = PackageKit::Daemon::searchNames(currentPkg, searchFilters);
+
+                            connect(searchTrans, &PackageKit::Transaction::package, this, [packageIds, currentPkg](PackageKit::Transaction::Info, const QString &packageID, const QString &)
+                                    {
+                                        if (packageID.section(QLatin1Char(';'), 0, 0) != currentPkg)
+                                            return;
+                                        if (packageIds->contains(packageID))
+                                            return;
+                                        const QString pkgName = packageID.section(QLatin1Char(';'), 0, 0);
+                                        for (const QString &existing : *packageIds)
+                                        {
+                                            if (existing.section(QLatin1Char(';'), 0, 0) == pkgName)
+                                                return;
+                                        }
+                                        packageIds->append(packageID); });
+
+                            connect(searchTrans, &PackageKit::Transaction::finished, this, [=]()
+                                    {
+                                        (*resolveNext)(); // Call the next iteration
+                                    });
+                        };
+
+                        (*resolveNext)(); // Start the loop
+                    });
+        }
+        else
+        {
+            finalCleanup();
+        }
+    };
+
     auto restoreMessages = [=]()
     {
         if (selectedOptions.value("messages").toBool() && QFile::exists(workDir + "/messages/groups.dat"))
         {
             emit progressUpdate(tr("Restoring messages..."));
             qDebug() << "Importing messages...";
-            Spawner::execute("commhistory-tool", {"import", "-groups", workDir + "/messages/groups.dat"}, finalCleanup);
+            Spawner::execute("commhistory-tool", {"import", "-groups", workDir + "/messages/groups.dat"}, restoreApps);
         }
         else
         {
-            finalCleanup();
+            restoreApps();
         }
     };
 
@@ -852,7 +1054,8 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
             });
 }
 
-QVariantList Talteen::getBackupFiles()
+QVariantList
+Talteen::getBackupFiles()
 {
     QVariantList list;
 

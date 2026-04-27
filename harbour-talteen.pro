@@ -12,6 +12,9 @@
 # The name of your application
 TARGET = harbour-talteen
 
+QT += qml quick dbus
+CONFIG += link_pkgconfig
+PKGCONFIG += packagekitqt5
 
 images.files = images/*.png
 images.path = $$PREFIX/share/$$TARGET/images
@@ -46,5 +49,12 @@ SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172
 CONFIG += sailfishapp_i18n
 
 
-INSTALLS += images
+privileges.files = data/harbour-talteen
+privileges.path = $$INSTALL_ROOT/usr/share/mapplauncherd/privileges.d/
+dbus.files = data/harbour.talteen.service
+dbus.path = $$INSTALL_ROOT/usr/share/dbus-1/services
+polkit_rules.files = data/99-talteen.rules
+polkit_rules.path = $$INSTALL_ROOT/usr/share/polkit-1/rules.d/
+
+INSTALLS += privileges dbus polkit_rules images
 TRANSLATIONS +=  translations/*.ts

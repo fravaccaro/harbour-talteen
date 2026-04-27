@@ -159,7 +159,7 @@ void NetworkTransfer::stopDiscovery()
     }
 }
 
-// FIX 1: Updated signature to include fileLabel
+// Updated signature to include fileLabel
 void NetworkTransfer::sendFile(QString targetIp, int port, QString filePath, QString fileLabel)
 {
 
@@ -222,7 +222,7 @@ void NetworkTransfer::sendFile(QString targetIp, int port, QString filePath, QSt
 
     socket->connectToHost(targetIp, port);
 
-    // FIX 2: Added the variables to the lambda capture, and constructed the 3-part header
+    // Add the variables to the lambda capture, and constructed the 3-part header
     connect(socket, &QTcpSocket::connected, this, [this, fileName, fileLabel, fileInfo]()
             {
         emit statusChanged(tr("Waiting for the other device to accept..."));
@@ -359,7 +359,7 @@ void NetworkTransfer::acceptConnection()
 
                         m_pendingFileName = "incoming_backup.talteen";
                         
-                        // FIX 3: Parse the 3-part header and set a fallback label
+                        // Parse the 3-part header and set a fallback label
                         QString m_pendingFileLabel = m_pendingFileName;
 
                         if (header.contains('|'))

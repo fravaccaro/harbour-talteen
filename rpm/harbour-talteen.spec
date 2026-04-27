@@ -2,7 +2,7 @@ Name:       harbour-talteen
 
 Summary:    Talteen
 Version:    0.1.5
-Release:    1
+Release:    22
 License:    GPLv3
 URL:        https://github.com/fravaccaro/harbour-talteen
 Source0:    %{name}-%{version}.tar.bz2
@@ -12,6 +12,7 @@ Requires:   openssl
 Requires:   xz
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
 BuildRequires:  pkgconfig(Qt5Core)
+BuildRequires:  pkgconfig(packagekitqt5)
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  pkgconfig(Qt5Network)
@@ -43,3 +44,6 @@ desktop-file-install --delete-original         --dir %{buildroot}%{_datadir}/app
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
+%{_datadir}/mapplauncherd/privileges.d/%{name}
+%{_datadir}/dbus-1/services/harbour.talteen.service
+%{_datadir}/polkit-1/rules.d/99-talteen.rules

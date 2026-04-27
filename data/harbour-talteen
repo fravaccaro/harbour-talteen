@@ -1,0 +1,2 @@
+# Allow harbour-talteen to manage packages silently
+/usr/bin/harbour-talteen,r
