@@ -11,6 +11,11 @@
 #include <QSettings>
 #include <functional>
 #include <QSharedPointer>
+#include <PackageKit/Daemon>
+#include <PackageKit/Transaction>
+#include <QDBusInterface>
+#include <QDBusReply>
+#include <QDBusConnection>
 
 Talteen::Talteen(QObject *parent) : QObject(parent)
 {
@@ -76,6 +81,7 @@ void Talteen::startBackup(const QVariantMap &options)
     QDir(workDir).removeRecursively();
     QDir().mkpath(workDir);
 
+    bool hasAppinstalled = options.value("appinstalled").toBool();
     bool hasAppdata = options.value("appdata").toBool();
     bool hasApporder = options.value("apporder").toBool();
     bool hasCalls = options.value("calls").toBool();
@@ -206,7 +212,7 @@ void Talteen::startBackup(const QVariantMap &options)
             out << "encrypted: true\n";
             out << "checksum: \"" << checksum << "\"\n";
 
-            QStringList allCategories = {"appdata", "apporder", "calls", "messages", "pictures", "documents", "downloads", "music", "videos"};
+            QStringList allCategories = {"appinstalled", "appdata", "apporder", "calls", "messages", "pictures", "documents", "downloads", "music", "videos"};
             for (const QString &category : allCategories)
             {
                 out << category << ": " << (options.value(category).toBool() ? "true" : "false") << "\n";
@@ -290,6 +296,8 @@ void Talteen::startBackup(const QVariantMap &options)
         QStringList tarArgs;
         tarArgs << "-cJhf" << "-";
 
+        if (hasAppinstalled)
+            tarArgs << "appinstalled";
         if (hasApporder)
             tarArgs << "apporder";
         if (hasCalls)
@@ -440,8 +448,58 @@ void Talteen::startBackup(const QVariantMap &options)
         rsyncProcess->start("rsync", rsyncArgs);
     };
 
+    // Defined last because it will be the very first one to run
+    auto runAppinstalledStep = [=]()
+    {
+        if (!hasAppinstalled)
+        {
+            runRsyncAppdataStep(); // Skip and move to the next step
+            return;
+        }
+
+        emit progressUpdate(tr("Saving apps and repositories..."));
+        qDebug() << "Executing Step 0: Exporting apps and repositories...";
+        QDir().mkpath(workDir + "/appinstalled");
+
+        // Command 1: Repositories
+        QProcess *repoProc = new QProcess(this);
+        connect(repoProc, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                [=](int, QProcess::ExitStatus)
+                {
+                    QFile repoFile(workDir + "/appinstalled/repositories.txt");
+                    if (repoFile.open(QIODevice::WriteOnly | QIODevice::Text))
+                    {
+                        repoFile.write(repoProc->readAllStandardOutput());
+                        repoFile.close();
+                    }
+                    repoProc->deleteLater();
+
+                    // Command 2: Installed Apps (Runs only after Repos finish)
+                    QProcess *appProc = new QProcess(this);
+                    connect(appProc, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                            [=](int, QProcess::ExitStatus)
+                            {
+                                QFile appFile(workDir + "/appinstalled/appinstalled.txt");
+                                if (appFile.open(QIODevice::WriteOnly | QIODevice::Text))
+                                {
+                                    appFile.write(appProc->readAllStandardOutput());
+                                    appFile.close();
+                                }
+                                appProc->deleteLater();
+
+                                // Move to the next step in the backup chain
+                                runRsyncAppdataStep();
+                            });
+
+                    // C++ Strings don't need escaping for $ signs, so we can pass your awk exactly as is.
+                    appProc->start("sh", {"-c", "pkcon get-packages --filter installed | awk '{print $2}' | grep -iE '^(harbour|openrepos|sailfishos|patchmanager)' | sed 's/-[0-9].*//'"});
+                });
+
+        repoProc->start("sh", {"-c", "ssu lr | grep -iE 'openrepos|chum' | awk '{ print $2, $4 }'"});
+    };
+
     // Start the chain
-    runRsyncAppdataStep();
+    runAppinstalledStep();
 }
 
 void Talteen::analyzeArchive(const QString &backupFile)

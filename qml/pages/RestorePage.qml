@@ -110,12 +110,20 @@ Page {
 
         Component.onCompleted: {
             // 'triggers' is used to determine whether the section header should be visible.
+
+            append({
+                "key": "appinstalled",
+                "name": qsTr("Sailfish OS apps"),
+                "section": qsTr("Applications"),
+                "triggers": "appinstalled,appdata,apporder",
+                "isChecked": false
+            });
             append({
                 "key": "appdata",
                 "name": qsTr("App data"),
-                "section": qsTr("Applications"),
-                "triggers": "appdata,apporder",
-                "isChecked": false
+                "section": "",
+                "triggers": "",
+                "isChecked": true
             });
             append({
                 "key": "apporder",

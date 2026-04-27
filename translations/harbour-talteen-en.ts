@@ -246,6 +246,10 @@
         <source>Preparing backup...</source>
         <translation>Preparing backup...</translation>
     </message>
+    <message>
+        <source>Sailfish OS apps</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CoverPage</name>
@@ -636,6 +640,10 @@
         <source>Security</source>
         <translation>Security</translation>
     </message>
+    <message>
+        <source>Sailfish OS apps</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SendPage</name>
@@ -915,6 +923,10 @@
     <message>
         <source>Opening backup...</source>
         <translation>Opening backup...</translation>
+    </message>
+    <message>
+        <source>Saving apps and repositories...</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

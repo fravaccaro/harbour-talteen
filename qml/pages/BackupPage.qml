@@ -64,6 +64,12 @@ Page {
 
         Component.onCompleted: {
             append({
+                "key": "appinstalled",
+                "name": qsTr("Sailfish OS apps"),
+                "section": qsTr("Applications"),
+                "isChecked": true
+            });
+            append({
                 "key": "appdata",
                 "name": qsTr("App data"),
                 "section": qsTr("Applications"),
