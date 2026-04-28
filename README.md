@@ -3,9 +3,15 @@ Talteen is your all-in-one backup companion for Sailfish OS. Whether you are swi
 
 Available on [OpenRepos](https://openrepos.net/content/fravaccaro/talteen-backup).
 
-<a href="screenshots/grayscale.png"><img width="25%" style="float: left;" src="screenshots/grayscale.png" /></a> <a href="screenshots/brightness.png"><img width="25%" style="float: left;" src="screenshots/brightness.png" /></a>
-<br style="clear: both; height:5px;" /> <a href="screenshots/contrast.png"><img width="25%" style="float: left;" src="screenshots/contrast.png" /></a>
-<br style="clear: both; height:5px;" />
+## Screenshots
+
+<p align="left">
+  <img src="screenshots/MainScreen.png" alt="Main Screen" width="32%" />
+  <img src="screenshots/Backup.png" alt="Backup" width="32%" />
+  <img src="screenshots/Restore.png" alt="Restore" width="32%" />
+  <img src="screenshots/Send.png" alt="Send" width="32%" />
+  <img src="screenshots/Receive.png" alt="Receive" width="32%" />
+</p>
 
 ## Features
 * Save your messages, call history, app data, app grid layout, and media.
