@@ -47,13 +47,28 @@ void Talteen::analyzeArchive(const QString &backupFile)
                     }
                 }
 
-                if (metadata.value("version").toString() != "1.0.0")
+                const QString version = metadata.value("version").toString();
+                if (version == "1.0.0")
                 {
-                    emit archiveAnalyzed(false, tr("Unsupported backup version"), QVariantMap());
+                    emit archiveAnalyzed(true, tr("Backup verified"), metadata);
+                }
+                else if (version == "2.0.0")
+                {
+                    const bool hasRequired = !metadata.value("encryption").toString().isEmpty()
+                                             && !metadata.value("kdf").toString().isEmpty()
+                                             && !metadata.value("kdf_iterations").toString().isEmpty()
+                                             && !metadata.value("salt_b64").toString().isEmpty()
+                                             && !metadata.value("iv_b64").toString().isEmpty()
+                                             && !metadata.value("tag_b64").toString().isEmpty()
+                                             && !metadata.value("aad").toString().isEmpty();
+                    if (hasRequired)
+                        emit archiveAnalyzed(true, tr("Backup verified"), metadata);
+                    else
+                        emit archiveAnalyzed(false, tr("Invalid v2 backup metadata"), QVariantMap());
                 }
                 else
                 {
-                    emit archiveAnalyzed(true, tr("Backup verified"), metadata);
+                    emit archiveAnalyzed(false, tr("Unsupported backup version"), QVariantMap());
                 }
 
                 tarProcess->deleteLater();

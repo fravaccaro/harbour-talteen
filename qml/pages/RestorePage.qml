@@ -288,7 +288,8 @@ Page {
                     TextSwitch {
                         visible: availableMetadata[model.key] === "true"
                         text: model.name
-                        description: model.key === "apporder" ? qsTr("Takes effect after restarting the home screen or device") : ""
+                        description: model.key === "apporder" ? qsTr("Takes effect after restarting the home screen or device.") :
+                                     model.key === "appinstalled" ? qsTr("Applies only to native Sailfish OS apps. Requires an internet connection and may take a few minutes.") : ""
                         enabled: !isRestoreRunning
                         checked: model.isChecked
                         onClicked: {

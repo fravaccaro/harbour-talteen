@@ -31,7 +31,7 @@ The backup files are saved to:
 * Internal storage: `/home/defaultuser/.local/share/harbour-talteen`
 * SD card: `/run/media/sdcard/harbour-talteen`
 
-You can extract any `.talteen` archive on any Linux terminal without using the app:
+You can extract legacy `v1` (`AES-256-CBC`) backups on any Linux terminal without using the app:
 
 1. Unpack the container:
    ```
@@ -41,6 +41,27 @@ You can extract any `.talteen` archive on any Linux terminal without using the a
    ```
    openssl enc -d -aes-256-cbc -pbkdf2 -in payload.enc | tar -xJv
    ```
+
+### Manual v2 backup extraction
+For `v2` backups (`encryption: "openssl-aes-256-gcm"`), use the helper script in this repo:
+
+```
+scripts/decrypt-v2.sh -i /path/to/backup.talteen -o /path/to/output
+```
+
+If `-p` is omitted, the script prompts for the password:
+
+```
+scripts/decrypt-v2.sh -i backup.talteen -o restored-data
+```
+
+You can optionally pass a password directly (less secure in shell history):
+
+```
+scripts/decrypt-v2.sh -i backup.talteen -o restored-data -p 'your-password'
+```
+
+The script validates v2 manifest fields (`kdf_iterations`, `salt_b64`, `iv_b64`, `tag_b64`, `aad`) and then decrypts with OpenSSL EVP AES-256-GCM before extracting the payload.
 
 
 

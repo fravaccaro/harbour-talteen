@@ -1,8 +1,8 @@
 Name:       harbour-talteen
 
 Summary:    Talteen
-Version:    0.1.5
-Release:    22
+Version:    0.2.0
+Release:    1
 License:    GPLv3
 URL:        https://github.com/fravaccaro/harbour-talteen
 Source0:    %{name}-%{version}.tar.bz2
@@ -16,6 +16,7 @@ BuildRequires:  pkgconfig(packagekitqt5)
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  pkgconfig(Qt5Network)
+BuildRequires:  pkgconfig(openssl)
 BuildRequires:  desktop-file-utils
 
 %description

@@ -1,5 +1,6 @@
 #include "talteen.h"
 #include "spawner.h"
+#include "talteen_crypto.h"
 
 #include <QDBusConnection>
 #include <QDBusInterface>
@@ -14,6 +15,7 @@
 #include <QStandardPaths>
 #include <QStorageInfo>
 #include <QTextStream>
+#include <QMap>
 
 #include <PackageKit/Daemon>
 #include <PackageKit/Transaction>
@@ -454,36 +456,225 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
         hashProc->start("sha256sum", {"payload.enc"});
     };
 
+    auto emitMetadataError = [=](const QString &fieldOrReason)
+    {
+        emit restoreFinished(false, tr("Invalid v2 backup metadata: %1").arg(fieldOrReason));
+    };
+
     // Read YAML metadata
     auto runReadYamlStep = [=]()
     {
         emit progressUpdate(tr("Loading backup details..."));
-        qDebug() << "Executing Step 2/4: Reading metadata for checksum...";
+        qDebug() << "Executing Step 2/4: Reading metadata...";
         QFile yamlFile(workDir + "/manifest.yaml");
         if (yamlFile.open(QIODevice::ReadOnly | QIODevice::Text))
         {
             QTextStream in(&yamlFile);
-            QString expectedChecksum = "";
+            QMap<QString, QString> metadata;
 
             while (!in.atEnd())
             {
-                QString line = in.readLine();
-                if (line.startsWith("checksum: "))
+                const QString line = in.readLine();
+                const int sep = line.indexOf(": ");
+                if (sep > 0)
                 {
-                    expectedChecksum = line.split(": ")[1].trimmed().remove("\"");
-                    break;
+                    const QString key = line.left(sep).trimmed();
+                    const QString value = line.mid(sep + 2).trimmed().remove("\"");
+                    metadata.insert(key, value);
                 }
             }
             yamlFile.close();
 
-            if (expectedChecksum.isEmpty())
+            const QString version = metadata.value("version");
+            if (version == "1.0.0")
             {
-                qDebug() << "[FATAL] No checksum found in archive metadata.";
-                emit restoreFinished(false, tr("Invalid backup format. Checksum is missing"));
-                return;
+                const QString expectedChecksum = metadata.value("checksum");
+                if (expectedChecksum.isEmpty())
+                {
+                    emit restoreFinished(false, tr("Invalid legacy backup. Checksum is missing"));
+                    return;
+                }
+                qDebug() << "V1 Backup detected. Running legacy checksum...";
+                runVerifyChecksumStep(expectedChecksum);
             }
+            else if (version == "2.0.0")
+            {
+                if (metadata.value("encrypted") != "true")
+                {
+                    emitMetadataError(tr("encrypted must be true"));
+                    return;
+                }
+                if (metadata.value("encryption") != "openssl-aes-256-gcm")
+                {
+                    emit restoreFinished(false, tr("Unsupported backup encryption format"));
+                    return;
+                }
+                if (metadata.value("kdf") != "pbkdf2-hmac-sha256")
+                {
+                    emit restoreFinished(false, tr("Unsupported backup key derivation format"));
+                    return;
+                }
 
-            runVerifyChecksumStep(expectedChecksum);
+                bool ok = false;
+                const int iterations = metadata.value("kdf_iterations").toInt(&ok);
+                if (!ok || iterations < 50000 || iterations > 5000000)
+                {
+                    emitMetadataError(tr("invalid kdf_iterations"));
+                    return;
+                }
+
+                const QString saltB64 = metadata.value("salt_b64");
+                const QString ivB64 = metadata.value("iv_b64");
+                const QString tagB64 = metadata.value("tag_b64");
+                const QString aad = metadata.value("aad");
+                if (saltB64.isEmpty())
+                {
+                    emitMetadataError(tr("missing salt_b64"));
+                    return;
+                }
+                if (ivB64.isEmpty())
+                {
+                    emitMetadataError(tr("missing iv_b64"));
+                    return;
+                }
+                if (tagB64.isEmpty())
+                {
+                    emitMetadataError(tr("missing tag_b64"));
+                    return;
+                }
+                if (aad.isEmpty())
+                {
+                    emitMetadataError(tr("missing aad"));
+                    return;
+                }
+                if (aad != "talteen:v2")
+                {
+                    emitMetadataError(tr("invalid aad"));
+                    return;
+                }
+
+                const QByteArray salt = QByteArray::fromBase64(saltB64.toUtf8());
+                const QByteArray iv = QByteArray::fromBase64(ivB64.toUtf8());
+                const QByteArray tag = QByteArray::fromBase64(tagB64.toUtf8());
+                if (salt.size() != 16)
+                {
+                    emitMetadataError(tr("salt_b64 has invalid length"));
+                    return;
+                }
+                if (iv.size() != 12)
+                {
+                    emitMetadataError(tr("iv_b64 has invalid length"));
+                    return;
+                }
+                if (tag.size() != 16)
+                {
+                    emitMetadataError(tr("tag_b64 has invalid length"));
+                    return;
+                }
+
+                QByteArray key;
+                const QString password = selectedOptions.value("password").toString();
+                if (!deriveKeyPbkdf2(password, salt, iterations, &key))
+                {
+                    emit restoreFinished(false, tr("Unable to derive decryption key"));
+                    return;
+                }
+
+                emit progressUpdate(tr("Decrypting backup payload..."));
+                QString cryptoError;
+                QFile encFile(workDir + "/payload.enc");
+                if (!encFile.open(QIODevice::ReadOnly))
+                {
+                    emit restoreFinished(false, tr("Unable to read encrypted payload"));
+                    return;
+                }
+
+                EVP_CIPHER_CTX *ctx = createAesGcmDecryptContext(key, iv, aad.toUtf8(), tag, &cryptoError);
+                if (!ctx)
+                {
+                    emit restoreFinished(false, tr("Unable to initialize decryption"));
+                    return;
+                }
+
+                emit progressUpdate(tr("Preparing files for restore..."));
+                QProcess *tarProcess = new QProcess(this);
+                tarProcess->setWorkingDirectory(workDir);
+                tarProcess->setProcessChannelMode(QProcess::ForwardedErrorChannel);
+                tarProcess->start("tar", {"-xJpf", "-", "-C", workDir});
+                if (!tarProcess->waitForStarted(5000))
+                {
+                    freeCipherContext(ctx);
+                    tarProcess->deleteLater();
+                    emit restoreFinished(false, tr("Unable to unpack restored files"));
+                    return;
+                }
+
+                bool streamOk = true;
+                while (streamOk)
+                {
+                    const QByteArray inChunk = encFile.read(65536);
+                    if (inChunk.isEmpty())
+                        break;
+
+                    QByteArray outChunk;
+                    if (!decryptAesGcmChunk(ctx, inChunk, &outChunk, &cryptoError))
+                    {
+                        streamOk = false;
+                        break;
+                    }
+                    if (!outChunk.isEmpty() && tarProcess->write(outChunk) != outChunk.size())
+                    {
+                        streamOk = false;
+                        cryptoError = tr("Unable to stream decrypted payload");
+                        break;
+                    }
+                }
+
+                if (streamOk && encFile.error() != QFile::NoError)
+                {
+                    streamOk = false;
+                    cryptoError = tr("Unable to read encrypted payload");
+                }
+
+                if (streamOk)
+                {
+                    QByteArray finalChunk;
+                    if (!finalizeAesGcmDecrypt(ctx, &finalChunk, &cryptoError))
+                        streamOk = false;
+                    else if (!finalChunk.isEmpty() && tarProcess->write(finalChunk) != finalChunk.size())
+                    {
+                        streamOk = false;
+                        cryptoError = tr("Unable to stream decrypted payload");
+                    }
+                }
+
+                freeCipherContext(ctx);
+
+                tarProcess->closeWriteChannel();
+                connect(tarProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                        [=, streamOk, cryptoError](int exitCode, QProcess::ExitStatus status)
+                        {
+                            tarProcess->deleteLater();
+                            QFile::remove(workDir + "/payload.enc");
+                            if (!streamOk)
+                            {
+                                qDebug() << "[FATAL] OpenSSL GCM decrypt failed:" << cryptoError;
+                                emit restoreFinished(false, tr("Unable to unlock backup (wrong password or modified backup)"));
+                            }
+                            else if (status == QProcess::NormalExit && exitCode == 0)
+                            {
+                                restoreFiles();
+                            }
+                            else
+                            {
+                                emit restoreFinished(false, tr("Unable to unpack restored files"));
+                            }
+                        });
+            }
+            else
+            {
+                emit restoreFinished(false, tr("Unsupported backup version"));
+            }
         }
         else
         {

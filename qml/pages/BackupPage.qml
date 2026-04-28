@@ -252,6 +252,7 @@ Page {
 
                     TextSwitch {
                         text: model.name
+                        description: model.key === "appinstalled" ? qsTr("Applies only to native Sailfish OS apps") : ""
                         enabled: !isBackupRunning
                         checked: model.isChecked
                         onClicked: {

@@ -15,6 +15,7 @@ TARGET = harbour-talteen
 QT += qml quick dbus
 CONFIG += link_pkgconfig
 PKGCONFIG += packagekitqt5
+LIBS += -lcrypto
 
 images.files = images/*.png
 images.path = $$PREFIX/share/$$TARGET/images
@@ -25,6 +26,7 @@ CONFIG += sailfishapp
 HEADERS += \
     src/spawner.h \
     src/networktransfer.h \
+    src/talteen_crypto.h \
     src/talteen.h
 
 SOURCES += \
@@ -34,6 +36,7 @@ SOURCES += \
     src/talteen.cpp \
     src/talteen_device.cpp \
     src/talteen_backup.cpp \
+    src/talteen_crypto.cpp \
     src/talteen_restore.cpp \
     src/talteen_archive.cpp
 

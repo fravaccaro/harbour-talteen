@@ -424,6 +424,37 @@
     </message>
 </context>
 <context>
+    <name>QObject</name>
+    <message>
+        <source>Failed to initialize encryption</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Encryption failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to read encrypted payload</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to write decrypted payload</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to initialize decryption</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Authentication failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decryption failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ReceivePage</name>
     <message>
         <source>Receiving file...</source>
@@ -804,15 +835,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Unable to secure your backup. Is OpenSSL installed?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Failed to write metadata file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to generate checksum</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -833,10 +856,6 @@
     </message>
     <message>
         <source>Backup may be damaged (Checksum mismatch)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Invalid backup format. Checksum is missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -900,10 +919,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Creating integrity check...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Creating secure backup...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -928,7 +943,107 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Restoring apps (this may take a while)...</source>
+        <source>Restoring apps...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid v2 backup metadata</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to generate encryption parameters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to derive encryption key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to write encrypted payload</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid v2 backup metadata: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid legacy backup. Checksum is missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>encrypted must be true</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unsupported backup encryption format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unsupported backup key derivation format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>invalid kdf_iterations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>missing salt_b64</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>missing iv_b64</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>missing tag_b64</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>missing aad</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>invalid aad</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>salt_b64 has invalid length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>iv_b64 has invalid length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>tag_b64 has invalid length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to derive decryption key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decrypting backup payload...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to unlock backup (wrong password or modified backup)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to unpack restored files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to read encrypted payload</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to initialize decryption</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to stream decrypted payload</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
