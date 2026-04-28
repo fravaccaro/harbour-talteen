@@ -1,3 +1,10 @@
+* Tue Apr 28 2026 0.1.3-17
+- Added v2 backup format based on OpenSSL EVP AES-256-GCM with PBKDF2-HMAC-SHA256
+- Kept backward compatibility with v1 restore (AES-256-CBC)
+- Updated archive structure documentation in UI Technical details and README
+- Added manual v2 terminal restore script documentation
+- Backup creation with the new GCM pipeline is measured at about 1.95x faster
+
 * Thu Apr 23 2026 0.1.3-16
 - UI polishing
 - Added Technical details page

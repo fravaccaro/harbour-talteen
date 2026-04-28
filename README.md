@@ -17,14 +17,31 @@ Available on [OpenRepos](https://openrepos.net/content/fravaccaro/talteen-backup
 Talteen acts as a frontend for:
 * Archiving: `tar`
 * Compression: `xz`
-* Encryption: `openssl` (AES-256-CBC with PBKDF2)
+* Encryption:
+  * v2 (default): `openssl` EVP (`AES-256-GCM` + `PBKDF2-HMAC-SHA256`)
+  * v1 (legacy restore only): `openssl enc` (`AES-256-CBC` + `PBKDF2`)
 * A custom `QTcpServer`/`QTcpSocket` implementation to facilitate device-to-device transfers over the local network.
 
 
 ## Archive structure
 The app creates a standard `tar` archive with extension `.talteen` holding two files:
-* `payload.enc`: An AES-256 encrypted, XZ-compressed stream containing the actual files and folders.
-* `manifest.yaml`: a human-readable file containing the metadata necessary for the app to understand what is inside the encrypted payload without having to decrypt it first.
+* `payload.enc`: encrypted, XZ-compressed payload stream containing the actual files and folders.
+* `manifest.yaml`: human-readable metadata used to determine the backup format and categories before decrypting.
+
+### v2 format (current default)
+`manifest.yaml` includes:
+* `version: "2.0.0"`
+* `encryption: "openssl-aes-256-gcm"`
+* `kdf: "pbkdf2-hmac-sha256"`
+* `kdf_iterations`, `salt_b64`, `iv_b64`, `tag_b64`, `aad`
+
+v2 integrity is provided by AES-GCM authentication (`tag_b64`), so no separate payload checksum is used.
+
+### v1 format (legacy)
+Legacy backups use:
+* `version: "1.0.0"`
+* OpenSSL AES-256-CBC + PBKDF2
+* `checksum` field in `manifest.yaml`
 
 ### Manual backup extraction
 The backup files are saved to:

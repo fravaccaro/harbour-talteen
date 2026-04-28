@@ -38,7 +38,12 @@ Page {
                 }
 
                 LabelText {
-                    text: "<ul>" + "<li>" + qsTr("Archiving:") + " <code>tar</code>" + "</li>" + "<li>" + qsTr("Compression:") + " <code>xz</code>" + "</li>" + "<li>" + qsTr("Encryption:") + " <code>openssl (AES-256-CBC with PBKDF2)</code>" + "</li>" + "</ul>"
+                    text: "<ul>"
+                          + "<li>" + qsTr("Archiving:") + " <code>tar</code>" + "</li>"
+                          + "<li>" + qsTr("Compression:") + " <code>xz</code>" + "</li>"
+                          + "<li>" + qsTr("Encryption (v2 default):") + " <code>openssl EVP (AES-256-GCM with PBKDF2-HMAC-SHA256)</code>" + "</li>"
+                          + "<li>" + qsTr("Encryption (v1 legacy):") + " <code>openssl enc (AES-256-CBC with PBKDF2)</code>" + "</li>"
+                          + "</ul>"
                 }
 
                 LabelText {
@@ -57,7 +62,18 @@ Page {
                 }
 
                 LabelText {
-                    text: "<ul>" + "<li>" + "<code>payload.enc</code> " + qsTr("an AES-256 encrypted, XZ-compressed stream containing the actual files and folders.") + "</li>" + "<li>" + "<code>manifest.yaml</code> " + qsTr("a human-readable file containing the metadata necessary for the app to understand what is inside the encrypted payload without having to decrypt it first.") + "</li>" + "</ul>"
+                    text: "<ul>"
+                          + "<li><code>payload.enc</code> " + qsTr("an encrypted, XZ-compressed stream containing the actual files and folders.") + "</li>"
+                          + "<li><code>manifest.yaml</code> " + qsTr("a human-readable file containing metadata used to detect the backup format and required decryption parameters.") + "</li>"
+                          + "</ul>"
+                }
+
+                LabelText {
+                    text: qsTr("V2 backups (default) use AES-256-GCM and store <code>kdf_iterations</code>, <code>salt_b64</code>, <code>iv_b64</code>, <code>tag_b64</code>, and <code>aad</code> in the manifest.")
+                }
+
+                LabelText {
+                    text: qsTr("V1 backups are still supported for restore and use AES-256-CBC with a separate SHA-256 checksum in the manifest.")
                 }
 
                 LabelSpacer {
@@ -76,7 +92,7 @@ Page {
                 }
 
                 LabelText {
-                    text: qsTr("You can extract any <code>.talteen</code> archive on any Linux terminal without using the app:")
+                    text: qsTr("You can extract legacy v1 <code>.talteen</code> archives on any Linux terminal without using the app:")
                 }
 
                 LabelText {
@@ -93,6 +109,19 @@ Page {
 
                 TerminalBlock {
                     command: "openssl enc -d -aes-256-cbc -pbkdf2 -in payload.enc | tar -xJv"
+                }
+
+                LabelText {
+                    text: qsTr("For v2 backups, use the helper script from this repository:")
+                }
+
+                ActionButton {
+                    text: qsTr("Script")
+                    onClicked: Qt.openUrlExternally("https://github.com/fravaccaro/harbour-talteen/blob/main/scripts/decrypt-v2.sh")
+                }
+
+                TerminalBlock {
+                    command: "scripts/decrypt-v2.sh -i backup_name.talteen -o restored-data"
                 }
 
                 LabelSpacer {

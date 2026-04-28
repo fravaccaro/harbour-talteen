@@ -250,6 +250,10 @@
         <source>Sailfish OS apps</source>
         <translation>Sailfish OS apps</translation>
     </message>
+    <message>
+        <source>Applies only to native Sailfish OS apps</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CoverPage</name>
@@ -648,10 +652,6 @@
         <translation>Backup is ready</translation>
     </message>
     <message>
-        <source>Takes effect after restarting the home screen or device</source>
-        <translation>Takes effect after restarting the home screen or device</translation>
-    </message>
-    <message>
         <source>Restore in progress</source>
         <translation>Restore in progress</translation>
     </message>
@@ -674,6 +674,14 @@
     <message>
         <source>Sailfish OS apps</source>
         <translation>Sailfish OS apps</translation>
+    </message>
+    <message>
+        <source>Takes effect after restarting the home screen or device.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Applies only to native Sailfish OS apps. Requires an internet connection and may take a few minutes.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1071,10 +1079,6 @@
         <translation>Compression:</translation>
     </message>
     <message>
-        <source>Encryption:</source>
-        <translation>Encryption:</translation>
-    </message>
-    <message>
         <source>Manual backup extraction</source>
         <translation>Manual backup extraction</translation>
     </message>
@@ -1111,16 +1115,40 @@
         <translation>Archive structure</translation>
     </message>
     <message>
-        <source>an AES-256 encrypted, XZ-compressed stream containing the actual files and folders.</source>
-        <translation>an AES-256 encrypted, XZ-compressed stream containing the actual files and folders.</translation>
+        <source>Encryption (v2 default):</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>a human-readable file containing the metadata necessary for the app to understand what is inside the encrypted payload without having to decrypt it first.</source>
-        <translation>a human-readable file containing the metadata necessary for the app to understand what is inside the encrypted payload without having to decrypt it first.</translation>
+        <source>Encryption (v1 legacy):</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You can extract any &lt;code&gt;.talteen&lt;/code&gt; archive on any Linux terminal without using the app:</source>
-        <translation>You can extract any &lt;code&gt;.talteen&lt;/code&gt; archive on any Linux terminal without using the app:</translation>
+        <source>an encrypted, XZ-compressed stream containing the actual files and folders.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>a human-readable file containing metadata used to detect the backup format and required decryption parameters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>V2 backups (default) use AES-256-GCM and store &lt;code&gt;kdf_iterations&lt;/code&gt;, &lt;code&gt;salt_b64&lt;/code&gt;, &lt;code&gt;iv_b64&lt;/code&gt;, &lt;code&gt;tag_b64&lt;/code&gt;, and &lt;code&gt;aad&lt;/code&gt; in the manifest.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>V1 backups are still supported for restore and use AES-256-CBC with a separate SHA-256 checksum in the manifest.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You can extract legacy v1 &lt;code&gt;.talteen&lt;/code&gt; archives on any Linux terminal without using the app:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>For v2 backups, use the helper script from this repository:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
