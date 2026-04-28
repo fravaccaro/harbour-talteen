@@ -53,7 +53,7 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
     {
         if (selectedOptions.value("appinstalled").toBool() && QDir(workDir + "/appinstalled").exists())
         {
-            emit progressUpdate(tr("Restoring apps and repositories (this may take a while)..."));
+            emit progressUpdate(tr("Restoring apps..."));
             qDebug() << "Restoring repositories and applications...";
 
             // Add repositories via D-Bus

@@ -53,11 +53,11 @@ SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172
 CONFIG += sailfishapp_i18n
 
 
-privileges.files = data/harbour-talteen
+privileges.files = services/harbour-talteen
 privileges.path = $$INSTALL_ROOT/usr/share/mapplauncherd/privileges.d/
-dbus.files = data/harbour.talteen.service
+dbus.files = services/harbour.talteen.service
 dbus.path = $$INSTALL_ROOT/usr/share/dbus-1/services
-polkit_rules.files = data/99-talteen.rules
+polkit_rules.files = services/99-talteen.rules
 polkit_rules.path = $$INSTALL_ROOT/usr/share/polkit-1/rules.d/
 
 INSTALLS += privileges dbus polkit_rules images

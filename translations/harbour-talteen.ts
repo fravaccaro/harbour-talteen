@@ -924,11 +924,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Saving apps and repositories...</source>
+        <source>Saving installed apps...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Restoring apps and repositories (this may take a while)...</source>
+        <source>Restoring apps (this may take a while)...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -248,7 +248,7 @@
     </message>
     <message>
         <source>Sailfish OS apps</source>
-        <translation type="unfinished"></translation>
+        <translation>Sailfish OS apps</translation>
     </message>
 </context>
 <context>
@@ -642,7 +642,7 @@
     </message>
     <message>
         <source>Sailfish OS apps</source>
-        <translation type="unfinished"></translation>
+        <translation>Sailfish OS apps</translation>
     </message>
 </context>
 <context>
@@ -925,12 +925,12 @@
         <translation>Opening backup...</translation>
     </message>
     <message>
-        <source>Saving apps and repositories...</source>
-        <translation type="unfinished"></translation>
+        <source>Saving installed apps...</source>
+        <translation>Saving installed apps...</translation>
     </message>
     <message>
-        <source>Restoring apps and repositories (this may take a while)...</source>
-        <translation type="unfinished"></translation>
+        <source>Restoring apps (this may take a while)...</source>
+        <translation>Restoring apps (this may take a while)...</translation>
     </message>
 </context>
 <context>

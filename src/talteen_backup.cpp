@@ -11,28 +11,29 @@
 #include <QStorageInfo>
 #include <QTextStream>
 
-namespace {
-qint64 calculateDirSize(const QString &dirPath)
+namespace
 {
-    qint64 size = 0;
-    QDir dir(dirPath);
-
-    QFileInfoList list = dir.entryInfoList(QDir::Files | QDir::Dirs |
-                                           QDir::NoDotAndDotDot | QDir::Hidden |
-                                           QDir::System | QDir::NoSymLinks);
-    for (const QFileInfo &fileInfo : list)
+    qint64 calculateDirSize(const QString &dirPath)
     {
-        if (fileInfo.isDir())
+        qint64 size = 0;
+        QDir dir(dirPath);
+
+        QFileInfoList list = dir.entryInfoList(QDir::Files | QDir::Dirs |
+                                               QDir::NoDotAndDotDot | QDir::Hidden |
+                                               QDir::System | QDir::NoSymLinks);
+        for (const QFileInfo &fileInfo : list)
         {
-            size += calculateDirSize(fileInfo.absoluteFilePath());
+            if (fileInfo.isDir())
+            {
+                size += calculateDirSize(fileInfo.absoluteFilePath());
+            }
+            else
+            {
+                size += fileInfo.size();
+            }
         }
-        else
-        {
-            size += fileInfo.size();
-        }
+        return size;
     }
-    return size;
-}
 }
 
 void Talteen::startBackup(const QVariantMap &options)
@@ -422,7 +423,7 @@ void Talteen::startBackup(const QVariantMap &options)
             return;
         }
 
-        emit progressUpdate(tr("Saving apps and repositories..."));
+        emit progressUpdate(tr("Saving installed apps..."));
         qDebug() << "Executing Step 0: Exporting apps and repositories...";
         QDir().mkpath(workDir + "/appinstalled");
 
