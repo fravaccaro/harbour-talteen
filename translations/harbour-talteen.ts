@@ -251,7 +251,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Applies only to native Sailfish OS apps</source>
+        <source>For native Sailfish OS apps only</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -676,11 +676,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Takes effect after restarting the home screen or device.</source>
+        <source>Takes effect after restarting the home screen or device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Applies only to native Sailfish OS apps. Requires an internet connection and may take a few minutes.</source>
+        <source>For native Sailfish OS apps only. Requires an internet connection and may take a few minutes</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

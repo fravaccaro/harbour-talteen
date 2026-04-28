@@ -106,11 +106,11 @@ Page {
 
     // Categories model
     ListModel {
+        // 'triggers' is used to determine whether the section header should be visible.
+
         id: restoreCategoriesModel
 
         Component.onCompleted: {
-            // 'triggers' is used to determine whether the section header should be visible.
-
             append({
                 "key": "appinstalled",
                 "name": qsTr("Sailfish OS apps"),
@@ -288,8 +288,7 @@ Page {
                     TextSwitch {
                         visible: availableMetadata[model.key] === "true"
                         text: model.name
-                        description: model.key === "apporder" ? qsTr("Takes effect after restarting the home screen or device.") :
-                                     model.key === "appinstalled" ? qsTr("Applies only to native Sailfish OS apps. Requires an internet connection and may take a few minutes.") : ""
+                        description: model.key === "apporder" ? qsTr("Takes effect after restarting the home screen or device") : model.key === "appinstalled" ? qsTr("For native Sailfish OS apps only. Requires an internet connection and may take a few minutes") : ""
                         enabled: !isRestoreRunning
                         checked: model.isChecked
                         onClicked: {

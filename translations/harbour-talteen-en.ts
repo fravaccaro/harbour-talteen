@@ -251,8 +251,8 @@
         <translation>Sailfish OS apps</translation>
     </message>
     <message>
-        <source>Applies only to native Sailfish OS apps</source>
-        <translation type="unfinished"></translation>
+        <source>For native Sailfish OS apps only</source>
+        <translation>For native Sailfish OS apps only</translation>
     </message>
 </context>
 <context>
@@ -431,31 +431,31 @@
     <name>QObject</name>
     <message>
         <source>Failed to initialize encryption</source>
-        <translation type="unfinished"></translation>
+        <translation>Failed to initialize encryption</translation>
     </message>
     <message>
         <source>Encryption failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Encryption failed</translation>
     </message>
     <message>
         <source>Unable to read encrypted payload</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to read encrypted payload</translation>
     </message>
     <message>
         <source>Unable to write decrypted payload</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to write decrypted payload</translation>
     </message>
     <message>
         <source>Failed to initialize decryption</source>
-        <translation type="unfinished"></translation>
+        <translation>Failed to initialize decryption</translation>
     </message>
     <message>
         <source>Authentication failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Authentication failed</translation>
     </message>
     <message>
         <source>Decryption failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Decryption failed</translation>
     </message>
 </context>
 <context>
@@ -676,12 +676,12 @@
         <translation>Sailfish OS apps</translation>
     </message>
     <message>
-        <source>Takes effect after restarting the home screen or device.</source>
-        <translation type="unfinished"></translation>
+        <source>Takes effect after restarting the home screen or device</source>
+        <translation>Takes effect after restarting the home screen or device</translation>
     </message>
     <message>
-        <source>Applies only to native Sailfish OS apps. Requires an internet connection and may take a few minutes.</source>
-        <translation type="unfinished"></translation>
+        <source>For native Sailfish OS apps only. Requires an internet connection and may take a few minutes</source>
+        <translation>For native Sailfish OS apps only. Requires an internet connection and may take a few minutes</translation>
     </message>
 </context>
 <context>
@@ -953,107 +953,107 @@
     </message>
     <message>
         <source>Restoring apps...</source>
-        <translation type="unfinished"></translation>
+        <translation>Restoring apps...</translation>
     </message>
     <message>
         <source>Invalid v2 backup metadata</source>
-        <translation type="unfinished"></translation>
+        <translation>Invalid v2 backup metadata</translation>
     </message>
     <message>
         <source>Unable to generate encryption parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to generate encryption parameters</translation>
     </message>
     <message>
         <source>Unable to derive encryption key</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to derive encryption key</translation>
     </message>
     <message>
         <source>Unable to write encrypted payload</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to write encrypted payload</translation>
     </message>
     <message>
         <source>Invalid v2 backup metadata: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Invalid v2 backup metadata: %1</translation>
     </message>
     <message>
         <source>Invalid legacy backup. Checksum is missing</source>
-        <translation type="unfinished"></translation>
+        <translation>Invalid legacy backup. Checksum is missing</translation>
     </message>
     <message>
         <source>encrypted must be true</source>
-        <translation type="unfinished"></translation>
+        <translation>encrypted must be true</translation>
     </message>
     <message>
         <source>Unsupported backup encryption format</source>
-        <translation type="unfinished"></translation>
+        <translation>Unsupported backup encryption format</translation>
     </message>
     <message>
         <source>Unsupported backup key derivation format</source>
-        <translation type="unfinished"></translation>
+        <translation>Unsupported backup key derivation format</translation>
     </message>
     <message>
         <source>invalid kdf_iterations</source>
-        <translation type="unfinished"></translation>
+        <translation>invalid kdf_iterations</translation>
     </message>
     <message>
         <source>missing salt_b64</source>
-        <translation type="unfinished"></translation>
+        <translation>missing salt_b64</translation>
     </message>
     <message>
         <source>missing iv_b64</source>
-        <translation type="unfinished"></translation>
+        <translation>missing iv_b64</translation>
     </message>
     <message>
         <source>missing tag_b64</source>
-        <translation type="unfinished"></translation>
+        <translation>missing tag_b64</translation>
     </message>
     <message>
         <source>missing aad</source>
-        <translation type="unfinished"></translation>
+        <translation>missing aad</translation>
     </message>
     <message>
         <source>invalid aad</source>
-        <translation type="unfinished"></translation>
+        <translation>invalid aad</translation>
     </message>
     <message>
         <source>salt_b64 has invalid length</source>
-        <translation type="unfinished"></translation>
+        <translation>salt_b64 has invalid length</translation>
     </message>
     <message>
         <source>iv_b64 has invalid length</source>
-        <translation type="unfinished"></translation>
+        <translation>iv_b64 has invalid length</translation>
     </message>
     <message>
         <source>tag_b64 has invalid length</source>
-        <translation type="unfinished"></translation>
+        <translation>tag_b64 has invalid length</translation>
     </message>
     <message>
         <source>Unable to derive decryption key</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to derive decryption key</translation>
     </message>
     <message>
         <source>Decrypting backup payload...</source>
-        <translation type="unfinished"></translation>
+        <translation>Decrypting backup payload...</translation>
     </message>
     <message>
         <source>Unable to unlock backup (wrong password or modified backup)</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to unlock backup (wrong password or modified backup)</translation>
     </message>
     <message>
         <source>Unable to unpack restored files</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to unpack restored files</translation>
     </message>
     <message>
         <source>Unable to read encrypted payload</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to read encrypted payload</translation>
     </message>
     <message>
         <source>Unable to initialize decryption</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to initialize decryption</translation>
     </message>
     <message>
         <source>Unable to stream decrypted payload</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to stream decrypted payload</translation>
     </message>
 </context>
 <context>
@@ -1116,39 +1116,39 @@
     </message>
     <message>
         <source>Encryption (v2 default):</source>
-        <translation type="unfinished"></translation>
+        <translation>Encryption (v2 default):</translation>
     </message>
     <message>
         <source>Encryption (v1 legacy):</source>
-        <translation type="unfinished"></translation>
+        <translation>Encryption (v1 legacy):</translation>
     </message>
     <message>
         <source>an encrypted, XZ-compressed stream containing the actual files and folders.</source>
-        <translation type="unfinished"></translation>
+        <translation>an encrypted, XZ-compressed stream containing the actual files and folders.</translation>
     </message>
     <message>
         <source>a human-readable file containing metadata used to detect the backup format and required decryption parameters.</source>
-        <translation type="unfinished"></translation>
+        <translation>a human-readable file containing metadata used to detect the backup format and required decryption parameters.</translation>
     </message>
     <message>
         <source>V2 backups (default) use AES-256-GCM and store &lt;code&gt;kdf_iterations&lt;/code&gt;, &lt;code&gt;salt_b64&lt;/code&gt;, &lt;code&gt;iv_b64&lt;/code&gt;, &lt;code&gt;tag_b64&lt;/code&gt;, and &lt;code&gt;aad&lt;/code&gt; in the manifest.</source>
-        <translation type="unfinished"></translation>
+        <translation>V2 backups (default) use AES-256-GCM and store &lt;code&gt;kdf_iterations&lt;/code&gt;, &lt;code&gt;salt_b64&lt;/code&gt;, &lt;code&gt;iv_b64&lt;/code&gt;, &lt;code&gt;tag_b64&lt;/code&gt;, and &lt;code&gt;aad&lt;/code&gt; in the manifest.</translation>
     </message>
     <message>
         <source>V1 backups are still supported for restore and use AES-256-CBC with a separate SHA-256 checksum in the manifest.</source>
-        <translation type="unfinished"></translation>
+        <translation>V1 backups are still supported for restore and use AES-256-CBC with a separate SHA-256 checksum in the manifest.</translation>
     </message>
     <message>
         <source>You can extract legacy v1 &lt;code&gt;.talteen&lt;/code&gt; archives on any Linux terminal without using the app:</source>
-        <translation type="unfinished"></translation>
+        <translation>You can extract legacy v1 &lt;code&gt;.talteen&lt;/code&gt; archives on any Linux terminal without using the app:</translation>
     </message>
     <message>
         <source>For v2 backups, use the helper script from this repository:</source>
-        <translation type="unfinished"></translation>
+        <translation>For v2 backups, use the helper script from this repository:</translation>
     </message>
     <message>
         <source>Script</source>
-        <translation type="unfinished"></translation>
+        <translation>Script</translation>
     </message>
 </context>
 <context>

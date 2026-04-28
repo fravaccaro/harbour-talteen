@@ -38,12 +38,7 @@ Page {
                 }
 
                 LabelText {
-                    text: "<ul>"
-                          + "<li>" + qsTr("Archiving:") + " <code>tar</code>" + "</li>"
-                          + "<li>" + qsTr("Compression:") + " <code>xz</code>" + "</li>"
-                          + "<li>" + qsTr("Encryption (v2 default):") + " <code>openssl EVP (AES-256-GCM with PBKDF2-HMAC-SHA256)</code>" + "</li>"
-                          + "<li>" + qsTr("Encryption (v1 legacy):") + " <code>openssl enc (AES-256-CBC with PBKDF2)</code>" + "</li>"
-                          + "</ul>"
+                    text: "<ul>" + "<li>" + qsTr("Archiving:") + " <code>tar</code>" + "</li>" + "<li>" + qsTr("Compression:") + " <code>xz</code>" + "</li>" + "<li>" + qsTr("Encryption (v2 default):") + " <code>openssl EVP (AES-256-GCM with PBKDF2-HMAC-SHA256)</code>" + "</li>" + "<li>" + qsTr("Encryption (v1 legacy):") + " <code>openssl enc (AES-256-CBC with PBKDF2)</code>" + "</li>" + "</ul>"
                 }
 
                 LabelText {
@@ -62,10 +57,7 @@ Page {
                 }
 
                 LabelText {
-                    text: "<ul>"
-                          + "<li><code>payload.enc</code> " + qsTr("an encrypted, XZ-compressed stream containing the actual files and folders.") + "</li>"
-                          + "<li><code>manifest.yaml</code> " + qsTr("a human-readable file containing metadata used to detect the backup format and required decryption parameters.") + "</li>"
-                          + "</ul>"
+                    text: "<ul>" + "<li><code>payload.enc</code> " + qsTr("an encrypted, XZ-compressed stream containing the actual files and folders.") + "</li>" + "<li><code>manifest.yaml</code> " + qsTr("a human-readable file containing metadata used to detect the backup format and required decryption parameters.") + "</li>" + "</ul>"
                 }
 
                 LabelText {
