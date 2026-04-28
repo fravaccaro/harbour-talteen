@@ -285,20 +285,36 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
     {
         qDebug() << "Moving extracted files to their final destinations...";
 
-        // Handle apporder immediately
-        if (selectedOptions.value("apporder").toBool() && QDir(workDir + "/apporder").exists())
-        {
-            emit progressUpdate(tr("Restoring app grid layout..."));
-            QDir().mkpath(homePath + "/.config/lipstick");
-            QString destMenu = homePath + "/.config/lipstick/applications.menu";
-            QFile::remove(destMenu);
-            QFile::copy(workDir + "/apporder/applications.menu", destMenu);
-        }
-
         // Use standard Qt StringLists to completely avoid the "incomplete struct" C++ compilation error
         QSharedPointer<QStringList> syncCmds(new QStringList());
         QSharedPointer<QStringList> syncMsgs(new QStringList());
 
+        if (selectedOptions.value("apporder").toBool() && QDir(workDir + "/apporder").exists())
+        {
+            QString lipstickPath = homePath + "/.config/lipstick";
+            QString apporderPath = workDir + "/apporder";
+            QDir().mkpath(lipstickPath);
+
+            QString destMenu = lipstickPath + "/applications.menu";
+            QFile::remove(destMenu);
+            QString srcMenu = apporderPath + "/applications.menu";
+            if (QFile::exists(srcMenu))
+                QFile::copy(srcMenu, destMenu);
+
+            QDir apporderDir(apporderPath);
+            QStringList backupFolderFiles = apporderDir.entryList(QStringList() << "Folder*.directory", QDir::Files);
+            if (!backupFolderFiles.isEmpty())
+            {
+                QDir lipstickDir(lipstickPath);
+                QStringList existingFolderFiles = lipstickDir.entryList(QStringList() << "Folder*.directory", QDir::Files);
+                for (const QString &fileName : existingFolderFiles)
+                    lipstickDir.remove(fileName);
+                for (const QString &fileName : backupFolderFiles)
+                    QFile::copy(apporderPath + "/" + fileName, lipstickPath + "/" + fileName);
+            }
+
+            emit progressUpdate(tr("Restoring app grid layout..."));
+        }
         if (selectedOptions.value("appdata").toBool() && QDir(workDir + "/appdata").exists())
         {
             syncCmds->append(QString("rsync -a \"%1/appdata/.config\" \"%2/\" && rsync -a \"%1/appdata/.local\" \"%2/\"").arg(workDir, homePath));

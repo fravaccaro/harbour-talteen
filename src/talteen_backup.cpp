@@ -127,8 +127,22 @@ void Talteen::startBackup(const QVariantMap &options)
 
     if (hasApporder)
     {
-        QDir().mkpath(workDir + "/apporder");
-        QFile::copy(homePath + "/.config/lipstick/applications.menu", workDir + "/apporder/applications.menu");
+        QString lipstickPath = homePath + "/.config/lipstick";
+        if (QDir(lipstickPath).exists())
+        {
+            QString apporderPath = workDir + "/apporder";
+            QDir().mkpath(apporderPath);
+
+            QString srcMenu = lipstickPath + "/applications.menu";
+            QString dstMenu = apporderPath + "/applications.menu";
+            if (QFile::exists(srcMenu))
+                QFile::copy(srcMenu, dstMenu);
+
+            QDir lipstickDir(lipstickPath);
+            QStringList folderFiles = lipstickDir.entryList(QStringList() << "Folder*.directory", QDir::Files);
+            for (const QString &fileName : folderFiles)
+                QFile::copy(lipstickPath + "/" + fileName, apporderPath + "/" + fileName);
+        }
     }
     if (hasAppdata)
     {

@@ -67,7 +67,7 @@ Page {
                 "key": "appinstalled",
                 "name": qsTr("Sailfish OS apps"),
                 "section": qsTr("Applications"),
-                "isChecked": true
+                "isChecked": false
             });
             append({
                 "key": "appdata",
