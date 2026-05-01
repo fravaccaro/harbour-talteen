@@ -51,8 +51,8 @@ Dialog {
         }
 
         TextSwitch {
-            text: qsTr("Restore when transfer is finished")
-            description: qsTr("Open restore for this backup after it is saved")
+            text: qsTr("Restore on completion")
+            description: qsTr("Automatically open the restore screen once the backup is saved")
             checked: restoreWhenFinished
             onCheckedChanged: restoreWhenFinished = checked
         }

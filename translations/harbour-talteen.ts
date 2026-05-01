@@ -1177,11 +1177,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Restore when transfer is finished</source>
+        <source>Restore on completion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Open restore for this backup after it is saved</source>
+        <source>Automatically open the restore screen once the backup is saved</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

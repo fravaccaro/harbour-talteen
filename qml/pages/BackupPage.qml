@@ -17,6 +17,12 @@ Page {
     property bool allSelected: false
     property bool noneSelected: false
 
+    function clearLastBackup() {
+        lastBackupPath = "";
+        lastBackupSize = 0;
+        lastBackupDate = "";
+    }
+
     // Helper functions for the pulley menu
     function setAllSwitches(state) {
         for (var i = 0; i < categoriesModel.count; i++) {
@@ -62,9 +68,7 @@ Page {
                 lastBackupSize = outputSizeBytes;
                 lastBackupDate = outputDate;
             } else {
-                lastBackupPath = "";
-                lastBackupSize = 0;
-                lastBackupDate = "";
+                clearLastBackup();
             }
             console.log(message);
             appWindow.showNotification(success ? qsTr("Backup complete") : qsTr("Backup failed"), message);
@@ -305,18 +309,13 @@ Page {
                     appWindow.showProgressNotification(qsTr("Backup in progress"), qsTr("Preparing backup..."), Notification.ProgressIndeterminate);
                     appCore.startBackup(backupOptions);
                 }
-            }
 
-            ActionButton {
-                text: qsTr("Send")
-                enabled: lastBackupPath !== "" && !isBackupRunning
-                onClicked: {
-                    pageStack.push(Qt.resolvedUrl("SendPage.qml"), {
-                        "selectedFile": lastBackupPath,
-                        "backupLabel": backupLabelField.text,
-                        "backupDate": lastBackupDate,
-                        "backupSize": SharedUtils.formatBytes(lastBackupSize)
-                    });
+                Button {
+                    text: qsTr("Send")
+                    enabled: lastBackupPath !== "" && !isBackupRunning
+                    onClicked: {
+                        pageStack.push(Qt.resolvedUrl("SendPage.qml"), SharedUtils.sendPageProperties(lastBackupPath, backupLabelField.text, lastBackupDate, SharedUtils.formatBytes(lastBackupSize)));
+                    }
                 }
             }
 

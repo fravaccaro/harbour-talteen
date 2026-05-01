@@ -134,13 +134,7 @@ Page {
             menu: ContextMenu {
                 MenuItem {
                     text: qsTr("Send to a nearby device")
-                    onClicked: pageStack.push(Qt.resolvedUrl("SendPage.qml"), {
-                        "selectedFile": model.path,
-                        "backupName": model.name,
-                        "backupLabel": model.label,
-                        "backupDate": model.date,
-                        "backupSize": SharedUtils.formatBytes(model.size)
-                    })
+                    onClicked: pageStack.push(Qt.resolvedUrl("SendPage.qml"), SharedUtils.sendPageProperties(model.path, model.label, model.date, SharedUtils.formatBytes(model.size)))
                 }
 
                 MenuItem {

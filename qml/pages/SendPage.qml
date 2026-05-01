@@ -8,7 +8,6 @@ Page {
     id: sendPage
 
     property string selectedFile: ""
-    property string backupName: ""
     property string backupLabel: ""
     property string backupDate: ""
     property string backupSize: ""

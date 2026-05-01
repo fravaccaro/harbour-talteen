@@ -8,3 +8,12 @@ function formatBytes(bytes) {
     var i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 }
+
+function sendPageProperties(selectedFile, backupLabel, backupDate, backupSize) {
+    return {
+        "selectedFile": selectedFile,
+        "backupLabel": backupLabel,
+        "backupDate": backupDate,
+        "backupSize": backupSize
+    };
+}

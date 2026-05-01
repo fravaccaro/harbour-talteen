@@ -256,7 +256,7 @@
     </message>
     <message>
         <source>Send</source>
-        <translation type="unfinished">Invia</translation>
+        <translation>Invia</translation>
     </message>
 </context>
 <context>
@@ -1178,12 +1178,12 @@
         <translation>Ricevere il backup?</translation>
     </message>
     <message>
-        <source>Restore when transfer is finished</source>
-        <translation type="unfinished"></translation>
+        <source>Restore on completion</source>
+        <translation>Ripristina al completamento</translation>
     </message>
     <message>
-        <source>Open restore for this backup after it is saved</source>
-        <translation type="unfinished"></translation>
+        <source>Automatically open the restore screen once the backup is saved</source>
+        <translation>Apri automaticamente la schermata di ripristino non appena il backup viene salvato</translation>
     </message>
 </context>
 </TS>
