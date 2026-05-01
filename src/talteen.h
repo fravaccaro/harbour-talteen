@@ -28,7 +28,7 @@ public:
     Q_INVOKABLE qint64 getFreeSpace(bool onSdCard);
 
 signals:
-    void backupFinished(bool success, const QString &message);
+    void backupFinished(bool success, const QString &message, const QString &outputPath, qint64 outputSizeBytes, const QString &outputDate);
 
     void archiveAnalyzed(bool isValid, const QString &message, const QVariantMap &metadata);
 

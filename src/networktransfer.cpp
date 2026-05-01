@@ -471,6 +471,7 @@ void NetworkTransfer::acceptConnection()
                         qDebug() << "[DEBUG] Transfer complete!";
                         emit statusChanged(tr("Transfer complete"));
                         emit progressChanged(1.0);
+                        emit receiveTransferComplete(savedPath);
                     }
                 }
 

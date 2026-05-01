@@ -14,6 +14,7 @@ Page {
     // Property to remember the incoming file name and label
     property string incomingFileName: ""
     property string incomingFileLabel: ""
+    property bool restoreAfterReceive: false
 
     allowedOrientations: Orientation.All
     backNavigation: !isTransferRunning
@@ -54,6 +55,7 @@ Page {
             // Save the filename so the Progress indicator can use it
             incomingFileName = fileName;
             incomingFileLabel = fileLabel;
+            restoreAfterReceive = false;
             var dialog = pageStack.push(Qt.resolvedUrl("TransferPromptDialog.qml"), {
                 "incomingFileName": fileName,
                 "incomingFileSize": SharedUtils.formatBytes(fileSize),
@@ -64,6 +66,7 @@ Page {
             if (dialog) {
                 dialog.accepted.connect(function() {
                     isTransferRunning = true;
+                    restoreAfterReceive = dialog.restoreWhenFinished;
                     var useSdCard = dialog.saveToSdCard;
                     netTransfer.acceptTransfer(useSdCard);
                 });
@@ -73,6 +76,14 @@ Page {
             } else {
                 console.log("ERROR: Could not load TransferPromptDialog.qml!");
                 netTransfer.rejectTransfer(); // Auto-reject so the socket doesn't hang
+            }
+        }
+        onReceiveTransferComplete: function (localPath) {
+            if (restoreAfterReceive && localPath !== "") {
+                restoreAfterReceive = false;
+                pageStack.push(Qt.resolvedUrl("RestorePage.qml"), {
+                    "selectedBackupPath": localPath
+                });
             }
         }
         onTransferAborted: {

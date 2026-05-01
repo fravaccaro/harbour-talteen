@@ -41,6 +41,7 @@ signals:
     void isDiscoveringChanged();
     void transferRequested(QString fileName, qint64 fileSize, QString fileLabel);
     void progressChanged(double progress);
+    void receiveTransferComplete(const QString &localPath);
     void transferAborted();
 
 private slots:

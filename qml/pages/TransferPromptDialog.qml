@@ -4,11 +4,14 @@ import Sailfish.Silica 1.0
 Dialog {
     id: transferDialog
 
+    objectName: "TransferPromptDialog"
+
     property string incomingFileName: ""
     property string incomingFileSize: ""
     property string incomingFileLabel: ""
     property bool hasSdCard: false
     property bool saveToSdCard: false
+    property bool restoreWhenFinished: false
 
     Column {
         width: parent.width
@@ -45,6 +48,13 @@ Dialog {
             visible: hasSdCard // Only show if an SD card exists!
             checked: saveToSdCard
             onCheckedChanged: saveToSdCard = checked
+        }
+
+        TextSwitch {
+            text: qsTr("Restore when transfer is finished")
+            description: qsTr("Open restore for this backup after it is saved")
+            checked: restoreWhenFinished
+            onCheckedChanged: restoreWhenFinished = checked
         }
 
     }

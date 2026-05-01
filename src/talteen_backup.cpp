@@ -102,7 +102,7 @@ void Talteen::startBackup(const QVariantMap &options)
     if (storage.bytesAvailable() < (estimatedSize + 104857600))
     {
         qDebug() << "[ERROR] Not enough free space in destination.";
-        emit backupFinished(false, tr("Not enough storage space to save the backup"));
+        emit backupFinished(false, tr("Not enough storage space to save the backup"), QString(), 0, QString());
         return;
     }
 
@@ -112,7 +112,7 @@ void Talteen::startBackup(const QVariantMap &options)
     if (cacheStorage.bytesAvailable() < (estimatedSize * 1.5 + 104857600))
     {
         qDebug() << "[ERROR] Not enough free space in internal cache memory.";
-        emit backupFinished(false, tr("Not enough internal storage space to prepare the backup"));
+        emit backupFinished(false, tr("Not enough internal storage space to prepare the backup"), QString(), 0, QString());
         return;
     }
 
@@ -121,7 +121,7 @@ void Talteen::startBackup(const QVariantMap &options)
     QString password = options.value("password").toString();
     if (password.isEmpty())
     {
-        emit backupFinished(false, tr("A password is required to save a backup"));
+        emit backupFinished(false, tr("A password is required to save a backup"), QString(), 0, QString());
         return;
     }
 
@@ -182,11 +182,13 @@ void Talteen::startBackup(const QVariantMap &options)
                     if (exitCode == 0)
                     {
                         qDebug() << "Backup successfully saved in:" << finalDestination;
-                        emit backupFinished(true, tr("Backup saved successfully"));
+                        QFileInfo fi(finalDestination);
+                        emit backupFinished(true, tr("Backup saved successfully"), finalDestination, fi.size(),
+                                           fi.lastModified().toString(QStringLiteral("yyyy-MM-dd HH:mm")));
                     }
                     else
                     {
-                        emit backupFinished(false, tr("Unable to save backup"));
+                        emit backupFinished(false, tr("Unable to save backup"), QString(), 0, QString());
                     }
                     outerTar->deleteLater();
                 });
@@ -227,7 +229,7 @@ void Talteen::startBackup(const QVariantMap &options)
         }
         else
         {
-            emit backupFinished(false, tr("Failed to write metadata file"));
+            emit backupFinished(false, tr("Failed to write metadata file"), QString(), 0, QString());
         }
     };
 
@@ -259,7 +261,7 @@ void Talteen::startBackup(const QVariantMap &options)
         QByteArray iv(12, 0);
         if (!fillRandomBytes(&salt) || !fillRandomBytes(&iv))
         {
-            emit backupFinished(false, tr("Unable to generate encryption parameters"));
+            emit backupFinished(false, tr("Unable to generate encryption parameters"), QString(), 0, QString());
             tarProcess->deleteLater();
             delete encFile;
             return;
@@ -269,7 +271,7 @@ void Talteen::startBackup(const QVariantMap &options)
         QByteArray key;
         if (!deriveKeyPbkdf2(password, salt, iterations, &key))
         {
-            emit backupFinished(false, tr("Unable to derive encryption key"));
+            emit backupFinished(false, tr("Unable to derive encryption key"), QString(), 0, QString());
             tarProcess->deleteLater();
             delete encFile;
             return;
@@ -277,7 +279,7 @@ void Talteen::startBackup(const QVariantMap &options)
 
         if (!encFile->open(QIODevice::WriteOnly))
         {
-            emit backupFinished(false, tr("Unable to write encrypted payload"));
+            emit backupFinished(false, tr("Unable to write encrypted payload"), QString(), 0, QString());
             tarProcess->deleteLater();
             delete encFile;
             return;
@@ -288,7 +290,7 @@ void Talteen::startBackup(const QVariantMap &options)
         EVP_CIPHER_CTX *ctx = createAesGcmEncryptContext(key, iv, aad, cryptoError.data());
         if (!ctx)
         {
-            emit backupFinished(false, *cryptoError);
+            emit backupFinished(false, *cryptoError, QString(), 0, QString());
             tarProcess->deleteLater();
             encFile->close();
             delete encFile;
@@ -389,7 +391,7 @@ void Talteen::startBackup(const QVariantMap &options)
                         else
                             qDebug() << "[FATAL] OpenSSL GCM streaming encryption failed:" << *cryptoError;
                         QFile::remove(workDir + "/payload.enc");
-                        emit backupFinished(false, tr("Encryption or compression failed. Backup cancelled"));
+                        emit backupFinished(false, tr("Encryption or compression failed. Backup cancelled"), QString(), 0, QString());
                     }
 
                     freeCipherContext(ctx);
@@ -486,7 +488,7 @@ void Talteen::startBackup(const QVariantMap &options)
                     else
                     {
                         qDebug() << "[FATAL] Rsync failed with exit code:" << exitCode;
-                        emit backupFinished(false, tr("Unable to save app data"));
+                        emit backupFinished(false, tr("Unable to save app data"), QString(), 0, QString());
                     }
                     rsyncProcess->deleteLater();
                 });

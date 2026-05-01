@@ -1,4 +1,5 @@
 import "../components"
+import "../components/Utils.js" as SharedUtils
 import Nemo.KeepAlive 1.2
 import Nemo.Notifications 1.0
 import QtQuick 2.0
@@ -10,6 +11,9 @@ Page {
 
     property bool isBackupRunning: false
     property string statusMessage: qsTr("Ready")
+    property string lastBackupPath: ""
+    property double lastBackupSize: 0
+    property string lastBackupDate: ""
     property bool allSelected: false
     property bool noneSelected: false
 
@@ -50,9 +54,18 @@ Page {
             appWindow.appWorkingText = statusMessage;
             appWindow.showProgressNotification(qsTr("Backup in progress"), statusMessage, Notification.ProgressIndeterminate);
         }
-        onBackupFinished: {
+        onBackupFinished: function (success, message, outputPath, outputSizeBytes, outputDate) {
             isBackupRunning = false;
             backupPage.statusMessage = message;
+            if (success) {
+                lastBackupPath = outputPath;
+                lastBackupSize = outputSizeBytes;
+                lastBackupDate = outputDate;
+            } else {
+                lastBackupPath = "";
+                lastBackupSize = 0;
+                lastBackupDate = "";
+            }
             console.log(message);
             appWindow.showNotification(success ? qsTr("Backup complete") : qsTr("Backup failed"), message);
         }
@@ -277,6 +290,9 @@ Page {
                 enabled: !noneSelected && !isBackupRunning && backupLabelField.acceptableInput && passwordField.text.length > 0 && passwordField.text === repeatPasswordField.text
                 onClicked: {
                     isBackupRunning = true;
+                    lastBackupPath = "";
+                    lastBackupSize = 0;
+                    lastBackupDate = "";
                     var backupOptions = {
                         "destination": storageBtn.saveToSdCard ? appCore.getSdCardPath() : "internal",
                         "label": backupLabelField.text,
@@ -288,6 +304,19 @@ Page {
                     }
                     appWindow.showProgressNotification(qsTr("Backup in progress"), qsTr("Preparing backup..."), Notification.ProgressIndeterminate);
                     appCore.startBackup(backupOptions);
+                }
+            }
+
+            ActionButton {
+                text: qsTr("Send")
+                enabled: lastBackupPath !== "" && !isBackupRunning
+                onClicked: {
+                    pageStack.push(Qt.resolvedUrl("SendPage.qml"), {
+                        "selectedFile": lastBackupPath,
+                        "backupLabel": backupLabelField.text,
+                        "backupDate": lastBackupDate,
+                        "backupSize": SharedUtils.formatBytes(lastBackupSize)
+                    });
                 }
             }
 

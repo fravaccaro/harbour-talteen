@@ -254,6 +254,10 @@
         <source>For native Sailfish OS apps only</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Send</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CoverPage</name>
@@ -1170,6 +1174,14 @@
     </message>
     <message>
         <source>Receive backup?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restore when transfer is finished</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open restore for this backup after it is saved</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
