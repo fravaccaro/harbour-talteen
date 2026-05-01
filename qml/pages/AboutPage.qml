@@ -159,6 +159,11 @@ Page {
                     value: "fravaccaro"
                 }
 
+                DetailItem {
+                    label: "Svenska"
+                    value: "Åke Engelbrektson"
+                }
+
                 LabelText {
                     text: qsTr("Request a new language or contribute to existing languages.")
                 }

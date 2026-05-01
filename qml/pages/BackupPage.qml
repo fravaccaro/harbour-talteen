@@ -60,7 +60,7 @@ Page {
             appWindow.appWorkingText = statusMessage;
             appWindow.showProgressNotification(qsTr("Backup in progress"), statusMessage, Notification.ProgressIndeterminate);
         }
-        onBackupFinished: function (success, message, outputPath, outputSizeBytes, outputDate) {
+        onBackupFinished: function(success, message, outputPath, outputSizeBytes, outputDate) {
             isBackupRunning = false;
             backupPage.statusMessage = message;
             if (success) {
@@ -317,6 +317,7 @@ Page {
                         pageStack.push(Qt.resolvedUrl("SendPage.qml"), SharedUtils.sendPageProperties(lastBackupPath, backupLabelField.text, lastBackupDate, SharedUtils.formatBytes(lastBackupSize)));
                     }
                 }
+
             }
 
             LabelSpacer {

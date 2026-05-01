@@ -78,7 +78,7 @@ Page {
                 netTransfer.rejectTransfer(); // Auto-reject so the socket doesn't hang
             }
         }
-        onReceiveTransferComplete: function (localPath) {
+        onReceiveTransferComplete: function(localPath) {
             if (restoreAfterReceive && localPath !== "") {
                 restoreAfterReceive = false;
                 pageStack.push(Qt.resolvedUrl("RestorePage.qml"), {

@@ -4,14 +4,14 @@ import Sailfish.Silica 1.0
 Dialog {
     id: transferDialog
 
-    objectName: "TransferPromptDialog"
-
     property string incomingFileName: ""
     property string incomingFileSize: ""
     property string incomingFileLabel: ""
     property bool hasSdCard: false
     property bool saveToSdCard: false
     property bool restoreWhenFinished: false
+
+    objectName: "TransferPromptDialog"
 
     Column {
         width: parent.width
