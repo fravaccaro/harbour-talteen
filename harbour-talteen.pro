@@ -26,12 +26,14 @@ CONFIG += sailfishapp
 HEADERS += \
     src/spawner.h \
     src/networktransfer.h \
+    src/storageutil.h \
     src/talteen_crypto.h \
     src/talteen.h
 
 SOURCES += \
     src/main.cpp \
     src/spawner.cpp \
+    src/storageutil.cpp \
     src/networktransfer.cpp \
     src/talteen.cpp \
     src/talteen_device.cpp \

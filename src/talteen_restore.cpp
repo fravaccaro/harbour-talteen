@@ -45,10 +45,19 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
     QDir(workDir).removeRecursively();
     QDir().mkpath(workDir);
 
+    QSharedPointer<bool> restoreOk(new bool(true));
+    QSharedPointer<QString> restoreMessage(new QString(tr("Backup restored successfully")));
+
+    auto markAppRestoreFailed = [=](const QString &details)
+    {
+        *restoreOk = false;
+        *restoreMessage = tr("Backup restored, but some apps could not be reinstalled: %1").arg(details);
+    };
+
     auto finalCleanup = [=]()
     {
         QDir(workDir).removeRecursively();
-        emit restoreFinished(true, tr("Backup restored successfully"));
+        emit restoreFinished(*restoreOk, *restoreMessage);
     };
 
     auto restoreApps = [=]()
@@ -102,6 +111,14 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
                             else
                             {
                                 qDebug() << "Successfully added repo via D-Bus:" << repoAlias;
+                                QProcess enableProc;
+                                enableProc.start(QStringLiteral("ssu"), {QStringLiteral("er"), repoAlias});
+                                enableProc.waitForFinished();
+                                if (enableProc.exitStatus() != QProcess::NormalExit || enableProc.exitCode() != 0)
+                                {
+                                    qDebug() << "Failed to enable repo:" << repoAlias
+                                             << enableProc.readAllStandardError();
+                                }
                             }
                         }
                     }
@@ -197,6 +214,7 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
                                 if (packageIds->isEmpty())
                                 {
                                     qDebug() << "[ERROR] No valid packages found.";
+                                    markAppRestoreFailed(tr("no matching packages found in repositories"));
                                     finalCleanup();
                                     return;
                                 }
@@ -205,7 +223,10 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
                                 auto installTrans = PackageKit::Daemon::installPackages(*packageIds);
 
                                 connect(installTrans, &PackageKit::Transaction::errorCode, this, [=](PackageKit::Transaction::Error error, const QString &details)
-                                        { qDebug() << "[PackageKit Install Error]" << error << "-" << details; });
+                                        {
+                                            qDebug() << "[PackageKit Install Error]" << error << "-" << details;
+                                            markAppRestoreFailed(details);
+                                        });
 
                                 connect(installTrans, &PackageKit::Transaction::finished, this, [=](PackageKit::Transaction::Exit exitStatus, uint)
                                         {
@@ -213,6 +234,7 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
                                                 qDebug() << "Apps restored successfully.";
                                             } else {
                                                 qDebug() << "App restore failed.";
+                                                markAppRestoreFailed(tr("installation failed"));
                                             }
                                             finalCleanup(); });
                                 return;

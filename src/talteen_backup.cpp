@@ -55,13 +55,8 @@ namespace
 void Talteen::startBackup(const QVariantMap &options)
 {
     QString homePath = QDir::homePath();
-    QString cachePath = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
-    QString workDir = cachePath + "/workdir";
     QString dateTimeString = QDateTime::currentDateTime().toString("yyyy-MM-dd_HH-mm");
     QString baseFileName = "talteen_backup_" + dateTimeString;
-
-    QDir(workDir).removeRecursively();
-    QDir().mkpath(workDir);
 
     bool hasAppinstalled = options.value("appinstalled").toBool();
     bool hasAppdata = options.value("appdata").toBool();
@@ -93,26 +88,31 @@ void Talteen::startBackup(const QVariantMap &options)
     }
 
     QString destOption = options.value("destination").toString();
-    QString targetFolder = (destOption == "internal" || destOption.isEmpty()) ? homePath : destOption;
-
-    QDir().mkpath(targetFolder);
-    QStorageInfo storage(targetFolder);
-
-    // Check final destination space
-    if (storage.bytesAvailable() < (estimatedSize + 104857600))
+    if (destOption.isEmpty())
     {
-        qDebug() << "[ERROR] Not enough free space in destination.";
-        emit backupFinished(false, tr("Not enough storage space to save the backup"), QString(), 0, QString());
+        emit backupFinished(false, tr("SD card not found"), QString(), 0, QString());
         return;
     }
 
-    // Because of streaming, we only need ~1.5x the size in cache (just for the encrypted file and raw links)
-    QDir().mkpath(cachePath);
-    QStorageInfo cacheStorage(cachePath);
-    if (cacheStorage.bytesAvailable() < (estimatedSize * 1.5 + 104857600))
+    const bool useInternal = (destOption == QLatin1String("internal"));
+    const QString appDataLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    const QString stagingBase = useInternal
+        ? appDataLocation + QStringLiteral("/.staging")
+        : destOption + QStringLiteral("/harbour-talteen/.staging");
+    const QString workDir = stagingBase + QStringLiteral("/workdir");
+    const QString backupFolder = useInternal ? appDataLocation : destOption + QStringLiteral("/harbour-talteen");
+    const QString targetFolder = useInternal ? homePath : destOption;
+
+    QDir(stagingBase).removeRecursively();
+    QDir().mkpath(workDir);
+
+    QDir().mkpath(targetFolder);
+    QStorageInfo storage(stagingBase);
+
+    if (storage.bytesAvailable() < (static_cast<qint64>(estimatedSize * 1.5) + 104857600))
     {
-        qDebug() << "[ERROR] Not enough free space in internal cache memory.";
-        emit backupFinished(false, tr("Not enough internal storage space to prepare the backup"), QString(), 0, QString());
+        qDebug() << "[ERROR] Not enough free space in destination.";
+        emit backupFinished(false, tr("Not enough storage space to save the backup"), QString(), 0, QString());
         return;
     }
 
@@ -165,7 +165,6 @@ void Talteen::startBackup(const QVariantMap &options)
         emit progressUpdate(tr("Finishing up..."));
         qDebug() << "Executing Step 3/3: Outer archive pack...";
 
-        QString backupFolder = (destOption == "internal" || destOption.isEmpty()) ? QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) : destOption + "/harbour-talteen";
         QDir().mkpath(backupFolder);
         QString finalDestination = backupFolder + "/" + baseFileName + ".talteen";
 
@@ -178,7 +177,7 @@ void Talteen::startBackup(const QVariantMap &options)
         connect(outerTar, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                 [=](int exitCode, QProcess::ExitStatus)
                 {
-                    QDir(workDir).removeRecursively();
+                    QDir(stagingBase).removeRecursively();
                     if (exitCode == 0)
                     {
                         qDebug() << "Backup successfully saved in:" << finalDestination;
@@ -451,6 +450,7 @@ void Talteen::startBackup(const QVariantMap &options)
         rsyncArgs << "-a" << "--no-specials" << "--delete";
 
         QStringList excludePaths = {
+            ".local/share/harbour-talteen/.staging",
             ".local/share/harbour-talteen",
             ".mozilla/lock", ".mozilla/.parentlock",
             ".local/share/org.sailfishos/browser/.mozilla/cache2",
@@ -540,10 +540,10 @@ void Talteen::startBackup(const QVariantMap &options)
                             });
 
                     // C++ Strings don't need escaping for $ signs, so we can pass your awk exactly as is.
-                    appProc->start("sh", {"-c", "pkcon get-packages --filter installed | awk '{print $2}' | grep -iE '^(harbour|openrepos|sailfishos|patchmanager)' | sed 's/-[0-9].*//'"});
+                    appProc->start("sh", {"-c", "pkcon get-packages --filter installed | awk '{print $2}' | grep -iE '^(harbour|openrepos|sailfishos|patchmanager|jolla-)' | sed 's/-[0-9].*//'"});
                 });
 
-        repoProc->start("sh", {"-c", "ssu lr | grep -iE 'openrepos|chum' | awk '{ print $2, $4 }'"});
+        repoProc->start("sh", {"-c", "ssu lr 2>&1 | grep -iE 'openrepos|chum|harbour-|sailfishos-' | grep -v ' - store ' | awk '/- / { alias=$2; url=\"\"; for(i=NF;i>=1;i--) if($i ~ /^https?:\\/\\//){url=$i; break} if(alias!=\"\" && url!=\"\") print alias, url }'"});
     };
 
     // Start the chain

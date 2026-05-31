@@ -1,4 +1,5 @@
 #include "networktransfer.h"
+#include "storageutil.h"
 #include <memory>
 #include <QDebug>
 #include <QFileInfo>
@@ -42,18 +43,7 @@ NetworkTransfer::NetworkTransfer(QObject *parent)
 
 QString NetworkTransfer::getSdCardPath()
 {
-    for (const QStorageInfo &storage : QStorageInfo::mountedVolumes())
-    {
-        if (storage.isValid() && storage.isReady() && !storage.isReadOnly())
-        {
-            QString path = storage.rootPath();
-            if (path.startsWith("/run/media/"))
-            {
-                return path;
-            }
-        }
-    }
-    return "";
+    return findSdCardMountPath();
 }
 
 bool NetworkTransfer::hasSdCard()

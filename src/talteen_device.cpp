@@ -1,22 +1,12 @@
 #include "talteen.h"
+#include "storageutil.h"
 
 #include <QDir>
 #include <QStorageInfo>
 
 QString Talteen::getSdCardPath()
 {
-    for (const QStorageInfo &storage : QStorageInfo::mountedVolumes())
-    {
-        if (storage.isValid() && storage.isReady() && !storage.isReadOnly())
-        {
-            QString path = storage.rootPath();
-            if (path.startsWith("/run/media/"))
-            {
-                return path;
-            }
-        }
-    }
-    return "";
+    return findSdCardMountPath();
 }
 
 qint64 Talteen::getFreeSpace(bool onSdCard)

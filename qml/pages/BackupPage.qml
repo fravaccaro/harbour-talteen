@@ -16,6 +16,13 @@ Page {
     property string lastBackupDate: ""
     property bool allSelected: false
     property bool noneSelected: false
+    property bool sdCardAvailable: false
+
+    function refreshSdCardAvailability() {
+        sdCardAvailable = appCore.getSdCardPath() !== "";
+        if (!sdCardAvailable)
+            storageBtn.saveToSdCard = false;
+    }
 
     function clearLastBackup() {
         lastBackupPath = "";
@@ -47,6 +54,11 @@ Page {
     allowedOrientations: Orientation.All
     // Prevent swipe to go back while backup is ongoing
     backNavigation: !isBackupRunning
+    Component.onCompleted: refreshSdCardAvailability()
+    onStatusChanged: {
+        if (status === PageStatus.Active)
+            refreshSdCardAvailability();
+    }
     onIsBackupRunningChanged: {
         appWindow.isAppWorking = isBackupRunning;
         appWindow.appWorkingText = qsTr("Saving backup...");
@@ -249,7 +261,7 @@ Page {
 
                 width: parent.width
                 backendEngine: appCore
-                isSdCardAvailable: appCore.getSdCardPath() !== ""
+                isSdCardAvailable: backupPage.sdCardAvailable
                 isAppBusy: isBackupRunning
             }
 
