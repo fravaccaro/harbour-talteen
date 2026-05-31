@@ -86,7 +86,25 @@ scripts/decrypt-v2.sh -i backup.talteen -o restored-data -p 'your-password'
 
 The script validates v2 manifest fields (`kdf_iterations`, `salt_b64`, `iv_b64`, `tag_b64`, `aad`) and then decrypts with OpenSSL EVP AES-256-GCM before extracting the payload.
 
+#### Prerequisites
 
+The script compiles a small C++ helper on first run. Having the `openssl` CLI installed is not enough; you also need a C++ compiler and OpenSSL development headers:
+
+- `g++` (or another compiler via the `CXX` environment variable)
+- OpenSSL dev headers and libcrypto
+
+Install on common Linux distros:
+
+```
+# Debian / Ubuntu / Linux Mint
+sudo apt install g++ libssl-dev
+
+# Fedora / RHEL
+sudo dnf install gcc-c++ openssl-devel
+
+# openSUSE
+sudo zypper install gcc-c++ libopenssl-devel
+```
 
 ## Support
 If you like my work and want to buy me a beer, [feel free to do it](https://www.paypal.me/fravaccaro)!

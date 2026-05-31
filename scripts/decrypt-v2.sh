@@ -6,6 +6,11 @@ usage() {
 Usage:
   scripts/decrypt-v2.sh -i backup.talteen -o output_dir [-p password]
 
+Requirements:
+  g++ (or $CXX) and OpenSSL development headers (libcrypto).
+  Debian/Ubuntu/Mint: sudo apt install g++ libssl-dev
+  Fedora/RHEL:        sudo dnf install gcc-c++ openssl-devel
+
 Options:
   -i  Path to .talteen backup (required)
   -o  Output directory for extracted files (required)
