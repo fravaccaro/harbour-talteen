@@ -540,10 +540,10 @@ void Talteen::startBackup(const QVariantMap &options)
                             });
 
                     // C++ Strings don't need escaping for $ signs, so we can pass your awk exactly as is.
-                    appProc->start("sh", {"-c", "pkcon get-packages --filter installed | awk '{print $2}' | grep -iE '^(harbour|openrepos|sailfishos|patchmanager|jolla-)' | sed 's/-[0-9].*//'"});
+                    appProc->start("sh", {"-c", "pkcon get-packages --filter installed | awk '{print $2}' | grep -iE '^(harbour|openrepos|sailfishos|patchmanager)' | sed 's/-[0-9].*//'"});
                 });
 
-        repoProc->start("sh", {"-c", "ssu lr 2>&1 | grep -iE 'openrepos|chum|harbour-|sailfishos-' | grep -v ' - store ' | awk '/- / { alias=$2; url=\"\"; for(i=NF;i>=1;i--) if($i ~ /^https?:\\/\\//){url=$i; break} if(alias!=\"\" && url!=\"\") print alias, url }'"});
+        repoProc->start("sh", {"-c", "ssu lr 2>&1 | grep -iE 'openrepos|chum|harbour-' | grep -v ' - store ' | awk '/- / { alias=$2; url=\"\"; for(i=NF;i>=1;i--) if($i ~ /^https?:\\/\\//){url=$i; break} if(alias!=\"\" && url!=\"\") print alias, url }'"});
     };
 
     // Start the chain

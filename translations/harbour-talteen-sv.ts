@@ -840,10 +840,6 @@
         <translation>Lösenord krävs för denna säkerhetskopia</translation>
     </message>
     <message>
-        <source>Not enough internal storage space to prepare the backup</source>
-        <translation>Inte tillräckligt med internt lagringsutrymme för att förbereda säkerhetskopia</translation>
-    </message>
-    <message>
         <source>Encryption tool failed to start. Is OpenSSL installed?</source>
         <translation>Krypteringsverktyget kunde inte starta. Är OpenSSL installerat?</translation>
     </message>
@@ -1058,6 +1054,22 @@
     <message>
         <source>Unable to stream decrypted payload</source>
         <translation>Kan inte strömma avkrypterad nyttolast</translation>
+    </message>
+    <message>
+        <source>SD card not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Backup restored, but some apps could not be reinstalled: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>no matching packages found in repositories</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>installation failed</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
