@@ -5,7 +5,6 @@
 #include <QDBusConnection>
 #include <QDBusInterface>
 #include <QDBusReply>
-#include <QDateTime>
 #include <QDebug>
 #include <QDir>
 #include <QFile>
@@ -98,7 +97,10 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
                             // Check if the system already has this repo
                             if (currentRepos.contains(repoAlias))
                             {
-                                qDebug() << "Repository already enabled, skipping:" << repoAlias;
+                                qDebug() << "Repository already present, ensuring enabled:" << repoAlias;
+                                QProcess enableProc;
+                                enableProc.start(QStringLiteral("ssu"), {QStringLiteral("er"), repoAlias});
+                                enableProc.waitForFinished();
                                 continue;
                             }
 
@@ -184,89 +186,92 @@ void Talteen::executeRestore(const QString &backupFile, const QVariantMap &selec
                 return;
             }
 
-            // Natively refresh PackageKit cache
-            qDebug() << "Refreshing PackageKit cache...";
+            // SSU repo metadata must be refreshed before PackageKit can see newly added OpenRepos repos.
+            qDebug() << "Updating repository metadata (ssu ur)...";
+            QProcess ssuUrProc;
+            ssuUrProc.start(QStringLiteral("ssu"), {QStringLiteral("ur")});
+            ssuUrProc.waitForFinished(-1);
 
+            qDebug() << "Refreshing PackageKit cache...";
             auto refreshTrans = PackageKit::Daemon::refreshCache(true);
 
-            // Handle the case where the user cancels or the system blocks the refresh
             connect(refreshTrans, &PackageKit::Transaction::errorCode, this, [=](PackageKit::Transaction::Error error, const QString &details)
                     {
                         qDebug() << "[PackageKit Refresh Error]" << error << "-" << details;
-                        // We continue anyway, because a stale cache is better than no restore at all.
                     });
 
             connect(refreshTrans, &PackageKit::Transaction::finished, this, [=](PackageKit::Transaction::Exit, uint)
                     {
                         qDebug() << "Cache refresh attempt finished.";
 
-                        // One-by-one search to prevent Zypper batch crashes
-                        QSharedPointer<QStringList> packageIds(new QStringList());
+                        QProcess pkRefresh;
+                        pkRefresh.start(QStringLiteral("pkcon"), {QStringLiteral("refresh")});
+                        pkRefresh.waitForFinished(-1);
+
                         QSharedPointer<QStringList> remainingNames(new QStringList(packageNames));
+                        QSharedPointer<QStringList> failedPackages(new QStringList());
+                        QSharedPointer<std::function<void()>> installNext(new std::function<void()>());
 
-                        // Use QSharedPointer so the lambda can safely capture itself
-                        QSharedPointer<std::function<void()>> resolveNext(new std::function<void()>());
-
-                        *resolveNext = [=]()
+                        *installNext = [=]()
                         {
                             if (remainingNames->isEmpty())
                             {
-                                if (packageIds->isEmpty())
+                                if (!failedPackages->isEmpty())
                                 {
-                                    qDebug() << "[ERROR] No valid packages found.";
-                                    markAppRestoreFailed(tr("no matching packages found in repositories"));
-                                    finalCleanup();
-                                    return;
+                                    qDebug() << "Some packages could not be installed:" << *failedPackages;
+                                    markAppRestoreFailed(failedPackages->join(QStringLiteral(", ")));
                                 }
-
-                                // Install the valid packages!
-                                auto installTrans = PackageKit::Daemon::installPackages(*packageIds);
-
-                                connect(installTrans, &PackageKit::Transaction::errorCode, this, [=](PackageKit::Transaction::Error error, const QString &details)
-                                        {
-                                            qDebug() << "[PackageKit Install Error]" << error << "-" << details;
-                                            markAppRestoreFailed(details);
-                                        });
-
-                                connect(installTrans, &PackageKit::Transaction::finished, this, [=](PackageKit::Transaction::Exit exitStatus, uint)
-                                        {
-                                            if (exitStatus == PackageKit::Transaction::ExitSuccess) {
-                                                qDebug() << "Apps restored successfully.";
-                                            } else {
-                                                qDebug() << "App restore failed.";
-                                                markAppRestoreFailed(tr("installation failed"));
-                                            }
-                                            finalCleanup(); });
+                                else
+                                {
+                                    qDebug() << "Apps restored successfully.";
+                                }
+                                finalCleanup();
                                 return;
                             }
 
-                            // Process the next package
-                            QString currentPkg = remainingNames->takeFirst();
+                            const QString currentPkg = remainingNames->takeFirst();
+                            QSharedPointer<QString> foundId(new QString());
                             const PackageKit::Transaction::Filters searchFilters =
                                 PackageKit::Transaction::FilterNewest | PackageKit::Transaction::FilterNotInstalled;
                             auto searchTrans = PackageKit::Daemon::searchNames(currentPkg, searchFilters);
 
-                            connect(searchTrans, &PackageKit::Transaction::package, this, [packageIds, currentPkg](PackageKit::Transaction::Info, const QString &packageID, const QString &)
+                            connect(searchTrans, &PackageKit::Transaction::package, this,
+                                    [foundId, currentPkg](PackageKit::Transaction::Info, const QString &packageID, const QString &)
                                     {
-                                        if (packageID.section(QLatin1Char(';'), 0, 0) != currentPkg)
-                                            return;
-                                        if (packageIds->contains(packageID))
-                                            return;
-                                        const QString pkgName = packageID.section(QLatin1Char(';'), 0, 0);
-                                        for (const QString &existing : *packageIds)
-                                        {
-                                            if (existing.section(QLatin1Char(';'), 0, 0) == pkgName)
-                                                return;
-                                        }
-                                        packageIds->append(packageID); });
+                                        if (packageID.section(QLatin1Char(';'), 0, 0) == currentPkg)
+                                            *foundId = packageID;
+                                    });
 
                             connect(searchTrans, &PackageKit::Transaction::finished, this, [=]()
                                     {
-                                        (*resolveNext)(); // Call the next iteration
+                                        if (foundId->isEmpty())
+                                        {
+                                            qDebug() << "Package not found in repositories:" << currentPkg;
+                                            failedPackages->append(currentPkg);
+                                            (*installNext)();
+                                            return;
+                                        }
+
+                                        auto installTrans = PackageKit::Daemon::installPackages(QStringList{*foundId});
+
+                                        connect(installTrans, &PackageKit::Transaction::errorCode, this,
+                                                [=](PackageKit::Transaction::Error error, const QString &details)
+                                                {
+                                                    qDebug() << "[PackageKit Install Error]" << currentPkg << error << "-" << details;
+                                                });
+
+                                        connect(installTrans, &PackageKit::Transaction::finished, this,
+                                                [=](PackageKit::Transaction::Exit exitStatus, uint)
+                                                {
+                                                    if (exitStatus != PackageKit::Transaction::ExitSuccess)
+                                                        failedPackages->append(currentPkg);
+
+                                                    (*installNext)();
+                                                });
                                     });
                         };
 
-                        (*resolveNext)(); // Start the loop
+                        (*installNext)();
                     });
         }
         else

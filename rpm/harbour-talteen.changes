@@ -1,4 +1,12 @@
-Tue May 5 2026 0.2.1-1
+Sat May 31 2026 0.2.2-1
+- Fixed third-party app restore after repository re-add (ssu ur, cache refresh, per-package install)
+- Fixed SD card backups using on-card staging instead of internal cache
+- Improved SD card detection
+- Refined app backup to exclude Jolla stock apps and the official store repository
+- Added GitHub Actions workflow for RPM builds
+- Documented decrypt-v2.sh prerequisites in README
+
+* Tue May 5 2026 0.2.1-1
 - Added Send button in backup page
 - Added restore on backup transfer complete
 - Added Swedish translation (thanks to eson)

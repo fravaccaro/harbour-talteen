@@ -1063,14 +1063,6 @@
         <source>Backup restored, but some apps could not be reinstalled: %1</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>no matching packages found in repositories</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>installation failed</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>TechnicalDetailsPage</name>
