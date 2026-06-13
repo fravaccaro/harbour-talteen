@@ -6,6 +6,6 @@ Exec=harbour-talteen
 Name=Talteen
 
 [X-Sailjail]
-OrganizationName=org.harbour-talteen
+OrganizationName=org.frapps.talteen
 ApplicationName=harbour-talteen
 Sandboxing=Disabled

@@ -1,4 +1,4 @@
-Sat May 31 2026 0.2.2-1
+Sat May 31 2026 0.2.2-2
 - Fixed third-party app restore after repository re-add (ssu ur, cache refresh, per-package install)
 - Fixed SD card backups using on-card staging instead of internal cache
 - Improved SD card detection
