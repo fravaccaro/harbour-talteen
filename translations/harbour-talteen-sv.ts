@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="sv">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="sv">
 <context>
     <name>AboutPage</name>
     <message>
@@ -712,10 +710,7 @@
     </message>
     <message numerus="yes">
         <source>%n device(s) found</source>
-        <translation>
-            <numerusform>%n enhet hittad</numerusform>
-            <numerusform>%n enheter hittade</numerusform>
-        </translation>
+        <translation><numerusform>%n enhet hittad</numerusform><numerusform>%n enheter hittade</numerusform></translation>
     </message>
     <message>
         <source>Stop looking</source>
@@ -1057,11 +1052,11 @@
     </message>
     <message>
         <source>SD card not found</source>
-        <translation type="unfinished"></translation>
+        <translation>Inget SD-kort hittades</translation>
     </message>
     <message>
         <source>Backup restored, but some apps could not be reinstalled: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Säkerhetskopia återställd, men vissa appar kunde inte återinstalleras: %1</translation>
     </message>
 </context>
 <context>

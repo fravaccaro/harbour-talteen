@@ -97,8 +97,8 @@ void Talteen::startBackup(const QVariantMap &options)
     const bool useInternal = (destOption == QLatin1String("internal"));
     const QString appDataLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     const QString stagingBase = useInternal
-        ? appDataLocation + QStringLiteral("/.staging")
-        : destOption + QStringLiteral("/harbour-talteen/.staging");
+                                    ? appDataLocation + QStringLiteral("/.staging")
+                                    : destOption + QStringLiteral("/harbour-talteen/.staging");
     const QString workDir = stagingBase + QStringLiteral("/workdir");
     const QString backupFolder = useInternal ? appDataLocation : destOption + QStringLiteral("/harbour-talteen");
     const QString targetFolder = useInternal ? homePath : destOption;
@@ -183,7 +183,7 @@ void Talteen::startBackup(const QVariantMap &options)
                         qDebug() << "Backup successfully saved in:" << finalDestination;
                         QFileInfo fi(finalDestination);
                         emit backupFinished(true, tr("Backup saved successfully"), finalDestination, fi.size(),
-                                           fi.lastModified().toString(QStringLiteral("yyyy-MM-dd HH:mm")));
+                                            fi.lastModified().toString(QStringLiteral("yyyy-MM-dd HH:mm")));
                     }
                     else
                     {
@@ -321,7 +321,7 @@ void Talteen::startBackup(const QVariantMap &options)
             } });
 
         QStringList tarArgs;
-        tarArgs << "-cJhf" << "-";
+        tarArgs << "--ignore-failed-read" << "-cJhf" << "-";
 
         if (hasAppinstalled)
             tarArgs << "appinstalled";
@@ -351,8 +351,7 @@ void Talteen::startBackup(const QVariantMap &options)
                     if (*cryptoOk && !trailing.isEmpty())
                     {
                         QByteArray outChunk;
-                        if (!encryptAesGcmChunk(ctx, trailing, &outChunk, cryptoError.data())
-                            || encFile->write(outChunk.constData(), outChunk.size()) != outChunk.size())
+                        if (!encryptAesGcmChunk(ctx, trailing, &outChunk, cryptoError.data()) || encFile->write(outChunk.constData(), outChunk.size()) != outChunk.size())
                         {
                             *cryptoOk = false;
                         }
@@ -367,8 +366,7 @@ void Talteen::startBackup(const QVariantMap &options)
                         {
                             *cryptoOk = false;
                         }
-                        else if (finalChunk.size() > 0
-                                 && encFile->write(finalChunk.constData(), finalChunk.size()) != finalChunk.size())
+                        else if (finalChunk.size() > 0 && encFile->write(finalChunk.constData(), finalChunk.size()) != finalChunk.size())
                         {
                             *cryptoOk = false;
                         }
@@ -483,6 +481,9 @@ void Talteen::startBackup(const QVariantMap &options)
                 {
                     if (exitStatus == QProcess::NormalExit && (exitCode == 0 || exitCode == 24))
                     {
+                        // Drop broken symlinks so tar does not abort.
+                        QProcess::execute("find",
+                                          {workDir + "/appdata", "-type", "l", "!", "-exec", "test", "-e", "{}", ";", "-delete"});
                         runCallsStep(); // Move to the next step safely
                     }
                     else
