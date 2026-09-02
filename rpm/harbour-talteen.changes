@@ -1,4 +1,14 @@
-Sat May 31 2026 0.2.3-1
+* Wed Sep 2 2026 0.2.4-1
+- Fixed backups always failing on Sailfish OS 5, where tar is provided by BusyBox
+  and rejects the GNU-only --ignore-failed-read option
+- Fixed backups being discarded when tar reported unreadable or vanished files,
+  even though the archive itself was complete
+- Fixed backups being discarded when a selected media folder does not exist
+- Fixed backups being discarded when a file under .config or .local is unreadable
+- Broken symlinks are now dropped without relying on the system find command
+- Backups that had to skip files now report it instead of appearing fully complete
+
+* Sat May 31 2026 0.2.3-1
 - Fixed backup failure when app data contains broken symlinks
 
 * Sat May 31 2026 0.2.2-2

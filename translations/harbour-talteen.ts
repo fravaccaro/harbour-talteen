@@ -1062,6 +1062,14 @@
         <source>Backup restored, but some apps could not be reinstalled: %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Backup saved. Some files could not be read and were skipped</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>None of the selected content could be found</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>TechnicalDetailsPage</name>

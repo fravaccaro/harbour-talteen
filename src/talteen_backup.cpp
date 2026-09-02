@@ -7,6 +7,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QPair>
 #include <QProcess>
 #include <QByteArray>
 #include <QSharedPointer>
@@ -14,6 +15,7 @@
 #include <QStorageInfo>
 #include <QTextStream>
 #include <QMap>
+#include <QVector>
 
 namespace
 {
@@ -27,6 +29,46 @@ namespace
             return false;
         *buffer = data;
         return true;
+    }
+
+    // Sailfish OS 5.x ships BusyBox tar, which rejects GNU long options and aborts
+    // before writing a single byte, so support has to be probed instead of assumed.
+    bool tarSupportsIgnoreFailedRead()
+    {
+        static const bool supported = []() {
+            QProcess probe;
+            // BusyBox answers with its whole usage text; keep it out of the log.
+            probe.setStandardOutputFile(QProcess::nullDevice());
+            probe.setStandardErrorFile(QProcess::nullDevice());
+            probe.start(QStringLiteral("tar"),
+                        {QStringLiteral("--ignore-failed-read"), QStringLiteral("--version")});
+            return probe.waitForFinished(5000) && probe.exitStatus() == QProcess::NormalExit && probe.exitCode() == 0;
+        }();
+        return supported;
+    }
+
+    // Archiving dereferences symlinks, so a single dangling one aborts tar. Recursion
+    // deliberately stops at every symlink: descending through one would leave the
+    // staging copy and start deleting from the user's real directories.
+    int pruneBrokenSymlinks(const QString &dirPath)
+    {
+        int removed = 0;
+        const QFileInfoList entries = QDir(dirPath).entryInfoList(
+            QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden | QDir::System);
+
+        for (const QFileInfo &entry : entries)
+        {
+            if (entry.isSymLink())
+            {
+                if (!entry.exists() && QFile::remove(entry.absoluteFilePath()))
+                    ++removed;
+            }
+            else if (entry.isDir())
+            {
+                removed += pruneBrokenSymlinks(entry.absoluteFilePath());
+            }
+        }
+        return removed;
     }
 
     qint64 calculateDirSize(const QString &dirPath)
@@ -159,6 +201,9 @@ void Talteen::startBackup(const QVariantMap &options)
     if (hasVideos)
         QFile::link(QStandardPaths::writableLocation(QStandardPaths::MoviesLocation), workDir + "/videos");
 
+    // Set when tar could not read part of the selection; the archive is still usable.
+    QSharedPointer<bool> incompleteSelection(new bool(false));
+
     // Outer Wrapper
     auto runOuterTarStep = [=]()
     {
@@ -182,7 +227,10 @@ void Talteen::startBackup(const QVariantMap &options)
                     {
                         qDebug() << "Backup successfully saved in:" << finalDestination;
                         QFileInfo fi(finalDestination);
-                        emit backupFinished(true, tr("Backup saved successfully"), finalDestination, fi.size(),
+                        const QString successMessage = *incompleteSelection
+                                                           ? tr("Backup saved. Some files could not be read and were skipped")
+                                                           : tr("Backup saved successfully");
+                        emit backupFinished(true, successMessage, finalDestination, fi.size(),
                                             fi.lastModified().toString(QStringLiteral("yyyy-MM-dd HH:mm")));
                     }
                     else
@@ -256,6 +304,10 @@ void Talteen::startBackup(const QVariantMap &options)
                 qDebug() << "[TAR LOG]" << errorOutput.trimmed();
             } });
 
+        // Plaintext bytes received from tar, used to tell a partial archive apart
+        // from one that was never started at all.
+        QSharedPointer<qint64> streamedBytes(new qint64(0));
+
         QByteArray salt(16, 0);
         QByteArray iv(12, 0);
         if (!fillRandomBytes(&salt) || !fillRandomBytes(&iv))
@@ -309,6 +361,7 @@ void Talteen::startBackup(const QVariantMap &options)
             if (inChunk.isEmpty()) {
                 return;
             }
+            *streamedBytes += inChunk.size();
 
             QByteArray outChunk;
             if (!encryptAesGcmChunk(ctx, inChunk, &outChunk, cryptoError.data())) {
@@ -320,29 +373,54 @@ void Talteen::startBackup(const QVariantMap &options)
                 return;
             } });
 
-        QStringList tarArgs;
-        tarArgs << "--ignore-failed-read" << "-cJhf" << "-";
+        const int prunedLinks = pruneBrokenSymlinks(workDir);
+        if (prunedLinks > 0)
+            qDebug() << "Dropped broken symlinks before packaging:" << prunedLinks;
 
-        if (hasAppinstalled)
-            tarArgs << "appinstalled";
-        if (hasApporder)
-            tarArgs << "apporder";
-        if (hasCalls)
-            tarArgs << "calls";
-        if (hasMessages)
-            tarArgs << "messages";
-        if (hasAppdata)
-            tarArgs << "appdata";
-        if (hasPictures)
-            tarArgs << "pictures";
-        if (hasDocuments)
-            tarArgs << "documents";
-        if (hasDownloads)
-            tarArgs << "downloads";
-        if (hasMusic)
-            tarArgs << "music";
-        if (hasVideos)
-            tarArgs << "videos";
+        const QVector<QPair<bool, QString>> categories = {
+            {hasAppinstalled, QStringLiteral("appinstalled")},
+            {hasApporder, QStringLiteral("apporder")},
+            {hasCalls, QStringLiteral("calls")},
+            {hasMessages, QStringLiteral("messages")},
+            {hasAppdata, QStringLiteral("appdata")},
+            {hasPictures, QStringLiteral("pictures")},
+            {hasDocuments, QStringLiteral("documents")},
+            {hasDownloads, QStringLiteral("downloads")},
+            {hasMusic, QStringLiteral("music")},
+            {hasVideos, QStringLiteral("videos")}};
+
+        QStringList stagedEntries;
+        for (const QPair<bool, QString> &category : categories)
+        {
+            if (!category.first)
+                continue;
+
+            // Media categories are staged as symlinks to the user directories, which
+            // may not exist. Naming one would abort the whole archive.
+            if (!QFileInfo::exists(workDir + QLatin1Char('/') + category.second))
+            {
+                qDebug() << "[WARNING] Nothing staged for category, skipping:" << category.second;
+                *incompleteSelection = true;
+                continue;
+            }
+            stagedEntries << category.second;
+        }
+
+        if (stagedEntries.isEmpty())
+        {
+            qDebug() << "[FATAL] None of the selected categories produced any data.";
+            emit backupFinished(false, tr("None of the selected content could be found"), QString(), 0, QString());
+            freeCipherContext(ctx);
+            encFile->close();
+            delete encFile;
+            tarProcess->deleteLater();
+            return;
+        }
+
+        QStringList tarArgs;
+        if (tarSupportsIgnoreFailedRead())
+            tarArgs << "--ignore-failed-read";
+        tarArgs << "-cJhf" << "-" << stagedEntries;
 
         connect(tarProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                 [=](int exitCode, QProcess::ExitStatus tarExit)
@@ -350,6 +428,7 @@ void Talteen::startBackup(const QVariantMap &options)
                     const QByteArray trailing = tarProcess->readAllStandardOutput();
                     if (*cryptoOk && !trailing.isEmpty())
                     {
+                        *streamedBytes += trailing.size();
                         QByteArray outChunk;
                         if (!encryptAesGcmChunk(ctx, trailing, &outChunk, cryptoError.data()) || encFile->write(outChunk.constData(), outChunk.size()) != outChunk.size())
                         {
@@ -357,7 +436,17 @@ void Talteen::startBackup(const QVariantMap &options)
                         }
                     }
 
-                    const bool tarOk = (tarExit == QProcess::NormalExit && exitCode == 0);
+                    // Exit 1 means individual entries were unreadable or vanished while
+                    // being read; the archive itself is complete. GNU tar reserves 2 and
+                    // above for fatal errors, BusyBox tar signals them with an empty stream.
+                    const bool tarWarnedOnly = (exitCode == 1 && *streamedBytes > 0);
+                    const bool tarOk = (tarExit == QProcess::NormalExit && (exitCode == 0 || tarWarnedOnly));
+                    if (tarWarnedOnly)
+                    {
+                        qDebug() << "[WARNING] Tar skipped unreadable entries, archive kept.";
+                        *incompleteSelection = true;
+                    }
+
                     if (tarOk && *cryptoOk)
                     {
                         QByteArray finalChunk;
@@ -479,11 +568,17 @@ void Talteen::startBackup(const QVariantMap &options)
         connect(rsyncProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                 [=](int exitCode, QProcess::ExitStatus exitStatus)
                 {
-                    if (exitStatus == QProcess::NormalExit && (exitCode == 0 || exitCode == 24))
+                    // 23 is a partial transfer caused by unreadable files, 24 one caused
+                    // by files vanishing mid-copy. Both leave a usable staging tree, and
+                    // both are normal on a live device, so neither may abort the backup.
+                    const bool rsyncPartial = (exitCode == 23 || exitCode == 24);
+                    if (exitStatus == QProcess::NormalExit && (exitCode == 0 || rsyncPartial))
                     {
-                        // Drop broken symlinks so tar does not abort.
-                        QProcess::execute("find",
-                                          {workDir + "/appdata", "-type", "l", "!", "-exec", "test", "-e", "{}", ";", "-delete"});
+                        if (rsyncPartial)
+                        {
+                            qDebug() << "[WARNING] Rsync could not copy every file, exit:" << exitCode;
+                            *incompleteSelection = true;
+                        }
                         runCallsStep(); // Move to the next step safely
                     }
                     else

@@ -1,7 +1,7 @@
 Name:       harbour-talteen
 
 Summary:    Talteen
-Version:    0.2.3
+Version:    0.2.4
 Release:    1
 License:    GPLv3
 URL:        https://github.com/fravaccaro/harbour-talteen
