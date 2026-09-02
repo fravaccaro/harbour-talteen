@@ -3,7 +3,15 @@ Talteen is your all-in-one backup companion for Sailfish OS. Whether you are swi
 
 Available on [OpenRepos](https://openrepos.net/content/fravaccaro/talteen-backup).
 
-## Screenshots
+## Donate
+
+The SailfishOS Community Team is on Liberapay:
+
+[![Liberapay receiving](https://img.shields.io/liberapay/receives/SailfishOScommunityTeam?logo=liberapay&label=SailfishOSCommunity)](https://liberapay.com/SailfishOScommunityTeam)
+
+[![Liberapay receiving](https://img.shields.io/liberapay/receives/fravaccaro?logo=liberapay&label=fravaccaro)](https://liberapay.com/fravaccaro)
+
+## Features
 
 <p align="left">
   <img src="screenshots/MainScreen.png" alt="Main Screen" width="32%" />
@@ -13,7 +21,6 @@ Available on [OpenRepos](https://openrepos.net/content/fravaccaro/talteen-backup
   <img src="screenshots/Receive.png" alt="Receive" width="32%" />
 </p>
 
-## Features
 * Save your messages, call history, app data, app grid layout, and media.
 * Easily move your data to a new device by copying the backup file via an SD card or over Wi-FI.
 * Lock your archives with standard AES-256 encryption.
