@@ -1,3 +1,11 @@
+---
+layout: default
+title: Home
+nav_order: 1
+description: "Save and restore apps, data and files"
+permalink: /
+---
+
 # Talteen
 Talteen is your all-in-one backup companion for Sailfish OS. Whether you are switching devices or just playing it safe, Talteen bundles your most important data into a single, secure archive. Easily back up your messages, call history, photos, media, and even your app settings. Everything is locked behind strong encryption, giving you total peace of mind that your personal data stays yours.
 
