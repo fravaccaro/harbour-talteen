@@ -1,0 +1,23 @@
+remote_theme: pmarsceill/just-the-docs
+title: Talteen
+description: Save and restore apps, data and files
+baseurl: "/harbour-talteen"
+exclude:
+  - appicons/
+  - images/
+  - qml/
+  - rpm/
+  - src/
+  - tools/
+  - translations/
+  - assets/
+  - "*.desktop"
+  - "*.pro"
+  - .sfdk/
+  - .github/
+
+url: "https://fravaccaro.github.io"
+search_enabled: false
+aux_links:
+  "Talteen on GitHub":
+    - "//github.com/fravaccaro/harbour-talteen"
